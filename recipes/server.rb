@@ -77,8 +77,8 @@ execute "openstack-dashboard syncdb" do
 end
 
 template value_for_platform(
-  [ "redhat","centos","fedora" ] => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" }, 
-  [ "ubuntu","debian" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
+  [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
+  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
   source "dash-site.erb"
@@ -91,11 +91,13 @@ template value_for_platform(
       :ssl_key_file => "#{node["horizon"]["cert_dir"]}/private/#{node["horizon"]["self_cert_key"]}",
       :apache_log_dir => node["apache"]["log_dir"],
       :django_wsgi_path => node["horizon"]["wsgi_path"],
-      :dash_path => node["horizon"]["dash_path"]
+      :dash_path => node["horizon"]["dash_path"],
+      :wsgi_user => node["apache"]["user"],
+      :wsgi_group => node["apache"]["group"]
   )
 end
 
-if platform?("debian", "ubuntu") then 
+if platform?("debian","ubuntu","fedora") then 
   apache_site "openstack-dashboard"
   apache_site(
     :name => "000-default",
