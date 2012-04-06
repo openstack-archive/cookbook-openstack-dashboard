@@ -99,7 +99,7 @@ end
 
 # fedora includes this file in the package - we need to delete
 # it because we do it better
-file "#{node[:apache][:dir]}/conf.d/openstack-dashboard.conf" do
+file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
   only_if do platform?("fedora") end
