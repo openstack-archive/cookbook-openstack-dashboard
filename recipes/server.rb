@@ -97,7 +97,7 @@ template value_for_platform(
   )
 end
 
-if platform?("debian","ubuntu","redhat","centos","fedora") then 
+if platform?("debian","ubuntu","fedora") then 
   apache_site "openstack-dashboard"
   apache_site(
     :name => "000-default",
