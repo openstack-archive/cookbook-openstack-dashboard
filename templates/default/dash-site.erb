@@ -4,10 +4,11 @@
    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
 </VirtualHost>
 
+# test
 <VirtualHost *:443>
   ServerAdmin <%= @apache_contact %>
   WSGIScriptAlias / <%= @django_wsgi_path %>/django.wsgi
-  WSGIDaemonProcess dashboard user=www-data group=www-data processes=3 threads=10 python-path=<%= @dash_path %>
+  WSGIDaemonProcess dashboard user=<%= @wsgi_user %> group=<%= @wsgi_group %> processes=3 threads=10 python-path=<%= @dash_path %>
   WSGIProcessGroup dashboard
 
   DocumentRoot <%= @dash_path %>/.blackhole/
