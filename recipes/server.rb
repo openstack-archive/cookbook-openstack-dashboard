@@ -105,10 +105,16 @@ file "#{node[:apache][:dir]}/conf.d/openstack-dashboard.conf" do
   only_if do platform?("fedora") end
 end
 
-if platform?("debian","ubuntu","fedora") then 
+if platform?("debian","ubuntu") then 
   apache_site "openstack-dashboard"
   apache_site(
     :name => "000-default",
+    :enable => false
+  )
+elsif platform?("fedora") then
+  apache_site "openstack-dashboard"
+  apache_site(
+    :name => "default",
     :enable => false
   )
 end
