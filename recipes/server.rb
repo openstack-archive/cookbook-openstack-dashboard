@@ -77,7 +77,8 @@ execute "openstack-dashboard syncdb" do
 end
 
 template value_for_platform(
-  [ "ubuntu","debian", "redhat","centos","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
+  [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
+  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
   source "dash-site.erb"
