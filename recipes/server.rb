@@ -111,6 +111,12 @@ if platform?("debian","ubuntu","fedora") then
     :name => "000-default",
     :enable => false
   )
+elsif platform?("fedora") then
+  apache_site "openstack-dashboard"
+  apache_site(
+    :name => "default",
+    :enable => false
+  )
 end
 
 # This is a dirty hack to deal with https://bugs.launchpad.net/nova/+bug/932468
