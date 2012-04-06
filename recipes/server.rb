@@ -72,6 +72,7 @@ execute "openstack-dashboard syncdb" do
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
   command "python manage.py syncdb"
   action :run
+  only_if do platform?("ubuntu","debian") end
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
