@@ -19,6 +19,3 @@ Attributes
 
 Usage
 =====
-
-Test
-====
