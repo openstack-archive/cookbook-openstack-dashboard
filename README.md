@@ -20,5 +20,3 @@ Attributes
 Usage
 =====
 
-Test
-====
