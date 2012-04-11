@@ -76,6 +76,20 @@ execute "openstack-dashboard syncdb" do
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
+cookbook_file "#{node["horizon"]["cert_dir"]}/certs/#{node["horizon"]["cert"]}" do
+  source "horizon.pem"
+  mode 0644
+  owner "root"
+  group "root"
+end
+
+cookbook_file "#{node["horizon"]["cert_dir"]}/private/#{node["horizon"]["cert_key"]}" do
+  source "horizon.key"
+  mode 0640
+  owner "root"
+  group "ssl-cert" # Don't know about fedora
+end
+
 template value_for_platform(
   [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
   [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
@@ -86,9 +100,10 @@ template value_for_platform(
   group "root"
   mode "0644"
   variables(
+      :use_ssl => node["horizon"]["use_ssl"],
       :apache_contact => node["apache"]["contact"],
-      :ssl_cert_file => "#{node["horizon"]["cert_dir"]}/certs/#{node["horizon"]["self_cert"]}",
-      :ssl_key_file => "#{node["horizon"]["cert_dir"]}/private/#{node["horizon"]["self_cert_key"]}",
+      :ssl_cert_file => "#{node["horizon"]["cert_dir"]}/certs/#{node["horizon"]["cert"]}",
+      :ssl_key_file => "#{node["horizon"]["cert_dir"]}/private/#{node["horizon"]["cert_key"]}",
       :apache_log_dir => node["apache"]["log_dir"],
       :django_wsgi_path => node["horizon"]["wsgi_path"],
       :dash_path => node["horizon"]["dash_path"],
@@ -105,18 +120,18 @@ file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   only_if do platform?("fedora") end
 end
 
+apache_site "openstack-dashboard" do
+  enable true
+end
+
 if platform?("debian","ubuntu") then 
-  apache_site "openstack-dashboard"
-  apache_site(
-    :name => "000-default",
-    :enable => false
-  )
+  apache_site "000-default" do
+    enable false
+  end
 elsif platform?("fedora") then
-  apache_site "openstack-dashboard"
-  apache_site(
-    :name => "default",
-    :enable => false
-  )
+  apache_site "default" do
+    enable false
+  end
 end
 
 # This is a dirty hack to deal with https://bugs.launchpad.net/nova/+bug/932468
