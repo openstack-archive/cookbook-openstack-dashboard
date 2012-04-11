@@ -1,11 +1,12 @@
 <VirtualHost *:80>
+<% if @use_ssl %>
    RewriteEngine On
    RewriteCond %{HTTPS} off
    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
 </VirtualHost>
 
-# test
 <VirtualHost *:443>
+<% end %>
   ServerAdmin <%= @apache_contact %>
   WSGIScriptAlias / <%= @django_wsgi_path %>/django.wsgi
   WSGIDaemonProcess dashboard user=<%= @wsgi_user %> group=<%= @wsgi_group %> processes=3 threads=10 python-path=<%= @dash_path %>
@@ -26,11 +27,11 @@
       allow from all
   </Directory>
 
-  # SSL Config
+  <% if @use_ssl %>
   SSLEngine on
   SSLCertificateFile <%= @ssl_cert_file %>
   SSLCertificateKeyFile <%= @ssl_key_file %>
-
+  <% end %>
 
   # Allow custom files to overlay the site (such as logo.png)
   RewriteEngine On
