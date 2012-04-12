@@ -83,11 +83,18 @@ cookbook_file "#{node["horizon"]["cert_dir"]}/certs/#{node["horizon"]["cert"]}" 
   group "root"
 end
 
+case node["platform"]
+when "ubuntu","debian"
+    grp = "ssl-cert"
+else
+    grp = "root"
+end
+
 cookbook_file "#{node["horizon"]["cert_dir"]}/private/#{node["horizon"]["cert_key"]}" do
   source "horizon.key"
   mode 0640
   owner "root"
-  group "ssl-cert" # Don't know about fedora
+  group grp # Don't know about fedora
 end
 
 template value_for_platform(
