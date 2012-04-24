@@ -49,6 +49,26 @@ package "openstack-dashboard" do
     action :upgrade
 end
 
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+else
+  # Lookup keystone api ip address
+  keystone, start, arbitary_value = Chef::Search::Query.new.search(:node, "roles:keystone AND chef_environment:#{node.chef_environment}")
+  if keystone.length > 0
+    Chef::Log.info("horizon/keystone: using search")
+    keystone_api_ip = keystone[0]['keystone']['api_ipaddress']
+    keystone_service_port = keystone[0]['keystone']['service_port']
+    keystone_admin_port = keystone[0]['keystone']['admin_port']
+    keystone_admin_token = keystone[0]['keystone']['admin_token']
+  else
+    Chef::Log.info("horizon/keystone: NOT using search")
+    keystone_api_ip = node['keystone']['api_ipaddress']
+    keystone_service_port = node['keystone']['service_port']
+    keystone_admin_port = node['keystone']['admin_port']
+    keystone_admin_token = node['keystone']['admin_token']
+  end
+end
+
 template "/etc/openstack-dashboard/local_settings.py" do
   source "local_settings.py.erb"
   owner "root"
@@ -60,10 +80,10 @@ template "/etc/openstack-dashboard/local_settings.py" do
             :ip_address => node["controller_ipaddress"],
             :db_name => node["horizon"]["db"],
             :db_ipaddress => node["horizon"]["db_ipaddress"],
-            :keystone_api_ipaddress => node["keystone"]["api_ipaddress"],
-            :service_port => node["identity"]["service_port"],
-            :admin_port => node["identity"]["admin_port"],
-            :admin_token => node["identity"]["admin_token"]
+            :keystone_api_ipaddress => keystone_api_ip,
+            :service_port => keystone_service_port,
+            :admin_port => keystone_admin_port,
+            :admin_token => keystone_admin_token
   )
 end
 
