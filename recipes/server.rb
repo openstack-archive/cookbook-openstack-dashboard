@@ -94,7 +94,7 @@ template "/etc/openstack-dashboard/local_settings.py" do
   group "root"
   mode "0644"
   variables(
-            :user => node["horizon"]["db"]["user"],
+            :user => node["horizon"]["db"]["username"],
             :passwd => node["horizon"]["db"]["password"],
             :db_name => node["horizon"]["db"]["name"],
             :db_ipaddress => db_ip_address,
