@@ -77,7 +77,7 @@ end
 mysql_database_user node["horizon"]["db"]["username"] do
   connection connection_info
   password node["horizon"]["db"]["password"]
-  database_name node["horizon"]["db"]
+  database_name node["horizon"]["db"]["name"]
   host '%'
   privileges [:all]
   action :grant 
