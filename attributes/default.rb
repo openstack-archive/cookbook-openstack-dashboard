@@ -11,7 +11,7 @@ when "fedora", "centos", "redhat", "amazon", "scientific"
   default["horizon"]["ssl"]["dir"] = "/etc/pki/tls"
   # TODO(shep) - Fedora does not generate self signed certs by default
 when "ubuntu", "debian"
-  default["horizon"]["ssl"]"[dir"] = "/etc/ssl"
+  default["horizon"]["ssl"]["dir"] = "/etc/ssl"
 end
 
 default["horizon"]["dash_path"] = "/usr/share/openstack-dashboard/openstack_dashboard"
