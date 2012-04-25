@@ -42,21 +42,20 @@ server
 ----
 -includes recipes `apache2`, `apache2:mod_wsgi`, `apache2:mod_rewrite`, `apache2:mod_ssl`, `mysql:client`  
 -installs and configures the openstack dashboard package, sets up the horizon database schema/user, and installs an appropriate apache config/site file
+-uses chef search to discover details of where the database (default mysql) and keystone api are installed so we don't need to explicitly set them in our attributes file for this cookbook
 
 
 
 Attributes 
 ==========
-* `horizon["db"]` - name of horizon database
-* `horizon["db_user"]` - username for horizon database access
-* `horizon["db_passwd"]` - password for horizon database access
-* `horizon["db_ipaddress"]` - ip address of the mysql db where the horizon data is stored
+* `horizon["db"]["name"]` - name of horizon database
+* `horizon["db"]["username"]` - username for horizon database access
+* `horizon["db"]["password"]` - password for horizon database access
 
 * `horizon["use_ssl"]` - toggle for using ssl with dashboard (default true)
-
-* `horizon["cert_dir"]` - directory where ssl certs are stored on this system
-* `horizon["cert"]` - name to use when creating the ssl certificate
-* `horizon["cert_key"]` - name to use when creating the ssl key
+* `horizon["ssl"]["dir"]` - directory where ssl certs are stored on this system
+* `horizon["ssl"]["cert"]` - name to use when creating the ssl certificate
+* `horizon["ssl"]["key"]` - name to use when creating the ssl key
 
 * `horizon["dash_path"]` - base path for dashboard files (document root)
 * `horizon["wsgi_path"]` - path for wsgi dir
