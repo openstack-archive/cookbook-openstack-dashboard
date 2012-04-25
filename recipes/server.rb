@@ -128,7 +128,7 @@ else
     grp = "root"
 end
 
-cookbook_file "#{node["horizon"]["cert"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}" do
+cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}" do
   source "horizon.key"
   mode 0640
   owner "root"
