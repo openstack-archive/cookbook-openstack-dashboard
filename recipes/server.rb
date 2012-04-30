@@ -165,6 +165,13 @@ file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   only_if do platform?("fedora") end
 end
 
+# ubuntu includes their own branding - we need to delete this
+file "/usr/share/openstack-dashboard/openstack_dashboard/static/dashboard/css/ubuntu.css" do
+  action :delete
+  backup false
+  only_if do platform?("ubuntu") end
+end
+
 apache_site "openstack-dashboard" do
   enable true
 end
