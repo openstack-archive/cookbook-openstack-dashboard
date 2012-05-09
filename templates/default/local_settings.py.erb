@@ -42,6 +42,11 @@ HORIZON_CONFIG = {
     'user_home': 'openstack_dashboard.views.user_home',
 }
 
+OPENSTACK_KEYSTONE_BACKEND = {
+    'name': 'native',
+    'can_edit_user': True
+}
+
 # For multiple regions uncomment this configuration, and add (title, endpoint).
 # AVAILABLE_REGIONS = [
 #     ('cluster1', 'http://cluster1.com:5000/v2.0'),
