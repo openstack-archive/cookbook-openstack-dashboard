@@ -172,6 +172,12 @@ file "/usr/share/openstack-dashboard/openstack_dashboard/static/dashboard/css/ub
   only_if do platform?("ubuntu") end
 end
 
+file "/usr/share/openstack-dashboard/openstack_dashboard/static/dashboard/img/favicon-ubuntu.ico" do
+  action :delete
+  backup false
+  only_if do platform?("ubuntu") end
+end
+
 apache_site "openstack-dashboard" do
   enable true
 end
