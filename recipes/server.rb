@@ -23,41 +23,13 @@ include_recipe "apache2::mod_rewrite"
 include_recipe "apache2::mod_ssl"
 include_recipe "mysql::client"
 
-# Perform search to grab attributes for use later on
-if Chef::Config[:solo]
-  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
-else
-  # Lookup mysql ip address and root pass
-  mysql_server, start, arbitary_value = Chef::Search::Query.new.search(:node, "roles:mysql-master AND chef_environment:#{node.chef_environment}")
-  if mysql_server.length > 0
-    Chef::Log.info("horizon::server/mysql: using search")
-    db_ip_address = mysql_server[0]['mysql']['bind_address']
-    db_root_password = mysql_server[0]['mysql']['server_root_password']
-  else
-    Chef::Log.info("horizon::server/mysql: NOT using search")
-    db_ip_address = node['mysql']['bind_address']
-    db_root_password = node['mysql']['server_root_password']
-  end
-
-  # Lookup keystone api ip address
-  keystone, start, arbitary_value = Chef::Search::Query.new.search(:node, "roles:keystone AND chef_environment:#{node.chef_environment}")
-  if keystone.length > 0
-    Chef::Log.info("horizon::server/keystone: using search")
-    keystone_api_ip = keystone[0]['keystone']['api_ipaddress']
-    keystone_service_port = keystone[0]['keystone']['service_port']
-    keystone_admin_port = keystone[0]['keystone']['admin_port']
-    keystone_admin_token = keystone[0]['keystone']['admin_token']
-  else
-    Chef::Log.info("horizon::server/keystone: NOT using search")
-    keystone_api_ip = node['keystone']['api_ipaddress']
-    keystone_service_port = node['keystone']['service_port']
-    keystone_admin_port = node['keystone']['admin_port']
-    keystone_admin_token = node['keystone']['admin_token']
-  end
-end
+mysql_info = get_settings_by_role("mysql-master", "mysql")
+ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
+ks_service_endpoint = get_access_endpoint("keystone", "keystone", "service-api")
+keystone = get_settings_by_role("keystone", "keystone")
 
 # build connection string using attributes grabbed above
-connection_info = {:host => db_ip_address, :username => "root", :password => db_root_password}
+connection_info = {:host => mysql_info["bind_address"], :username => "root", :password => mysql_info["server_root_password"]}
 
 # create horizon database
 mysql_database "create horizon database" do
@@ -80,7 +52,7 @@ mysql_database_user node["horizon"]["db"]["username"] do
   database_name node["horizon"]["db"]["name"]
   host '%'
   privileges [:all]
-  action :grant 
+  action :grant
 end
 
 package "openstack-dashboard" do
@@ -97,14 +69,15 @@ template "/etc/openstack-dashboard/local_settings.py" do
             :user => node["horizon"]["db"]["username"],
             :passwd => node["horizon"]["db"]["password"],
             :db_name => node["horizon"]["db"]["name"],
-            :db_ipaddress => db_ip_address,
-            :keystone_api_ipaddress => keystone_api_ip,
-            :service_port => keystone_service_port,
-            :admin_port => keystone_admin_port,
-            :admin_token => keystone_admin_token
+            :db_ipaddress => mysql_info["bind_address"],
+            :keystone_api_ipaddress => ks_admin_endpoint["host"],
+            :service_port => ks_service_endpoint["port"],
+            :admin_port => ks_admin_endpoint["port"],
+            :admin_token => keystone["admin_token"]
   )
 end
 
+# FIXME: this shouldn't run every chef run
 execute "openstack-dashboard syncdb" do
   cwd "/usr/share/openstack-dashboard"
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
@@ -182,7 +155,7 @@ apache_site "openstack-dashboard" do
   enable true
 end
 
-if platform?("debian","ubuntu") then 
+if platform?("debian","ubuntu") then
   apache_site "000-default" do
     enable false
   end
