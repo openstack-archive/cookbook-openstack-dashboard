@@ -180,6 +180,13 @@ end
 # Horizon has a forced dependency on their being a volume service endpoint in your keystone catalog
 # https://answers.launchpad.net/horizon/+question/189551
 
+execute "restore-selinux-context" do
+    command "restorecon -R /etc/httpd /etc/pki"
+    action :nothing
+    only_if do platform?("fedora") end
+end
+
 service "apache2" do
    action :restart
+   notifies :run, "execute[restore-selinux-context]", :immediately
 end
