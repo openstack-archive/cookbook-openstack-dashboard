@@ -45,37 +45,17 @@ execute "set-selinux-enforcing" do
   only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
 end
 
-mysql_info = get_settings_by_role("mysql-master", "mysql")
 ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
 ks_service_endpoint = get_access_endpoint("keystone", "keystone", "service-api")
 keystone = get_settings_by_role("keystone", "keystone")
 
-# build connection string using attributes grabbed above
-connection_info = {:host => mysql_info["bind_address"], :username => "root", :password => mysql_info["server_root_password"]}
-
-# create horizon database
-mysql_database "create horizon database" do
-  connection connection_info
-  database_name node["horizon"]["db"]["name"]
-  action :create
-end
-
-# create horizon user
-mysql_database_user node["horizon"]["db"]["username"] do
-  connection connection_info
-  password node["horizon"]["db"]["password"]
-  action :create
-end
-
-# grant privs to horizon user
-mysql_database_user node["horizon"]["db"]["username"] do
-  connection connection_info
-  password node["horizon"]["db"]["password"]
-  database_name node["horizon"]["db"]["name"]
-  host '%'
-  privileges [:all]
-  action :grant
-end
+#creates db and user
+#returns connection info
+#defined in osops-utils/libraries
+mysql_info = create_db_and_user("mysql",
+                                node["horizon"]["db"]["name"],
+                                node["horizon"]["db"]["username"],
+                                node["horizon"]["db"]["password"])
 
 package "openstack-dashboard" do
     action :upgrade
