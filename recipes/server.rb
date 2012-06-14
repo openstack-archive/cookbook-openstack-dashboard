@@ -17,11 +17,33 @@
 # limitations under the License.
 #
 
+#
+# Workaround to install apache2 on a fedora machine with selinux set to enforcing
+# TODO(breu): this should move to a subscription of the template from the apache2 recipe
+#             and it should simply be a restorecon on the configuration file(s) and not
+#             change the selinux mode
+#
+execute "set-selinux-permissive" do
+  command "/sbin/setenforce Permissive"
+  action :run
+  only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
+end
+
 include_recipe "apache2"
 include_recipe "apache2::mod_wsgi"
 include_recipe "apache2::mod_rewrite"
 include_recipe "apache2::mod_ssl"
-include_recipe "mysql::client"
+
+#
+# Workaround to re-enable selinux after installing apache on a fedora machine that has
+# selinux enabled and is currently permissive and the configuration set to enforcing.
+# TODO(breu): get the other one working and this won't be necessary
+#
+execute "set-selinux-enforcing" do
+  command "/sbin/setenforce Enforcing ; restorecon -R /etc/httpd"
+  action :run
+  only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
+end
 
 mysql_info = get_settings_by_role("mysql-master", "mysql")
 ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
@@ -92,6 +114,7 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["
   mode 0644
   owner "root"
   group "root"
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 case node["platform"]
@@ -106,6 +129,7 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]
   mode 0640
   owner "root"
   group grp # Don't know about fedora
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 template value_for_platform(
@@ -128,6 +152,7 @@ template value_for_platform(
       :wsgi_user => node["apache"]["user"],
       :wsgi_group => node["apache"]["group"]
   )
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 # fedora includes this file in the package - we need to delete
@@ -156,6 +181,7 @@ end
 
 apache_site "openstack-dashboard" do
   enable true
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 if platform?("debian","ubuntu") then
@@ -165,6 +191,7 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
+    notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
@@ -181,12 +208,11 @@ end
 # https://answers.launchpad.net/horizon/+question/189551
 
 execute "restore-selinux-context" do
-    command "restorecon -R /etc/httpd /etc/pki"
+    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
     action :nothing
     only_if do platform?("fedora") end
 end
 
 service "apache2" do
    action :restart
-   notifies :run, "execute[restore-selinux-context]", :immediately
 end
