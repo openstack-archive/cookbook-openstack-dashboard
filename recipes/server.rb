@@ -53,7 +53,6 @@ keystone = get_settings_by_role("keystone", "keystone")
 #returns connection info
 #defined in osops-utils/libraries
 mysql_info = create_db_and_user("mysql",
-                                "horizon",
                                 node["horizon"]["db"]["name"],
                                 node["horizon"]["db"]["username"],
                                 node["horizon"]["db"]["password"])
