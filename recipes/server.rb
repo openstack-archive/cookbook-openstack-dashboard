@@ -114,6 +114,7 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["
   mode 0644
   owner "root"
   group "root"
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 case node["platform"]
@@ -128,6 +129,7 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]
   mode 0640
   owner "root"
   group grp # Don't know about fedora
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 template value_for_platform(
@@ -179,6 +181,7 @@ end
 
 apache_site "openstack-dashboard" do
   enable true
+  notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 if platform?("debian","ubuntu") then
@@ -188,6 +191,7 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
+    notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
@@ -204,7 +208,7 @@ end
 # https://answers.launchpad.net/horizon/+question/189551
 
 execute "restore-selinux-context" do
-    command "restorecon -Rv /etc/httpd /etc/pki"
+    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
     action :nothing
     only_if do platform?("fedora") end
 end
