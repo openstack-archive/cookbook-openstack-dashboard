@@ -85,7 +85,7 @@ execute "openstack-dashboard syncdb" do
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
   command "python manage.py syncdb"
   action :run
-  only_if do platform?("ubuntu","debian") end
+  only_if { platform?("ubuntu","debian") }
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
@@ -140,28 +140,14 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if do platform?("fedora") end
+  only_if { platform?("fedora") }
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
 # configurable paramter
-file "/usr/share/openstack-dashboard/openstack_dashboard/static/dashboard/css/ubuntu.css" do
-  action :delete
-  backup false
-  only_if do platform?("ubuntu") end
-end
-
-# ubuntu includes their own branding - we need to delete this until ubuntu makes this a
-# configurable paramter
-file "/usr/share/openstack-dashboard/openstack_dashboard/static/dashboard/img/favicon-ubuntu.ico" do
-  action :delete
-  backup false
-  only_if do platform?("ubuntu") end
-end
-
-apache_site "openstack-dashboard" do
-  enable true
-  notifies :run, "execute[restore-selinux-context]", :immediately
+package "openstack-dashboard-ubuntu-theme" do
+  action :purge
+  only_if {platform?("ubuntu")}
 end
 
 if platform?("debian","ubuntu") then
@@ -171,9 +157,25 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
-    notifies :run, "execute[restore-selinux-context]", :immediately
+    notifies :run, resources(:execute => "restore-selinux-context"), :immediately
   end
 end
+
+apache_site "openstack-dashboard" do
+  enable true
+  notifies :run, resources(:execute => "restore-selinux-context"), :immediately
+  notifies :reload, resources(:service => "apache2"), :immediately
+end
+
+execute "restore-selinux-context" do
+    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
+    action :nothing
+    only_if { platform?("fedora") }
+end
+
+# TODO(shep)
+# Horizon has a forced dependency on their being a volume service endpoint in your keystone catalog
+# https://answers.launchpad.net/horizon/+question/189551
 
 # This is a dirty hack to deal with https://bugs.launchpad.net/nova/+bug/932468
 directory "/var/www/.novaclient" do
@@ -181,18 +183,4 @@ directory "/var/www/.novaclient" do
   group node["apache"]["group"]
   mode "0755"
   action :create
-end
-
-# TODO(shep)
-# Horizon has a forced dependency on their being a volume service endpoint in your keystone catalog
-# https://answers.launchpad.net/horizon/+question/189551
-
-execute "restore-selinux-context" do
-    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
-    action :nothing
-    only_if do platform?("fedora") end
-end
-
-service "apache2" do
-   action :restart
 end
