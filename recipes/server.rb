@@ -85,7 +85,7 @@ execute "openstack-dashboard syncdb" do
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
   command "python manage.py syncdb"
   action :run
-  only_if do platform?("ubuntu","debian") end
+  only_if { platform?("ubuntu","debian") }
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
@@ -140,7 +140,7 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if do platform?("fedora") end
+  only_if { platform?("fedora") }
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
@@ -170,7 +170,7 @@ end
 execute "restore-selinux-context" do
     command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
     action :nothing
-    only_if do platform?("fedora") end
+    only_if { platform?("fedora") }
 end
 
 # TODO(shep)
