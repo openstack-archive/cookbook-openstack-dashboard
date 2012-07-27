@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: horizon
-# Recipe:: default
+# Recipe:: server
 #
 # Copyright 2012, Rackspace Hosting, Inc.
 #
