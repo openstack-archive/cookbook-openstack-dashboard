@@ -62,7 +62,7 @@ package "openstack-dashboard" do
 end
 
 
-template "/etc/openstack-dashboard/local_settings.py" do
+template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
   owner "root"
   group "root"
@@ -85,7 +85,6 @@ execute "openstack-dashboard syncdb" do
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
   command "python manage.py syncdb"
   action :run
-  only_if { platform?("ubuntu","debian") }
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
@@ -114,7 +113,8 @@ end
 
 template value_for_platform(
   [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
-  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
+  "centos" => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
+  "redhat" => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
   source "dash-site.erb"
@@ -140,7 +140,7 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if { platform?("fedora") }
+  only_if { platform?("fedora","redhat","centos") }
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
