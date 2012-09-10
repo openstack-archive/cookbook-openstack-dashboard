@@ -111,10 +111,11 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
+# TODO(breu): verify this for fedora
 template value_for_platform(
   [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
-  "centos" => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
-  "redhat" => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
+  "fedora" => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
+  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
   source "dash-site.erb"
