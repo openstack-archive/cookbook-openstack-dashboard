@@ -83,7 +83,7 @@ end
 execute "openstack-dashboard syncdb" do
   cwd "/usr/share/openstack-dashboard"
   environment ({'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'})
-  command "python manage.py syncdb"
+  command "python manage.py syncdb --noinput"
   action :run
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
@@ -109,6 +109,12 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]
   owner "root"
   group grp # Don't know about fedora
   notifies :run, "execute[restore-selinux-context]", :immediately
+end
+
+# stop apache bitching
+directory "#{node["horizon"]["dash_path"]}/.blackhole" do
+  owner "root"
+  action :create
 end
 
 # TODO(breu): verify this for fedora
