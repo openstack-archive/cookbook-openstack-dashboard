@@ -29,6 +29,14 @@ execute "set-selinux-permissive" do
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
+platform_options = node["horizon"]["platform"]
+
+if not node['package_component'].nil?
+    release = node['package_component']
+else
+    release = "essex-final"
+end
+
 include_recipe "apache2"
 include_recipe "apache2::mod_wsgi"
 include_recipe "apache2::mod_rewrite"
@@ -57,17 +65,15 @@ mysql_info = create_db_and_user("mysql",
                                 node["horizon"]["db"]["username"],
                                 node["horizon"]["db"]["password"])
 
-
-
-%w{openstack-dashboard lessc}.each do |pkg|
+platform_options["horizon_packages"].each do |pkg|
   package pkg do
     action :upgrade
+    options platform_options["package_overrides"]
   end
 end
 
-
 template node["horizon"]["local_settings_path"] do
-  source "local_settings.py.erb"
+  source "#{release}/local_settings.py.erb"
   owner "root"
   group "root"
   mode "0644"
@@ -128,7 +134,7 @@ template value_for_platform(
   [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
-  source "dash-site.erb"
+  source "#{release}/dash-site.erb"
   owner "root"
   group "root"
   mode "0644"
