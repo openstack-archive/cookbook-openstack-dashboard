@@ -6,6 +6,8 @@ default["horizon"]["use_ssl"] = true                                            
 default["horizon"]["ssl"]["cert"] = "horizon.pem"                                           # node_attribute
 default["horizon"]["ssl"]["key"] = "horizon.key"                                            # node_attribute
 
+default["horizon"]["theme"] = "default"
+
 case node["platform"]
 when "fedora", "centos", "redhat", "amazon", "scientific"
   default["horizon"]["ssl"]["dir"] = "/etc/pki/tls"                                         # node_attribute
