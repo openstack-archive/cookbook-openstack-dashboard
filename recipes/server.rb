@@ -57,8 +57,12 @@ mysql_info = create_db_and_user("mysql",
                                 node["horizon"]["db"]["username"],
                                 node["horizon"]["db"]["password"])
 
-package "openstack-dashboard" do
+
+
+%w{openstack-dashboard lessc}.each do |pkg|
+  package pkg do
     action :upgrade
+  end
 end
 
 
