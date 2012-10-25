@@ -11,6 +11,13 @@ from django.utils.translation import ugettext_lazy as _
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+<% if %w(fedora redhat centos scientific).include? node.platform -%>
+WEBROOT=''
+LOGIN_URL = WEBROOT+'/auth/login/'
+LOGOUT_URL = WEBROOT+'/auth/logout/'
+LOGIN_REDIRECT_URL = WEBROOT+'/syspanel'
+<% end %>
+
 # Set SSL proxy settings:
 # For Django 1.4+ pass this header from the proxy after terminating the SSL,
 # and don't forget to strip it from the client's request.
