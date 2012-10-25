@@ -1,0 +1,7 @@
+{% load compress %}
+
+{% compress css %}
+<link href='{{ STATIC_URL }}dashboard/css/fulsom.css' type='text/css' media='screen' rel='stylesheet' /> 
+{% endcompress %}
+
+<link rel="shortcut icon" href="{{ STATIC_URL }}dashboard/img/favicon.ico"/>
