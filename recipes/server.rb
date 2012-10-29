@@ -201,6 +201,14 @@ cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" 
 end
 
 template node["horizon"]["dash_path"]/templates/_stylesheets.html do
+	only_if(node["horizon"]["theme"] == "default")
+	source "default_stylesheets.html.erb"
+	mode 0644
+	owner "root"
+	group grp
+end
+
+template node["horizon"]["dash_path"]/templates/_stylesheets.html do
 	only_if(node["horizon"]["theme"] == "Rackspace")
 	source "rs_stylesheets.html.erb"
 	mode 0644
