@@ -215,3 +215,15 @@ template node["horizon"]["dash_path"]/templates/_stylesheets.html do
 	owner "root"
 	group grp
 end
+
+["PrivateCloud.png", "Rackspace_Cloud_Company.png", "Rackspace_Cloud_Company_Small.png", "alert_red.png", "body_bkg.gif", "selected_arrow.png"].each do |imgname|
+	http_request "HEAD https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}" do
+		only_if(node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom")
+		url "https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}"
+		action :head
+		if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
+			headers "Last-Modified" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
+		end
+		notifies :create, resources(:remote_file => "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}"), :immediately
+	end
+end
