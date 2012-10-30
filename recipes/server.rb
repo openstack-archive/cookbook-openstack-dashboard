@@ -193,32 +193,35 @@ directory "/var/www/.novaclient" do
 end
 
 cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" do
-	only_if(node["horizon"]["theme"] == "Rackspace")
+	only_if { node["package_component"] == "folsom" }
+	only_if { node["horizon"]["theme"] == "Rackspace" }
 	source "css/folsom.css"
 	mode 0644
 	owner "root"
 	group grp
 end
 
-template node["horizon"]["dash_path"]/templates/_stylesheets.html do
-	only_if(node["horizon"]["theme"] == "default")
-	source "default_stylesheets.html.erb"
-	mode 0644
-	owner "root"
-	group grp
-end
-
-template node["horizon"]["dash_path"]/templates/_stylesheets.html do
-	only_if(node["horizon"]["theme"] == "Rackspace")
-	source "rs_stylesheets.html.erb"
+template node["horizon"]["stylesheet_path"] do
+	if node["horizon"]["theme"] == "Rackspace"
+	        source "rs_stylesheets.html.erb"
+	else
+		source "default_stylesheets.html.erb"
+	end
 	mode 0644
 	owner "root"
 	group grp
 end
 
 ["PrivateCloud.png", "Rackspace_Cloud_Company.png", "Rackspace_Cloud_Company_Small.png", "alert_red.png", "body_bkg.gif", "selected_arrow.png"].each do |imgname|
+	# Register remote_file resource
+	remote_file "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}" do
+		source "https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}"
+		action :nothing
+	end
+
+	# See if modified before trying to run
 	http_request "HEAD https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}" do
-		only_if(node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom")
+		only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
 		url "https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}"
 		action :head
 		if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
