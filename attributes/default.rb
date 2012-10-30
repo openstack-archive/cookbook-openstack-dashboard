@@ -6,6 +6,8 @@ default["horizon"]["use_ssl"] = true                                            
 default["horizon"]["ssl"]["cert"] = "horizon.pem"                                           # node_attribute
 default["horizon"]["ssl"]["key"] = "horizon.key"                                            # node_attribute
 
+default["horizon"]["theme"] = "default"
+
 case node["platform"]
 when "fedora", "centos", "redhat", "amazon", "scientific"
   default["horizon"]["ssl"]["dir"] = "/etc/pki/tls"                                         # node_attribute
@@ -25,4 +27,5 @@ when "ubuntu", "debian"
 end
 
 default["horizon"]["dash_path"] = "/usr/share/openstack-dashboard/openstack_dashboard"      # node_attribute
+default["horizon"]["stylesheet_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html"
 default["horizon"]["wsgi_path"] = node["horizon"]["dash_path"] + "/wsgi"                    # node_attribute
