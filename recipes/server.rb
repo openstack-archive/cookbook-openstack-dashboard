@@ -203,8 +203,7 @@ directory "/var/www/.novaclient" do
 end
 
 cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" do
-	only_if { node["package_component"] == "folsom" }
-	only_if { node["horizon"]["theme"] == "Rackspace" }
+	only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
 	source "css/folsom.css"
 	mode 0644
 	owner "root"
@@ -212,6 +211,7 @@ cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" 
 end
 
 template node["horizon"]["stylesheet_path"] do
+	only_if { node["package_component"] == "folsom" }
 	if node["horizon"]["theme"] == "Rackspace"
 	        source "rs_stylesheets.html.erb"
 	else
