@@ -216,16 +216,18 @@ end
 	# Register remote_file resource
 	remote_file "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}" do
 		source "https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}"
+		mode "0644"
 		action :nothing
 	end
 
 	# See if modified before trying to run
 	http_request "HEAD https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}" do
 		only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
+		message ""
 		url "https://2a24bc863466d3d0c6a4-a90b34915fe2401d418a3390713e5cce.ssl.cf1.rackcdn.com/#{imgname}"
 		action :head
 		if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
-			headers "Last-Modified" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
+			headers "If-Modified-Since" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
 		end
 		notifies :create, resources(:remote_file => "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}"), :immediately
 	end
