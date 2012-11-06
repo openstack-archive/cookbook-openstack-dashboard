@@ -14,14 +14,14 @@ when "fedora", "centos", "redhat", "amazon", "scientific"
   default["horizon"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings"     # node_attribute
   # TODO(shep) - Fedora does not generate self signed certs by default
   default["horizon"]["platform"] = {                                                   # node_attribute
-    "horizon_packages" => ["openstack-dashboard"],
+    "horizon_packages" => ["openstack-dashboard", "MySQL-python"],
     "package_overrides" => ""
   }
 when "ubuntu", "debian"
   default["horizon"]["ssl"]["dir"] = "/etc/ssl"                                             # node_attribute
   default["horizon"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"  # node_attribute
   default["horizon"]["platform"] = {                                                   # node_attribute
-    "horizon_packages" => ["lessc","openstack-dashboard"],
+    "horizon_packages" => ["lessc","openstack-dashboard", "python-mysqldb"],
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end
