@@ -85,7 +85,8 @@ template node["horizon"]["local_settings_path"] do
             :keystone_api_ipaddress => ks_admin_endpoint["host"],
             :service_port => ks_service_endpoint["port"],
             :admin_port => ks_admin_endpoint["port"],
-            :admin_token => keystone["admin_token"]
+            :admin_token => keystone["admin_token"],
+            :swift_enable => node["horizon"]["swift"]["enabled"]
   )
 end
 

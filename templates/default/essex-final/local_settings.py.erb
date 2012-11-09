@@ -67,7 +67,7 @@ OPENSTACK_KEYSTONE_URL = "http://%s:<%= @service_port %>/v2.0" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_ADMIN_URL = "http://%s:<%= @admin_port %>/v2.0" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "Member"
 
-SWIFT_ENABLED = False
+SWIFT_ENABLED = <%= @swift_enable %>
 SWIFT_PAGINATE_LIMIT = 100
 
 # Configure quantum connection details for networking

@@ -6,6 +6,8 @@ default["horizon"]["use_ssl"] = true                                            
 default["horizon"]["ssl"]["cert"] = "horizon.pem"                                           # node_attribute
 default["horizon"]["ssl"]["key"] = "horizon.key"                                            # node_attribute
 
+default["horizon"]["swift"]["enabled"] = "False"
+
 default["horizon"]["theme"] = "default"
 
 case node["platform"]
