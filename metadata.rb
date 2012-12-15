@@ -1,6 +1,14 @@
-maintainer       "Opscode, Inc."
-maintainer_email "matt@opscode.com"
+maintainer       "AT&T, Inc."
 license          "Apache 2.0"
-description      "The OpenStack Dashboard service Horizon."
+description      "Installs/Configures horizon"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.0.1"
+version          "2012.2.0"
+name             "horizon"
+
+supports         "ubuntu"
+
+depends          "apache2"
+depends          "database"
+depends          "mysql"
+depends          "openstack-common"
+depends          "openstack-utils"
