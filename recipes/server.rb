@@ -3,6 +3,7 @@
 # Recipe:: server
 #
 # Copyright 2012, Rackspace US, Inc.
+# Copyright 2012, AT&T, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +18,12 @@
 # limitations under the License.
 #
 
+require "uri"
+
+class ::Chef::Recipe
+  include ::Openstack
+end
+
 #
 # Workaround to install apache2 on a fedora machine with selinux set to enforcing
 # TODO(breu): this should move to a subscription of the template from the apache2 recipe
@@ -30,12 +37,6 @@ execute "set-selinux-permissive" do
 end
 
 platform_options = node["horizon"]["platform"]
-
-if not node['package_component'].nil?
-    release = node['package_component']
-else
-    release = "essex-final"
-end
 
 include_recipe "apache2"
 include_recipe "apache2::mod_wsgi"
@@ -53,17 +54,15 @@ execute "set-selinux-enforcing" do
   only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
 end
 
-ks_admin_endpoint = get_access_endpoint("keystone", "keystone", "admin-api")
-ks_service_endpoint = get_access_endpoint("keystone", "keystone", "service-api")
-keystone = get_settings_by_role("keystone", "keystone")
+identity_admin_endpoint = endpoint "identity-admin"
+auth_admin_uri = ::URI.decode identity_admin_endpoint.to_s
+identity_endpoint = endpoint "identity-api"
+auth_uri = ::URI.decode identity_endpoint.to_s
+keystone_service_role = node["horizon"]["keystone_service_chef_role"]
+keystone = config_by_role keystone_service_role, "keystone"
 
-#creates db and user
-#returns connection info
-#defined in osops-utils/libraries
-mysql_info = create_db_and_user("mysql",
-                                node["horizon"]["db"]["name"],
-                                node["horizon"]["db"]["username"],
-                                node["horizon"]["db"]["password"])
+db_pass = db_password "horizon"
+db_info = db "dashboard"
 
 platform_options["horizon_packages"].each do |pkg|
   package pkg do
@@ -73,20 +72,15 @@ platform_options["horizon_packages"].each do |pkg|
 end
 
 template node["horizon"]["local_settings_path"] do
-  source "#{release}/local_settings.py.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  source "local_settings.py.erb"
+  owner node["horizon"]["user"]
+  group node["horizon"]["group"]
+  mode 00644
   variables(
-            :user => node["horizon"]["db"]["username"],
-            :passwd => node["horizon"]["db"]["password"],
-            :db_name => node["horizon"]["db"]["name"],
-            :db_ipaddress => mysql_info["bind_address"],
-            :keystone_api_ipaddress => ks_admin_endpoint["host"],
-            :service_port => ks_service_endpoint["port"],
-            :admin_port => ks_admin_endpoint["port"],
-            :admin_token => keystone["admin_token"],
-            :swift_enable => node["horizon"]["swift"]["enabled"]
+    "db_pass" => db_pass,
+    "db_info" => db_info,
+    "auth_uri" => auth_uri,
+    "auth_admin_uri" => auth_admin_uri
   )
 end
 
@@ -135,20 +129,13 @@ template value_for_platform(
   [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
-  source "#{release}/dash-site.erb"
-  owner "root"
-  group "root"
-  mode "0644"
+  source "dash-site.erb"
+  owner node["horizon"]["user"]
+  group node["horizon"]["group"]
+  mode 00644
   variables(
-      :use_ssl => node["horizon"]["use_ssl"],
-      :apache_contact => node["apache"]["contact"],
       :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
-      :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}",
-      :apache_log_dir => node["apache"]["log_dir"],
-      :django_wsgi_path => node["horizon"]["wsgi_path"],
-      :dash_path => node["horizon"]["dash_path"],
-      :wsgi_user => node["apache"]["user"],
-      :wsgi_group => node["apache"]["group"]
+      :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
   )
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
@@ -192,7 +179,7 @@ execute "restore-selinux-context" do
 end
 
 # TODO(shep)
-# Horizon has a forced dependency on their being a volume service endpoint in your keystone catalog
+# Horizon has a forced dependency on there being a volume service endpoint in your keystone catalog
 # https://answers.launchpad.net/horizon/+question/189551
 
 # This is a dirty hack to deal with https://bugs.launchpad.net/nova/+bug/932468
@@ -211,6 +198,8 @@ cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" 
 	group grp
 end
 
+# TODO(jaypipes): None of the below belongs in this recipe. It belongs in a
+# site-cookbook wrapper recipe that gets executed after horizon::server
 template node["horizon"]["stylesheet_path"] do
 	only_if { node["package_component"] == "folsom" }
 	if node["horizon"]["theme"] == "Rackspace"

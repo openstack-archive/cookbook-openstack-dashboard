@@ -1,7 +1,7 @@
 Description
 ===========
 
-Installs the Openstack dashboard (codename: horizon) from packages.
+Installs the Openstack dashboard (codename: Horizon) from packages.
 
 http://horizon.openstack.org
 
@@ -25,29 +25,17 @@ The following cookbooks are dependencies:
 * database
 * mysql
 
-Resources/Providers
-===================
-
-None
-
 Recipes
 =======
 
-default
-----
--includes recipe `server`  
-
 server
-----
--includes recipes `apache2`, `apache2:mod_wsgi`, `apache2:mod_rewrite`, `apache2:mod_ssl`, `mysql:client`  
--installs and configures the openstack dashboard package, sets up the horizon database schema/user, and installs an appropriate apache config/site file
--uses chef search to discover details of where the database (default mysql) and keystone api are installed so we don't need to explicitly set them in our attributes file for this cookbook
+------
+* Sets up the Horizon dashboard within an Apache `mod_wsgi` container. 
 
 Attributes 
 ==========
-* `horizon["db"]["name"]` - name of horizon database
+
 * `horizon["db"]["username"]` - username for horizon database access
-* `horizon["db"]["password"]` - password for horizon database access
 
 * `horizon["use_ssl"]` - toggle for using ssl with dashboard (default true)
 * `horizon["ssl"]["dir"]` - directory where ssl certs are stored on this system
