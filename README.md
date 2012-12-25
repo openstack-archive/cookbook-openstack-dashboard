@@ -24,6 +24,8 @@ The following cookbooks are dependencies:
 * apache2
 * database
 * mysql
+* openstack-utils
+* openstack-common >= 0.1.5
 
 Recipes
 =======
