@@ -26,9 +26,6 @@ default["horizon"]["custom_template_banner"] = "
 
 default["horizon"]["debug"] = false
 
-default["horizon"]["user"] = "horizon"
-default["horizon"]["group"] = "horizon"
-
 # This user's password is stored in an encrypted databag
 # and accessed with openstack-common cookbook library's
 # db_password routine.
