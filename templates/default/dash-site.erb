@@ -10,7 +10,7 @@
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
   WSGIScriptAlias / <%= node["horizon"]["wsgi_path"] %>
-  WSGIDaemonProcess dashboard user=<%= node["horizon"]["wsgi_user"] %> group=<%= node["horizon"]["wsgi_group"] %> processes=3 threads=10 python-path=<%= node["horizon"]["dash_path"] %>
+  WSGIDaemonProcess dashboard user=<%= node["apache"]["user"] %> group=<%= node["apache"]["group"] %> processes=3 threads=10 python-path=<%= node["horizon"]["dash_path"] %>
   WSGIProcessGroup dashboard
 
   DocumentRoot <%= node["horizon"]["dash_path"] %>/.blackhole/
