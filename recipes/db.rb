@@ -29,7 +29,7 @@ end
 include_recipe "mysql::client"
 include_recipe "mysql::ruby"
 
-db_pass = db_password, "horizon"
+db_pass = db_password "horizon"
 
 db_create_with_user("dashboard",
   node["horizon"]["db"]["username"],
