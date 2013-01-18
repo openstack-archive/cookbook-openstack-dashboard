@@ -168,7 +168,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.<%= @db_info["db_type"] %>',
         'NAME': '<%= @db_info["db_name"] %>',
-        'USER': '<%= node["horizon"]["db"]["username"]{ %>',
+        'USER': '<%= node["horizon"]["db"]["username"] %>',
         'PASSWORD': '<%= @db_pass %>',
         'HOST': '<%= @db_info["host"] %>',
         'default-character-set': 'utf8'
