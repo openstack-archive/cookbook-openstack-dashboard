@@ -231,4 +231,4 @@ end
 		end
 		notifies :create, resources(:remote_file => "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}"), :immediately
 	end
-en
+end
