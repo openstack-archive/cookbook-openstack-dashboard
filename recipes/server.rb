@@ -73,8 +73,8 @@ end
 
 template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
-  owner node["horizon"]["user"]
-  group node["horizon"]["group"]
+  owner "root"
+  group "root"
   mode 00644
   variables(
     "db_pass" => db_pass,
@@ -130,8 +130,8 @@ template value_for_platform(
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
   source "dash-site.erb"
-  owner node["horizon"]["user"]
-  group node["horizon"]["group"]
+  owner "root"
+  group "root"
   mode 00644
   variables(
       :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
