@@ -122,7 +122,7 @@ LOGGING = {
                 },
             'console': {
                 # Set the level to "DEBUG" for verbose output logging.
-                'level': 'INFO',
+                'level': '<%= node["horizon"]["debug"] ? "DEBUG" : "INFO" %>',
                 'class': 'logging.StreamHandler',
                 },
             },
