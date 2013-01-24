@@ -71,6 +71,8 @@ platform_options["horizon_packages"].each do |pkg|
   end
 end
 
+memcached = memcached_servers
+
 template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
   owner "root"
@@ -80,7 +82,8 @@ template node["horizon"]["local_settings_path"] do
     "db_pass" => db_pass,
     "db_info" => db_info,
     "auth_uri" => auth_uri,
-    "auth_admin_uri" => auth_admin_uri
+    "auth_admin_uri" => auth_admin_uri,
+    "memcached_servers" => memcached
   )
 end
 
