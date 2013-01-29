@@ -51,11 +51,23 @@ LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
 # memcached set CACHE_BACKED to something like 'memcached://127.0.0.1:11211/'
-<% if node["horizon"]["use_memcached"] %>
-CACHE_BACKEND = 'memcached://127.0.0.1:11211' <%# TODO(yorik-sar): Replace with actual memcached server address %>
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-<% else %>
+<% case node["horizon"]["session_backend"]
+     when "file" %>
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+<%   when "memcached" %>
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': [
+<%     @memcached_servers.each do |address| %>
+            '<%= address %>',
+<%     end %>
+        ]
+    }
+}
+<%   when "sql" %>
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 <% end %>
 
 # Send email to the console by default
