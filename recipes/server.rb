@@ -85,6 +85,7 @@ template node["horizon"]["local_settings_path"] do
     "auth_admin_uri" => auth_admin_uri,
     "memcached_servers" => memcached
   )
+  notifies :restart, "service[apache2]"
 end
 
 # FIXME: this shouldn't run every chef run
@@ -148,7 +149,7 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if { platform?("fedora","redhat","centos") }
+  only_if { platform?("fedora","redhat","centos") } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
@@ -165,14 +166,14 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
-    notifies :run, resources(:execute => "restore-selinux-context"), :immediately
+    notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
 apache_site "openstack-dashboard" do
   enable true
-  notifies :run, resources(:execute => "restore-selinux-context"), :immediately
-  notifies :reload, resources(:service => "apache2"), :immediately
+  notifies :run, "execute[restore-selinux-context]", :immediately
+  notifies :reload, "service[apache2]", :immediately
 end
 
 execute "restore-selinux-context" do
@@ -194,44 +195,44 @@ directory "/var/www/.novaclient" do
 end
 
 cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" do
-	only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
-	source "css/folsom.css"
-	mode 0644
-	owner "root"
-	group grp
+  only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
+  source "css/folsom.css"
+  mode 0644
+  owner "root"
+  group grp
 end
 
 # TODO(jaypipes): None of the below belongs in this recipe. It belongs in a
 # site-cookbook wrapper recipe that gets executed after horizon::server
 template node["horizon"]["stylesheet_path"] do
-	only_if { node["package_component"] == "folsom" }
-	if node["horizon"]["theme"] == "Rackspace"
-	        source "rs_stylesheets.html.erb"
-	else
-		source "default_stylesheets.html.erb"
-	end
-	mode 0644
-	owner "root"
-	group grp
+  only_if { node["package_component"] == "folsom" }
+  if node["horizon"]["theme"] == "Rackspace"
+          source "rs_stylesheets.html.erb"
+  else
+    source "default_stylesheets.html.erb"
+  end
+  mode 0644
+  owner "root"
+  group grp
 end
 
 ["PrivateCloud.png", "Rackspace_Cloud_Company.png", "Rackspace_Cloud_Company_Small.png", "alert_red.png", "body_bkg.gif", "selected_arrow.png"].each do |imgname|
-	# Register remote_file resource
-	remote_file "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}" do
-		source "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
-		mode "0644"
-		action :nothing
-	end
+  # Register remote_file resource
+  remote_file "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}" do
+    source "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
+    mode "0644"
+    action :nothing
+  end
 
-	# See if modified before trying to run
-	http_request "HEAD http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}" do
-		only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
-		message ""
-		url "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
-		action :head
-		if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
-			headers "If-Modified-Since" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
-		end
-		notifies :create, resources(:remote_file => "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}"), :immediately
-	end
+  # See if modified before trying to run
+  http_request "HEAD http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}" do
+    only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
+    message ""
+    url "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
+    action :head
+    if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
+      headers "If-Modified-Since" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
+    end
+    notifies :create, "remote_file[#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}]", :immediately
+  end
 end
