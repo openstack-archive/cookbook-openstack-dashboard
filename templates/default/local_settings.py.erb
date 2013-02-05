@@ -14,12 +14,14 @@ LOGOUT_URL = WEBROOT+'/auth/logout/'
 LOGIN_REDIRECT_URL = WEBROOT+'/syspanel'
 <% end %>
 
+<% if node["horizon"]["ssl_offload"] %>
 # Set SSL proxy settings:
 # For Django 1.4+ pass this header from the proxy after terminating the SSL,
 # and don't forget to strip it from the client's request.
 # For more information see:
 # https://docs.djangoproject.com/en/1.4/ref/settings/#secure-proxy-ssl-header
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+<% end %>
 
 # Specify a regular expression to validate user passwords.
 # HORIZON_CONFIG = {

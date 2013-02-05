@@ -67,3 +67,5 @@ default["horizon"]["dash_path"] = "/usr/share/openstack-dashboard/openstack_dash
 default["horizon"]["stylesheet_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html"
 default["horizon"]["wsgi_path"] = node["horizon"]["dash_path"] + "/wsgi/django.wsgi"
 default["horizon"]["session_backend"] = "memcached"
+
+default["horizon"]["ssl_offload"] = "false"
