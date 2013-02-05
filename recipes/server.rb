@@ -85,7 +85,7 @@ template node["horizon"]["local_settings_path"] do
     "auth_admin_uri" => auth_admin_uri,
     "memcached_servers" => memcached
   )
-  notifies :reload, resources(:service => "apache2")
+  notifies :restart, "service[apache2]"
 end
 
 # FIXME: this shouldn't run every chef run
@@ -149,7 +149,7 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if { platform?("fedora","redhat","centos") }
+  only_if { platform?("fedora","redhat","centos") } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
@@ -166,14 +166,14 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
-    notifies :run, resources(:execute => "restore-selinux-context"), :immediately
+    notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
 apache_site "openstack-dashboard" do
   enable true
-  notifies :run, resources(:execute => "restore-selinux-context"), :immediately
-  notifies :reload, resources(:service => "apache2"), :immediately
+  notifies :run, "execute[restore-selinux-context]", :immediately
+  notifies :reload, "service[apache2]", :immediately
 end
 
 execute "restore-selinux-context" do
@@ -233,6 +233,6 @@ end
     if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
       headers "If-Modified-Since" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
     end
-    notifies :create, resources(:remote_file => "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}"), :immediately
+    notifies :create, "remote_file[#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}]", :immediately
   end
 end
