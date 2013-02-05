@@ -85,6 +85,7 @@ template node["horizon"]["local_settings_path"] do
     "auth_admin_uri" => auth_admin_uri,
     "memcached_servers" => memcached
   )
+  notifies :reload, resources(:service => "apache2")
 end
 
 # FIXME: this shouldn't run every chef run
