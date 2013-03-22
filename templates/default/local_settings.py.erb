@@ -209,5 +209,6 @@ COMPRESS_OFFLINE = True
 import sys
 mod = sys.modules['openstack_dashboard.settings']
 <% node["horizon"]["plugins"].each do |p| %>
-mod.INSTALLED_APPS += ('<%= #{p} %>', )
+mod.INSTALLED_APPS += ('<%= p %>', )
+<% end %>
 <% end %>
