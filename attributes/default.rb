@@ -69,3 +69,4 @@ default["horizon"]["wsgi_path"] = node["horizon"]["dash_path"] + "/wsgi/django.w
 default["horizon"]["session_backend"] = "memcached"
 
 default["horizon"]["ssl_offload"] = "false"
+default["horizon"]["plugins"] = nil

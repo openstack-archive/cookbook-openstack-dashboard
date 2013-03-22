@@ -46,6 +46,7 @@ Attributes
 * `horizon["dash_path"]` - base path for dashboard files (document root)
 * `horizon["wsgi_path"]` - path for wsgi dir
 * `horizon["ssl_offload"]` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
+* `horizon["plugins"]` - Array of plugins to include via INSTALED\_APPS
 
 Templates
 =====

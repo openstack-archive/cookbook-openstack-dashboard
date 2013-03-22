@@ -205,6 +205,9 @@ COMPRESS_OFFLINE = True
 #     ['Nagios','http://foo.com'],
 #     ['Ganglia','http://bar.com'],
 # ]
-<% if node['roles'].include? 'gridcentric-client' %>
-import sys; mod = sys.modules['openstack_dashboard.settings']; mod.INSTALLED_APPS += ('gridcentric.horizon',)
+<% if node["horizon"]["plugins"] %>
+import sys
+mod = sys.modules['openstack_dashboard.settings']
+<% node["horizon"]["plugins"].each do |p| %>
+mod.INSTALLED_APPS += ('<%= #{p} %>', )
 <% end %>
