@@ -57,7 +57,7 @@ LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
      when "file" %>
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 <%   when "memcached" %>
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
