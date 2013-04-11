@@ -1,5 +1,8 @@
 <%= node["horizon"]["custom_template_banner"] %>
 <VirtualHost *:80>
+<% if node["horizon"]["server_name"] -%>
+   ServerName <%= node["horizon"]["server_name"] %>
+<% end -%>
 <% if node["horizon"]["use_ssl"] %>
    RewriteEngine On
    RewriteCond %{HTTPS} off
@@ -7,6 +10,9 @@
 </VirtualHost>
 
 <VirtualHost *:443>
+<%   if node["horizon"]["server_name"] -%>
+   ServerName <%= node["horizon"]["server_name"] %>
+<%   end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
   WSGIScriptAlias / <%= node["horizon"]["wsgi_path"] %>

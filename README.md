@@ -38,6 +38,7 @@ Attributes
 
 * `horizon["db"]["username"]` - username for horizon database access
 
+* `horizon["server_name"]` - Name to identify the Apache virtualhost.
 * `horizon["use_ssl"]` - toggle for using ssl with dashboard (default true)
 * `horizon["ssl"]["dir"]` - directory where ssl certs are stored on this system
 * `horizon["ssl"]["cert"]` - name to use when creating the ssl certificate

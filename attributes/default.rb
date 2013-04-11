@@ -37,6 +37,7 @@ default["horizon"]["keystone_default_role"] = "Member"
 # This is the name of the Chef role that will install the Keystone Service API
 default["horizon"]["keystone_service_chef_role"] = "keystone"
 
+default["horizon"]["server_name"] = nil
 default["horizon"]["use_ssl"] = true
 default["horizon"]["ssl"]["cert"] = "horizon.pem"
 default["horizon"]["ssl"]["key"] = "horizon.key"
