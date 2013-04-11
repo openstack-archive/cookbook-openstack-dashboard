@@ -1,7 +1,7 @@
 <%= node["horizon"]["custom_template_banner"] %>
 <VirtualHost *:80>
-<% if node["horizon"]["server_name"] -%>
-   ServerName <%= node["horizon"]["server_name"] %>
+<% if node["horizon"]["server_hostname"] -%>
+   ServerName <%= node["horizon"]["server_hostname"] %>
 <% end -%>
 <% if node["horizon"]["use_ssl"] %>
    RewriteEngine On
@@ -10,8 +10,8 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-<%   if node["horizon"]["server_name"] -%>
-   ServerName <%= node["horizon"]["server_name"] %>
+<%   if node["horizon"]["server_hostname"] -%>
+   ServerName <%= node["horizon"]["server_hostname"] %>
 <%   end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
