@@ -1,17 +1,17 @@
 <%= node["horizon"]["custom_template_banner"] %>
 <VirtualHost *:80>
 <% if node["horizon"]["server_hostname"] -%>
-   ServerName <%= node["horizon"]["server_hostname"] %>
+  ServerName <%= node["horizon"]["server_hostname"] %>
 <% end -%>
 <% if node["horizon"]["use_ssl"] %>
-   RewriteEngine On
-   RewriteCond %{HTTPS} off
-   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
 </VirtualHost>
 
 <VirtualHost *:443>
 <%   if node["horizon"]["server_hostname"] -%>
-   ServerName <%= node["horizon"]["server_hostname"] %>
+  ServerName <%= node["horizon"]["server_hostname"] %>
 <%   end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
@@ -23,15 +23,15 @@
   Alias /media <%= node["horizon"]["dash_path"] %>/media
 
   <Directory />
-      Options FollowSymLinks
-      AllowOverride None
+    Options FollowSymLinks
+    AllowOverride None
   </Directory>
 
   <Directory <%= node["horizon"]["dash_path"] %>>
-      Options Indexes FollowSymLinks MultiViews
-      AllowOverride None
-      Order allow,deny
-      allow from all
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Order allow,deny
+    allow from all
   </Directory>
 
   <% if node["horizon"]["use_ssl"] %>
