@@ -88,7 +88,7 @@ describe "horizon::server" do
 
     describe "openstack-dashboard virtual host" do
       before do
-        @file = @chef_run.template "/etc/httpd/conf.d/openstack-dashboard"
+        @file = @chef_run.template "/etc/httpd/sites-available/openstack-dashboard"
       end
 
       it "has proper owner" do

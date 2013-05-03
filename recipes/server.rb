@@ -130,33 +130,25 @@ directory "#{node["horizon"]["dash_path"]}/.blackhole" do
   action :create
 end
 
-# TODO(breu): verify this for fedora
-template value_for_platform(
-  [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
-  "fedora" => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
-  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
-  "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
-  ) do
-    source "dash-site.erb"
-    owner  "root"
-    group  "root"
-    mode   00644
+template "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" do
+  source "dash-site.erb"
+  owner  "root"
+  group  "root"
+  mode   00644
 
-    variables(
-      :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
-      :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
-    )
+  variables(
+    :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
+    :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
+  )
 
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
-# fedora includes this file in the package - we need to delete
-# it because we do it better
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
 
-  only_if { platform?("fedora","redhat","centos") } # :pragma-foodcritic: ~FC024 - won't fix this
+  only_if { platform?("fedora", "redhat", "centos") } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
@@ -164,7 +156,7 @@ end
 package "openstack-dashboard-ubuntu-theme" do
   action :purge
 
-  only_if {platform?("ubuntu")}
+  only_if { platform?("ubuntu")}
 end
 
 if platform?("debian","ubuntu") then
