@@ -67,7 +67,7 @@ This cookbook is using [ChefSpec](https://github.com/acrmp/chefspec) for
 testing. Run the following before commiting. It will run your tests,
 and check for lint errors.
 
-    % ./run_tests.bash
+    $ ./run_tests.bash
 
 License and Author
 ==================

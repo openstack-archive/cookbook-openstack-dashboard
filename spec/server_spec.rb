@@ -13,7 +13,8 @@ describe "horizon::server" do
   #describe "fedora" do
   #  before do
   #    @chef_run = ::ChefSpec::ChefRunner.new(
-  #      platform: "fedora"
+  #      :platform  => "fedora",
+  #      :log_level => :fatal
   #    ).converge "horizon::server"
   #  end
 
@@ -29,7 +30,8 @@ describe "horizon::server" do
   describe "redhat" do
     before do
       @chef_run = ::ChefSpec::ChefRunner.new(
-        platform: "redhat"
+        :platform  => "redhat",
+        :log_level => :fatal
       ).converge "horizon::server"
     end
 
@@ -128,8 +130,9 @@ describe "horizon::server" do
   describe "ubuntu" do
     before do
       @chef_run = ::ChefSpec::ChefRunner.new(
-        platform: "ubuntu",
-        version: "12.04"
+        :platform  => "ubuntu",
+        :version   => "12.04",
+        :log_level => :fatal
       ).converge "horizon::server"
     end
 
@@ -243,9 +246,10 @@ describe "horizon::server" do
 
     it "removes default virtualhost" do
       chef_run = ::ChefSpec::ChefRunner.new(
-        platform: "ubuntu",
-        version: "12.04",
-        :step_into => ["apache_site"]
+        :platform  => "ubuntu",
+        :version   => "12.04",
+        :step_into => ["apache_site"],
+        :log_level => :fatal
       ).converge "horizon::server"
 
       cmd = "/usr/sbin/a2dissite 000-default"
@@ -253,15 +257,15 @@ describe "horizon::server" do
     end
 
     it "enables virtualhost" do
-      f = ::ChefSpec::ChefRunner.new(
-        platform: "ubuntu",
-        version: "12.04",
-        :step_into => ["apache_site"]
-      )
-      b = f.converge "horizon::server"
+      chef_run = ::ChefSpec::ChefRunner.new(
+        :platform  => "ubuntu",
+        :version   => "12.04",
+        :step_into => ["apache_site"],
+        :log_level => :fatal
+      ).converge "horizon::server"
 
       cmd = "/usr/sbin/a2ensite openstack-dashboard"
-      expect(b).to execute_command cmd
+      expect(chef_run).to execute_command cmd
     end
 
     it "notifies apache2 restart" do
