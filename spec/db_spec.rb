@@ -21,8 +21,9 @@ describe "horizon::db" do
         and_return "test-pass"
 
       ::ChefSpec::ChefRunner.new(
-        platform: "ubuntu",
-        version: "12.04"
+        :platform  => "ubuntu",
+        :version   => "12.04",
+        :log_level => :fatal
       ).converge "horizon::db"
     }
   end
