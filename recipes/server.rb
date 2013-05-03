@@ -58,8 +58,6 @@ identity_admin_endpoint = endpoint "identity-admin"
 auth_admin_uri = ::URI.decode identity_admin_endpoint.to_s
 identity_endpoint = endpoint "identity-api"
 auth_uri = ::URI.decode identity_endpoint.to_s
-keystone_service_role = node["horizon"]["keystone_service_chef_role"]
-keystone = config_by_role keystone_service_role, "keystone"
 
 db_pass = db_password "horizon"
 db_info = db "dashboard"
