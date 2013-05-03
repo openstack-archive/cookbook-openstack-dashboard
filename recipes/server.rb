@@ -3,7 +3,7 @@
 # Recipe:: server
 #
 # Copyright 2012, Rackspace US, Inc.
-# Copyright 2012, AT&T, Inc.
+# Copyright 2012-2013, AT&T Services, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ end
 execute "set-selinux-permissive" do
   command "/sbin/setenforce Permissive"
   action :run
+
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
@@ -51,6 +52,7 @@ include_recipe "apache2::mod_ssl"
 execute "set-selinux-enforcing" do
   command "/sbin/setenforce Enforcing ; restorecon -R /etc/httpd"
   action :run
+
   only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
 end
 
@@ -58,8 +60,6 @@ identity_admin_endpoint = endpoint "identity-admin"
 auth_admin_uri = ::URI.decode identity_admin_endpoint.to_s
 identity_endpoint = endpoint "identity-api"
 auth_uri = ::URI.decode identity_endpoint.to_s
-keystone_service_role = node["horizon"]["keystone_service_chef_role"]
-keystone = config_by_role keystone_service_role, "keystone"
 
 db_pass = db_password "horizon"
 db_info = db "dashboard"
@@ -75,16 +75,18 @@ memcached = memcached_servers
 
 template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
-  owner "root"
-  group "root"
-  mode 00644
+  owner  "root"
+  group  "root"
+  mode   00644
+
   variables(
-    "db_pass" => db_pass,
-    "db_info" => db_info,
-    "auth_uri" => auth_uri,
-    "auth_admin_uri" => auth_admin_uri,
-    "memcached_servers" => memcached
+    :db_pass => db_pass,
+    :db_info => db_info,
+    :auth_uri => auth_uri,
+    :auth_admin_uri => auth_admin_uri,
+    :memcached_servers => memcached
   )
+
   notifies :restart, "service[apache2]"
 end
 
@@ -99,64 +101,62 @@ end
 
 cookbook_file "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}" do
   source "horizon.pem"
-  mode 0644
-  owner "root"
-  group "root"
+  mode   00644
+  owner  "root"
+  group  "root"
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 case node["platform"]
 when "ubuntu","debian"
-    grp = "ssl-cert"
+  grp = "ssl-cert"
 else
-    grp = "root"
+  grp = "root"
 end
 
 cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}" do
   source "horizon.key"
-  mode 0640
-  owner "root"
-  group grp # Don't know about fedora
+  mode   00640
+  owner  "root"
+  group  grp # Don't know about fedora
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
-#
+
 # stop apache bitching
 directory "#{node["horizon"]["dash_path"]}/.blackhole" do
   owner "root"
   action :create
 end
 
-# TODO(breu): verify this for fedora
-template value_for_platform(
-  [ "ubuntu","debian","fedora" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
-  "fedora" => { "default" => "#{node["apache"]["dir"]}/vhost.d/openstack-dashboard" },
-  [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
-  "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
-  ) do
+template "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" do
   source "dash-site.erb"
-  owner "root"
-  group "root"
-  mode 00644
+  owner  "root"
+  group  "root"
+  mode   00644
+
   variables(
-      :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
-      :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
+    :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
+    :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
   )
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
-# fedora includes this file in the package - we need to delete
-# it because we do it better
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-  only_if { platform?("fedora","redhat","centos") } # :pragma-foodcritic: ~FC024 - won't fix this
+
+  only_if { platform?("fedora", "redhat", "centos") } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
 # configurable paramter
 package "openstack-dashboard-ubuntu-theme" do
   action :purge
-  only_if {platform?("ubuntu")}
+
+  only_if { platform?("ubuntu")}
 end
 
 if platform?("debian","ubuntu") then
@@ -166,73 +166,25 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
+
     notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
 apache_site "openstack-dashboard" do
   enable true
+
   notifies :run, "execute[restore-selinux-context]", :immediately
   notifies :reload, "service[apache2]", :immediately
 end
 
 execute "restore-selinux-context" do
-    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
-    action :nothing
-    only_if { platform?("fedora") }
+  command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
+  action :nothing
+
+  only_if { platform?("fedora") }
 end
 
 # TODO(shep)
 # Horizon has a forced dependency on there being a volume service endpoint in your keystone catalog
 # https://answers.launchpad.net/horizon/+question/189551
-
-# This is a dirty hack to deal with https://bugs.launchpad.net/nova/+bug/932468
-directory "/var/www/.novaclient" do
-  owner node["apache"]["user"]
-  group node["apache"]["group"]
-  mode "0755"
-  action :create
-end
-
-cookbook_file "#{node["horizon"]["dash_path"]}/static/dashboard/css/folsom.css" do
-  only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
-  source "css/folsom.css"
-  mode 0644
-  owner "root"
-  group grp
-end
-
-# TODO(jaypipes): None of the below belongs in this recipe. It belongs in a
-# site-cookbook wrapper recipe that gets executed after horizon::server
-template node["horizon"]["stylesheet_path"] do
-  only_if { node["package_component"] == "folsom" }
-  if node["horizon"]["theme"] == "Rackspace"
-          source "rs_stylesheets.html.erb"
-  else
-    source "default_stylesheets.html.erb"
-  end
-  mode 0644
-  owner "root"
-  group grp
-end
-
-["PrivateCloud.png", "Rackspace_Cloud_Company.png", "Rackspace_Cloud_Company_Small.png", "alert_red.png", "body_bkg.gif", "selected_arrow.png"].each do |imgname|
-  # Register remote_file resource
-  remote_file "#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}" do
-    source "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
-    mode "0644"
-    action :nothing
-  end
-
-  # See if modified before trying to run
-  http_request "HEAD http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}" do
-    only_if { node["horizon"]["theme"] == "Rackspace" and node["package_component"] == "folsom" }
-    message ""
-    url "http://2a3f85ca3f24efb48c75-a90b34915fe2401d418a3390713e5cce.r22.cf1.rackcdn.com/#{imgname}"
-    action :head
-    if File.exists?("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}")
-      headers "If-Modified-Since" => File.mtime("#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}").httpdate
-    end
-    notifies :create, "remote_file[#{node["horizon"]["dash_path"]}/static/dashboard/img/#{imgname}]", :immediately
-  end
-end
