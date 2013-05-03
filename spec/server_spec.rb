@@ -253,15 +253,14 @@ describe "horizon::server" do
     end
 
     it "enables virtualhost" do
-      f = ::ChefSpec::ChefRunner.new(
+      chef_run = ::ChefSpec::ChefRunner.new(
         platform: "ubuntu",
         version: "12.04",
         :step_into => ["apache_site"]
-      )
-      b = f.converge "horizon::server"
+      ).converge "horizon::server"
 
       cmd = "/usr/sbin/a2ensite openstack-dashboard"
-      expect(b).to execute_command cmd
+      expect(chef_run).to execute_command cmd
     end
 
     it "notifies apache2 restart" do
