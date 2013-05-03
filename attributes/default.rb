@@ -47,7 +47,7 @@ default["horizon"]["swift"]["enabled"] = "False"
 default["horizon"]["theme"] = "default"
 
 case node["platform"]
-when "fedora", "centos", "redhat", "amazon", "scientific"
+when "fedora", "centos", "redhat"
   default["horizon"]["ssl"]["dir"] = "/etc/pki/tls"
   default["horizon"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings"
   # TODO(shep) - Fedora does not generate self signed certs by default
@@ -55,7 +55,7 @@ when "fedora", "centos", "redhat", "amazon", "scientific"
     "horizon_packages" => ["openstack-dashboard", "MySQL-python"],
     "package_overrides" => ""
   }
-when "ubuntu", "debian"
+when "ubuntu"
   default["horizon"]["ssl"]["dir"] = "/etc/ssl"
   default["horizon"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"
   default["horizon"]["platform"] = {

@@ -33,6 +33,7 @@ end
 execute "set-selinux-permissive" do
   command "/sbin/setenforce Permissive"
   action :run
+
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
@@ -51,6 +52,7 @@ include_recipe "apache2::mod_ssl"
 execute "set-selinux-enforcing" do
   command "/sbin/setenforce Enforcing ; restorecon -R /etc/httpd"
   action :run
+
   only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
 end
 
@@ -73,16 +75,18 @@ memcached = memcached_servers
 
 template node["horizon"]["local_settings_path"] do
   source "local_settings.py.erb"
-  owner "root"
-  group "root"
-  mode 00644
+  owner  "root"
+  group  "root"
+  mode   00644
+
   variables(
-    "db_pass" => db_pass,
-    "db_info" => db_info,
-    "auth_uri" => auth_uri,
-    "auth_admin_uri" => auth_admin_uri,
-    "memcached_servers" => memcached
+    :db_pass => db_pass,
+    :db_info => db_info,
+    :auth_uri => auth_uri,
+    :auth_admin_uri => auth_admin_uri,
+    :memcached_servers => memcached
   )
+
   notifies :restart, "service[apache2]"
 end
 
@@ -97,27 +101,29 @@ end
 
 cookbook_file "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}" do
   source "horizon.pem"
-  mode 0644
-  owner "root"
-  group "root"
+  mode   00644
+  owner  "root"
+  group  "root"
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
 case node["platform"]
 when "ubuntu","debian"
-    grp = "ssl-cert"
+  grp = "ssl-cert"
 else
-    grp = "root"
+  grp = "root"
 end
 
 cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}" do
   source "horizon.key"
-  mode 0640
-  owner "root"
-  group grp # Don't know about fedora
+  mode   00640
+  owner  "root"
+  group  grp # Don't know about fedora
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
-#
+
 # stop apache bitching
 directory "#{node["horizon"]["dash_path"]}/.blackhole" do
   owner "root"
@@ -131,14 +137,16 @@ template value_for_platform(
   [ "redhat","centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
   "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
   ) do
-  source "dash-site.erb"
-  owner "root"
-  group "root"
-  mode 00644
-  variables(
+    source "dash-site.erb"
+    owner  "root"
+    group  "root"
+    mode   00644
+
+    variables(
       :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
       :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
-  )
+    )
+
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
@@ -147,6 +155,7 @@ end
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
+
   only_if { platform?("fedora","redhat","centos") } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
@@ -154,6 +163,7 @@ end
 # configurable paramter
 package "openstack-dashboard-ubuntu-theme" do
   action :purge
+
   only_if {platform?("ubuntu")}
 end
 
@@ -164,20 +174,23 @@ if platform?("debian","ubuntu") then
 elsif platform?("fedora") then
   apache_site "default" do
     enable false
+
     notifies :run, "execute[restore-selinux-context]", :immediately
   end
 end
 
 apache_site "openstack-dashboard" do
   enable true
+
   notifies :run, "execute[restore-selinux-context]", :immediately
   notifies :reload, "service[apache2]", :immediately
 end
 
 execute "restore-selinux-context" do
-    command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
-    action :nothing
-    only_if { platform?("fedora") }
+  command "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
+  action :nothing
+
+  only_if { platform?("fedora") }
 end
 
 # TODO(shep)
