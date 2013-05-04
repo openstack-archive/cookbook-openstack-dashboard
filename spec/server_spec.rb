@@ -1,4 +1,4 @@
-require "chefspec"
+require "spec_helper"
 
 describe "horizon::server" do
   before do
@@ -13,7 +13,7 @@ describe "horizon::server" do
       @chef_run = ::ChefSpec::ChefRunner.new(
         :platform  => "ubuntu",
         :version   => "12.04",
-        :log_level => :fatal
+        :log_level => ::LOG_LEVEL
       ).converge "horizon::server"
     end
 

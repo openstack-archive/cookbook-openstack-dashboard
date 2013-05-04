@@ -1,4 +1,4 @@
-require "chefspec"
+require "spec_helper"
 
 describe "horizon::server" do
   before do
@@ -14,7 +14,7 @@ describe "horizon::server" do
   #  before do
   #    @chef_run = ::ChefSpec::ChefRunner.new(
   #      :platform  => "fedora",
-  #      :log_level => :fatal
+  #      :log_level => ::LOG_LEVEL
   #    ).converge "horizon::server"
   #  end
 

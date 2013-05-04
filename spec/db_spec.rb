@@ -1,4 +1,4 @@
-require "chefspec"
+require "spec_helper"
 
 describe "horizon::db" do
   it "installs mysql packages" do
@@ -22,7 +22,7 @@ describe "horizon::db" do
     ::ChefSpec::ChefRunner.new(
       :platform  => "ubuntu",
       :version   => "12.04",
-      :log_level => :fatal
+      :log_level => ::LOG_LEVEL
     ).converge "horizon::db"
   end
 end
