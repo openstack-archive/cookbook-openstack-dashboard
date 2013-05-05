@@ -10,11 +10,8 @@ describe "horizon::server" do
 
   describe "ubuntu" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "ubuntu",
-        :version   => "12.04",
-        :log_level => ::LOG_LEVEL
-      ).converge "horizon::server"
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run.converge "horizon::server"
     end
 
     it "doesn't execute set-selinux-permissive" do

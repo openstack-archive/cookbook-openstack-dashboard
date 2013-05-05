@@ -10,10 +10,8 @@ describe "horizon::server" do
 
   describe "redhat" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "redhat",
-        :log_level => ::LOG_LEVEL
-      ).converge "horizon::server"
+      @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
+      @chef_run.converge "horizon::server"
     end
 
     it "executes set-selinux-permissive" do
