@@ -1,8 +1,8 @@
-require "chefspec"
+require "spec_helper"
 
 describe "horizon::db" do
   it "installs mysql packages" do
-    @chef_run = converge.call
+    @chef_run = converge
 
     expect(@chef_run).to include_recipe "mysql::client"
     expect(@chef_run).to include_recipe "mysql::ruby"
@@ -12,19 +12,17 @@ describe "horizon::db" do
     ::Chef::Recipe.any_instance.should_receive(:db_create_with_user).
       with "dashboard", "dash", "test-pass"
 
-    converge.call
+    converge
   end
 
   def converge
-    Proc.new {
-      ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
-        and_return "test-pass"
+    ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
+      and_return "test-pass"
 
-      ::ChefSpec::ChefRunner.new(
-        :platform  => "ubuntu",
-        :version   => "12.04",
-        :log_level => :fatal
-      ).converge "horizon::db"
-    }
+    ::ChefSpec::ChefRunner.new(
+      :platform  => "ubuntu",
+      :version   => "12.04",
+      :log_level => ::LOG_LEVEL
+    ).converge "horizon::db"
   end
 end
