@@ -61,7 +61,11 @@ describe "horizon::server" do
       cmd = "python manage.py syncdb --noinput"
       expect(@chef_run).to execute_command(cmd).with(
         :cwd         => "/usr/share/openstack-dashboard",
-        :environment => {"PYTHONPATH" => "/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH"}
+        :environment => {
+          "PYTHONPATH" => "/etc/openstack-dashboard:" \
+                          "/usr/share/openstack-dashboard:" \
+                          "$PYTHONPATH"
+        }
       )
     end
 
@@ -94,7 +98,8 @@ describe "horizon::server" do
 
     describe "openstack-dashboard virtual host" do
       before do
-        @file = @chef_run.template "/etc/apache2/sites-available/openstack-dashboard"
+        f = "/etc/apache2/sites-available/openstack-dashboard"
+        @file = @chef_run.template f
       end
 
       it "has proper owner" do
