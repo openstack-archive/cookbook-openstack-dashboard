@@ -12,10 +12,8 @@ describe "horizon::server" do
 
   #describe "fedora" do
   #  before do
-  #    @chef_run = ::ChefSpec::ChefRunner.new(
-  #      :platform  => "fedora",
-  #      :log_level => ::LOG_LEVEL
-  #    ).converge "horizon::server"
+  #    @chef_run = ::ChefSpec::ChefRunner.new ::FEDORA_OPTS
+  #    @chef_run.converge "horizon::server"
   #  end
 
   #  it "executes restore-selinux-context" do

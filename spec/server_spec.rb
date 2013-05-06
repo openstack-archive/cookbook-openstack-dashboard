@@ -10,11 +10,8 @@ describe "horizon::server" do
 
   describe "ubuntu" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "ubuntu",
-        :version   => "12.04",
-        :log_level => ::LOG_LEVEL
-      ).converge "horizon::server"
+      @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+      @chef_run.converge "horizon::server"
     end
 
     it "doesn't execute set-selinux-permissive" do
@@ -64,7 +61,11 @@ describe "horizon::server" do
       cmd = "python manage.py syncdb --noinput"
       expect(@chef_run).to execute_command(cmd).with(
         :cwd         => "/usr/share/openstack-dashboard",
-        :environment => {"PYTHONPATH" => "/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH"}
+        :environment => {
+          "PYTHONPATH" => "/etc/openstack-dashboard:" \
+                          "/usr/share/openstack-dashboard:" \
+                          "$PYTHONPATH"
+        }
       )
     end
 
@@ -97,7 +98,8 @@ describe "horizon::server" do
 
     describe "openstack-dashboard virtual host" do
       before do
-        @file = @chef_run.template "/etc/apache2/sites-available/openstack-dashboard"
+        f = "/etc/apache2/sites-available/openstack-dashboard"
+        @file = @chef_run.template f
       end
 
       it "has proper owner" do

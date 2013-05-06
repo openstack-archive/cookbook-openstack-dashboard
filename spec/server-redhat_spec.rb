@@ -10,10 +10,8 @@ describe "horizon::server" do
 
   describe "redhat" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "redhat",
-        :log_level => ::LOG_LEVEL
-      ).converge "horizon::server"
+      @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
+      @chef_run.converge "horizon::server"
     end
 
     it "executes set-selinux-permissive" do
@@ -71,7 +69,8 @@ describe "horizon::server" do
 
     describe "openstack-dashboard virtual host" do
       before do
-        @file = @chef_run.template "/etc/httpd/sites-available/openstack-dashboard"
+        f = "/etc/httpd/sites-available/openstack-dashboard"
+        @file = @chef_run.template f
       end
 
       it "has proper owner" do
@@ -92,7 +91,8 @@ describe "horizon::server" do
     end
 
     it "deletes openstack-dashboard.conf" do
-      expect(@chef_run).to delete_file "/etc/httpd/conf.d/openstack-dashboard.conf"
+      file = "/etc/httpd/conf.d/openstack-dashboard.conf"
+      expect(@chef_run).to delete_file file
     end
 
     it "does not remove openstack-dashboard-ubuntu-theme package" do
