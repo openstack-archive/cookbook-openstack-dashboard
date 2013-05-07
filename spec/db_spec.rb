@@ -19,10 +19,6 @@ describe "horizon::db" do
     ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
       and_return "test-pass"
 
-    ::ChefSpec::ChefRunner.new(
-      :platform  => "ubuntu",
-      :version   => "12.04",
-      :log_level => ::LOG_LEVEL
-    ).converge "horizon::db"
+    ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS).converge "horizon::db"
   end
 end
