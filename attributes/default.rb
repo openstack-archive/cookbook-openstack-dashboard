@@ -55,6 +55,7 @@ when "fedora", "centos", "redhat"
     "mysql_python_packages" => ["MySQL-python"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "horizon_packages" => ["openstack-dashboard"],
+    "memcache_python_packages" => ["python-memcached"],
     "package_overrides" => ""
   }
 
@@ -65,6 +66,7 @@ when "suse"
     "mysql_python_packages" => ["python-mysql"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "horizon_packages" => ["openstack-dashboard"],
+    "memcache_python_packages" => ["python-python-memcached"],
     "package_overrides" => ""
   }
 
@@ -75,6 +77,7 @@ when "ubuntu"
     "horizon_packages" => ["lessc", "openstack-dashboard"],
     "mysql_python_packages" => ["python-mysqldb"],
     "postgresql_python_packages" => ["python-psycopg2"],
+    "memcache_python_packages" => ["python-memcache"],
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
 end

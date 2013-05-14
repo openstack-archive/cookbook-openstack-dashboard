@@ -72,6 +72,12 @@ python_packages = platform_options["#{db_info['db_type']}_python_packages"]
   end
 end
 
+if node["openstack-dashboard"]["session_backend"] == "memcached"
+  platform_options["memcache_python_packages"].each do |pkg|
+    package pkg
+  end
+end
+
 memcached = memcached_servers
 
 template node["openstack-dashboard"]["local_settings_path"] do
