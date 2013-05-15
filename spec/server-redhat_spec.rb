@@ -3,7 +3,7 @@ require "spec_helper"
 describe "openstack-dashboard::server" do
   before do
     ::Chef::Recipe.any_instance.stub(:memcached_servers).
-      and_return "hostA:port,hostB:port"
+      and_return ["hostA:port", "hostB:port"]
     ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
       and_return "test-pass"
   end
@@ -41,7 +41,7 @@ describe "openstack-dashboard::server" do
       end
 
       it "rh specific template" do
-        pending
+        expect(@chef_run).to create_file_with_content @file.name, "WEBROOT"
       end
     end
 
@@ -81,8 +81,13 @@ describe "openstack-dashboard::server" do
         expect(sprintf("%o", @file.mode)).to eq "644"
       end
 
-      it "template contents" do
-        pending
+      it "sets the ServerName directive " do
+        chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
+        node = chef_run.node
+        node.set["openstack-dashboard"]["server_hostname"] = "spec-test-host"
+        chef_run.converge "openstack-dashboard::server"
+
+        expect(chef_run).to create_file_with_content @file.name, "spec-test-host"
       end
 
       it "notifies restore-selinux-context" do

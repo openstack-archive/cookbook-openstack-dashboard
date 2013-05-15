@@ -34,7 +34,7 @@
     allow from all
   </Directory>
 
-  <Directory <%= node["horizon"]["static_path"] %>>
+  <Directory <%= node["openstack-dashboard"]["static_path"] %>>
       Options FollowSymLinks MultiViews
       AllowOverride None
       Order allow,deny

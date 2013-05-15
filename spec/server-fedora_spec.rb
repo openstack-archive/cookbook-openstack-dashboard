@@ -3,7 +3,7 @@ require "spec_helper"
 describe "openstack-dashboard::server" do
   before do
     ::Chef::Recipe.any_instance.stub(:memcached_servers).
-      and_return "hostA:port,hostB:port"
+      and_return ["hostA:port", "hostB:port"]
     ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
       and_return "test-pass"
   end
