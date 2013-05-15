@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: horizon
+# Cookbook Name:: openstack-dashboard
 # Recipe:: default
 #
 # Copyright 2012, Rackspace US, Inc.

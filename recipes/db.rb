@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: horizon
+# Cookbook Name:: openstack-dashboard
 # Recipe:: db
 #
 # Copyright 2012-2013, AT&T Services, Inc.
@@ -32,6 +32,6 @@ include_recipe "mysql::ruby"
 db_pass = db_password "horizon"
 
 db_create_with_user("dashboard",
-  node["horizon"]["db"]["username"],
+  node["openstack-dashboard"]["db"]["username"],
   db_pass
 )

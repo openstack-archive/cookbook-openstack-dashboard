@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "horizon::db" do
+describe "openstack-dashboard::db" do
   it "installs mysql packages" do
     @chef_run = converge
 
@@ -19,6 +19,6 @@ describe "horizon::db" do
     ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
       and_return "test-pass"
 
-    ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS).converge "horizon::db"
+    ::ChefSpec::ChefRunner.new(::UBUNTU_OPTS).converge "openstack-dashboard::db"
   end
 end

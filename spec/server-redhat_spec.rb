@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "horizon::server" do
+describe "openstack-dashboard::server" do
   before do
     ::Chef::Recipe.any_instance.stub(:memcached_servers).
       and_return "hostA:port,hostB:port"
@@ -11,7 +11,7 @@ describe "horizon::server" do
   describe "redhat" do
     before do
       @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
-      @chef_run.converge "horizon::server"
+      @chef_run.converge "openstack-dashboard::server"
     end
 
     it "executes set-selinux-permissive" do

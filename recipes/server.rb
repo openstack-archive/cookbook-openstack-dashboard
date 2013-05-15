@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: horizon
+# Cookbook Name:: openstack-dashboard
 # Recipe:: server
 #
 # Copyright 2012, Rackspace US, Inc.
@@ -37,7 +37,7 @@ execute "set-selinux-permissive" do
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
-platform_options = node["horizon"]["platform"]
+platform_options = node["openstack-dashboard"]["platform"]
 
 include_recipe "apache2"
 include_recipe "apache2::mod_wsgi"
@@ -73,7 +73,7 @@ end
 
 memcached = memcached_servers
 
-template node["horizon"]["local_settings_path"] do
+template node["openstack-dashboard"]["local_settings_path"] do
   source "local_settings.py.erb"
   owner  "root"
   group  "root"
@@ -99,7 +99,7 @@ execute "openstack-dashboard syncdb" do
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
 end
 
-cookbook_file "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}" do
+cookbook_file "#{node["openstack-dashboard"]["ssl"]["dir"]}/certs/#{node["openstack-dashboard"]["ssl"]["cert"]}" do
   source "horizon.pem"
   mode   00644
   owner  "root"
@@ -115,7 +115,7 @@ else
   grp = "root"
 end
 
-cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}" do
+cookbook_file "#{node["openstack-dashboard"]["ssl"]["dir"]}/private/#{node["openstack-dashboard"]["ssl"]["key"]}" do
   source "horizon.key"
   mode   00640
   owner  "root"
@@ -125,7 +125,7 @@ cookbook_file "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]
 end
 
 # stop apache bitching
-directory "#{node["horizon"]["dash_path"]}/.blackhole" do
+directory "#{node["openstack-dashboard"]["dash_path"]}/.blackhole" do
   owner "root"
   action :create
 end
@@ -137,8 +137,8 @@ template "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" do
   mode   00644
 
   variables(
-    :ssl_cert_file => "#{node["horizon"]["ssl"]["dir"]}/certs/#{node["horizon"]["ssl"]["cert"]}",
-    :ssl_key_file => "#{node["horizon"]["ssl"]["dir"]}/private/#{node["horizon"]["ssl"]["key"]}"
+    :ssl_cert_file => "#{node["openstack-dashboard"]["ssl"]["dir"]}/certs/#{node["openstack-dashboard"]["ssl"]["cert"]}",
+    :ssl_key_file => "#{node["openstack-dashboard"]["ssl"]["dir"]}/private/#{node["openstack-dashboard"]["ssl"]["key"]}"
   )
 
   notifies :run, "execute[restore-selinux-context]", :immediately

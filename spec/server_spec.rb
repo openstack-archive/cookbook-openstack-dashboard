@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "horizon::server" do
+describe "openstack-dashboard::server" do
   before do
     ::Chef::Recipe.any_instance.stub(:memcached_servers).
       and_return "hostA:port,hostB:port"
@@ -11,7 +11,7 @@ describe "horizon::server" do
   describe "ubuntu" do
     before do
       @chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-      @chef_run.converge "horizon::server"
+      @chef_run.converge "openstack-dashboard::server"
     end
 
     it "doesn't execute set-selinux-permissive" do
@@ -133,7 +133,7 @@ describe "horizon::server" do
         :version   => "12.04",
         :step_into => ["apache_site"],
         :log_level => :fatal
-      ).converge "horizon::server"
+      ).converge "openstack-dashboard::server"
 
       cmd = "/usr/sbin/a2dissite 000-default"
       expect(chef_run).to execute_command cmd
@@ -145,7 +145,7 @@ describe "horizon::server" do
         :version   => "12.04",
         :step_into => ["apache_site"],
         :log_level => :fatal
-      ).converge "horizon::server"
+      ).converge "openstack-dashboard::server"
 
       cmd = "/usr/sbin/a2ensite openstack-dashboard"
       expect(chef_run).to execute_command cmd

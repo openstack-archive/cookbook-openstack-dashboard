@@ -1,40 +1,40 @@
-<%= node["horizon"]["custom_template_banner"] %>
+<%= node["openstack-dashboard"]["custom_template_banner"] %>
 <VirtualHost *:80>
-<% if node["horizon"]["server_hostname"] -%>
-  ServerName <%= node["horizon"]["server_hostname"] %>
+<% if node["openstack-dashboard"]["server_hostname"] -%>
+  ServerName <%= node["openstack-dashboard"]["server_hostname"] %>
 <% end -%>
-<% if node["horizon"]["use_ssl"] %>
+<% if node["openstack-dashboard"]["use_ssl"] %>
   RewriteEngine On
   RewriteCond %{HTTPS} off
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
 </VirtualHost>
 
 <VirtualHost *:443>
-<%   if node["horizon"]["server_hostname"] -%>
-  ServerName <%= node["horizon"]["server_hostname"] %>
+<%   if node["openstack-dashboard"]["server_hostname"] -%>
+  ServerName <%= node["openstack-dashboard"]["server_hostname"] %>
 <%   end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
-  WSGIScriptAlias / <%= node["horizon"]["wsgi_path"] %>
-  WSGIDaemonProcess dashboard user=<%= node["apache"]["user"] %> group=<%= node["apache"]["group"] %> processes=3 threads=10 python-path=<%= node["horizon"]["dash_path"] %>
+  WSGIScriptAlias / <%= node["openstack-dashboard"]["wsgi_path"] %>
+  WSGIDaemonProcess dashboard user=<%= node["apache"]["user"] %> group=<%= node["apache"]["group"] %> processes=3 threads=10 python-path=<%= node["openstack-dashboard"]["dash_path"] %>
   WSGIProcessGroup dashboard
 
-  DocumentRoot <%= node["horizon"]["dash_path"] %>/.blackhole/
-  Alias /media <%= node["horizon"]["dash_path"] %>/media
+  DocumentRoot <%= node["openstack-dashboard"]["dash_path"] %>/.blackhole/
+  Alias /media <%= node["openstack-dashboard"]["dash_path"] %>/media
 
   <Directory />
     Options FollowSymLinks
     AllowOverride None
   </Directory>
 
-  <Directory <%= node["horizon"]["dash_path"] %>>
+  <Directory <%= node["openstack-dashboard"]["dash_path"] %>>
     Options Indexes FollowSymLinks MultiViews
     AllowOverride None
     Order allow,deny
     allow from all
   </Directory>
 
-  <% if node["horizon"]["use_ssl"] %>
+  <% if node["openstack-dashboard"]["use_ssl"] %>
   SSLEngine on
   SSLCertificateFile <%= @ssl_cert_file %>
   SSLCertificateKeyFile <%= @ssl_key_file %>

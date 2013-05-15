@@ -30,7 +30,7 @@ Configures database for use with Horizon
 
 ```json
 "run_list": [
-    "recipe[horizon::db]"
+    "recipe[openstack-dashboard::db]"
 ]
 ```
 
@@ -42,23 +42,23 @@ Sets up the Horizon dashboard within an Apache `mod_wsgi` container.
 
 ```json
 "run_list": [
-    "recipe[horizon::server]"
+    "recipe[openstack-dashboard::server]"
 ]
 ```
 
 Attributes
 ==========
 
-* `horizon["db"]["username"]` - username for horizon database access
-* `horizon["server_hostname"]` - sets the ServerName in the Apache config.
-* `horizon["use_ssl"]` - toggle for using ssl with dashboard (default true)
-* `horizon["ssl"]["dir"]` - directory where ssl certs are stored on this system
-* `horizon["ssl"]["cert"]` - name to use when creating the ssl certificate
-* `horizon["ssl"]["key"]` - name to use when creating the ssl key
-* `horizon["dash_path"]` - base path for dashboard files (document root)
-* `horizon["wsgi_path"]` - path for wsgi dir
-* `horizon["ssl_offload"]` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
-* `horizon["plugins"]` - Array of plugins to include via INSTALED\_APPS
+* `openstack-dashboard["db"]["username"]` - username for horizon database access
+* `openstack-dashboard["server_hostname"]` - sets the ServerName in the Apache config.
+* `openstack-dashboard["use_ssl"]` - toggle for using ssl with dashboard (default true)
+* `openstack-dashboard["ssl"]["dir"]` - directory where ssl certs are stored on this system
+* `openstack-dashboard["ssl"]["cert"]` - name to use when creating the ssl certificate
+* `openstack-dashboard["ssl"]["key"]` - name to use when creating the ssl key
+* `openstack-dashboard["dash_path"]` - base path for dashboard files (document root)
+* `openstack-dashboard["wsgi_path"]` - path for wsgi dir
+* `openstack-dashboard["ssl_offload"]` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
+* `openstack-dashboard["plugins"]` - Array of plugins to include via INSTALED\_APPS
 
 Testing
 =====
