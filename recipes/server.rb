@@ -64,7 +64,8 @@ auth_uri = ::URI.decode identity_endpoint.to_s
 db_pass = db_password "horizon"
 db_info = db "dashboard"
 
-platform_options["horizon_packages"].each do |pkg|
+python_packages = platform_options["#{db_info['db_type']}_python_packages"]
+(platform_options["horizon_packages"] + python_packages).each do |pkg|
   package pkg do
     action :upgrade
     options platform_options["package_overrides"]
