@@ -32,8 +32,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 #    'help_url': "http://docs.openstack.org"
 # }
 HORIZON_CONFIG = {
-    'dashboards': ('nova', 'syspanel', 'settings',),
-    'default_dashboard': 'nova',
+    'dashboards': ('project', 'admin', 'settings',),
+    'default_dashboard': 'project',
 }
 
 LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
