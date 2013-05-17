@@ -69,7 +69,7 @@ describe "openstack-dashboard::server" do
 
     describe "openstack-dashboard virtual host" do
       before do
-        f = "/etc/httpd/sites-available/openstack-dashboard"
+        f = "/etc/httpd/conf.d/openstack-dashboard"
         @file = @chef_run.template f
       end
 

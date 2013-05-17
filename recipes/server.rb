@@ -130,7 +130,12 @@ directory "#{node["openstack-dashboard"]["dash_path"]}/.blackhole" do
   action :create
 end
 
-template "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" do
+template value_for_platform(
+  [ "ubuntu", "debian" ] => { "default" => "#{node["apache"]["dir"]}/sites-available/openstack-dashboard" },
+  [ "fedora", "suse" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" },
+  [ "redhat", "centos" ] => { "default" => "#{node["apache"]["dir"]}/conf.d/openstack-dashboard" },
+  "default" => { "default" => "#{node["apache"]["dir"]}/openstack-dashboard" }
+  ) do
   source "dash-site.erb"
   owner  "root"
   group  "root"

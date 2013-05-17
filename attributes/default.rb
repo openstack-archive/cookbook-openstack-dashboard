@@ -55,6 +55,15 @@ when "fedora", "centos", "redhat"
     "horizon_packages" => ["openstack-dashboard", "MySQL-python"],
     "package_overrides" => ""
   }
+
+when "suse"
+  default["openstack-dashboard"]["ssl"]["dir"] = "/etc/ssl"
+  default["openstack-dashboard"]["local_settings_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py"
+  default["openstack-dashboard"]["platform"] = {
+    "horizon_packages" => ["openstack-dashboard", "python-mysql"],
+    "package_overrides" => ""
+  }
+
 when "ubuntu"
   default["openstack-dashboard"]["ssl"]["dir"] = "/etc/ssl"
   default["openstack-dashboard"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"

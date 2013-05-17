@@ -9,7 +9,7 @@ version          "2012.2.0"
 recipe           "openstack-dashboard::db", "Configures database for use with Horizon"
 recipe           "openstack-dashboard::server", "Sets up the Horizon dashboard within an Apache `mod_wsgi` container."
 
-%w{ ubuntu fedora redhat centos }.each do |os|
+%w{ ubuntu fedora redhat centos suse }.each do |os|
   supports os
 end
 
