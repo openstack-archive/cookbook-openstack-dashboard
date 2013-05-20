@@ -20,7 +20,7 @@
   WSGIProcessGroup dashboard
 
   DocumentRoot <%= node["openstack-dashboard"]["dash_path"] %>/.blackhole/
-  Alias /media <%= node["openstack-dashboard"]["dash_path"] %>/media
+  Alias /static <%= node["openstack-dashboard"]["static_path"] %>
 
   <Directory />
     Options FollowSymLinks
@@ -32,6 +32,13 @@
     AllowOverride None
     Order allow,deny
     allow from all
+  </Directory>
+
+  <Directory <%= node["horizon"]["static_path"] %>>
+      Options FollowSymLinks MultiViews
+      AllowOverride None
+      Order allow,deny
+      allow from all
   </Directory>
 
   <% if node["openstack-dashboard"]["use_ssl"] %>

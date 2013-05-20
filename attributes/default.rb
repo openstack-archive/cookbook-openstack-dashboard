@@ -50,6 +50,7 @@ case node["platform"]
 when "fedora", "centos", "redhat"
   default["openstack-dashboard"]["ssl"]["dir"] = "/etc/pki/tls"
   default["openstack-dashboard"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings"
+  default["openstack-dashboard"]["static_path"] = "/usr/share/openstack-dashboard/static"
   # TODO(shep) - Fedora does not generate self signed certs by default
   default["openstack-dashboard"]["platform"] = {
     "mysql_python_packages" => ["MySQL-python"],
@@ -62,6 +63,7 @@ when "fedora", "centos", "redhat"
 when "suse"
   default["openstack-dashboard"]["ssl"]["dir"] = "/etc/ssl"
   default["openstack-dashboard"]["local_settings_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py"
+  default["openstack-dashboard"]["static_path"] = "/usr/share/openstack-dashboard/static"
   default["openstack-dashboard"]["platform"] = {
     "mysql_python_packages" => ["python-mysql"],
     "postgresql_python_packages" => ["python-psycopg2"],
@@ -73,6 +75,7 @@ when "suse"
 when "ubuntu"
   default["openstack-dashboard"]["ssl"]["dir"] = "/etc/ssl"
   default["openstack-dashboard"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"
+  default["openstack-dashboard"]["static_path"] = "/usr/share/pyshared/horizon/static"
   default["openstack-dashboard"]["platform"] = {
     "horizon_packages" => ["lessc", "openstack-dashboard"],
     "mysql_python_packages" => ["python-mysqldb"],
