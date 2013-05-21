@@ -59,7 +59,7 @@ describe "openstack-dashboard::server" do
       it "has some plugins enabled" do
         chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
         node = chef_run.node
-        node.set["openstack-dashboard"]["plugins"] = ["testPlugin1" ]
+        node.set["openstack"]["dashboard"]["plugins"] = ["testPlugin1" ]
         chef_run.converge "openstack-dashboard::server"
 
         expect(chef_run).to create_file_with_content @file.name, "testPlugin1"
@@ -135,7 +135,7 @@ describe "openstack-dashboard::server" do
       it "sets the ServerName directive " do
         chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
         node = chef_run.node
-        node.set["openstack-dashboard"]["server_hostname"] = "spec-test-host"
+        node.set["openstack"]["dashboard"]["server_hostname"] = "spec-test-host"
         chef_run.converge "openstack-dashboard::server"
 
         expect(chef_run).to create_file_with_content @file.name, "spec-test-host"

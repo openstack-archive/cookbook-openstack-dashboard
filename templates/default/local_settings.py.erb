@@ -1,10 +1,10 @@
-<%= node["openstack-dashboard"]["custom_template_banner"] %>
+<%= node["openstack"]["dashboard"]["custom_template_banner"] %>
 
 import os
 
 from django.utils.translation import ugettext_lazy as _
 
-DEBUG = <%= node["openstack-dashboard"]["debug"] ? "True" : "False" %>
+DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
 
 <% if %w(fedora redhat centos scientific).include? node.platform -%>
@@ -14,7 +14,7 @@ LOGOUT_URL = WEBROOT+'/auth/logout/'
 LOGIN_REDIRECT_URL = WEBROOT+'/syspanel'
 <% end %>
 
-<% if node["openstack-dashboard"]["ssl_offload"] %>
+<% if node["openstack"]["dashboard"]["ssl_offload"] %>
 # Set SSL proxy settings:
 # For Django 1.4+ pass this header from the proxy after terminating the SSL,
 # and don't forget to strip it from the client's request.
@@ -53,7 +53,7 @@ LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
 # memcached set CACHE_BACKED to something like 'memcached://127.0.0.1:11211/'
-<% case node["openstack-dashboard"]["session_backend"]
+<% case node["openstack"]["dashboard"]["session_backend"]
      when "file" %>
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 <%   when "memcached" %>
@@ -91,7 +91,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 OPENSTACK_KEYSTONE_URL = "<%= @auth_uri %>"
 OPENSTACK_KEYSTONE_ADMIN_URL = "<%= @auth_admin_uri %>"
-OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack-dashboard"]["keystone_default_role"] %>"
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_default_role"] %>"
 
 # Disable SSL certificate checks (useful for self-signed certificates):
 # OPENSTACK_SSL_NO_VERIFY = True
@@ -140,7 +140,7 @@ LOGGING = {
                 },
             'console': {
                 # Set the level to "DEBUG" for verbose output logging.
-                'level': '<%= node["openstack-dashboard"]["debug"] ? "DEBUG" : "INFO" %>',
+                'level': '<%= node["openstack"]["dashboard"]["debug"] ? "DEBUG" : "INFO" %>',
                 'class': 'logging.StreamHandler',
                 },
             },
@@ -186,14 +186,14 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.<%= engine %>',
         'NAME': '<%= @db_info["db_name"] %>',
-        'USER': '<%= node["openstack-dashboard"]["db"]["username"] %>',
+        'USER': '<%= node["openstack"]["dashboard"]["db"]["username"] %>',
         'PASSWORD': '<%= @db_pass %>',
         'HOST': '<%= @db_info["host"] %>',
         'default-character-set': 'utf8'
     },
 }
 
-SWIFT_ENABLED = <%= node["openstack-dashboard"]["swift"]["enabled"] %>
+SWIFT_ENABLED = <%= node["openstack"]["dashboard"]["swift"]["enabled"] %>
 SWIFT_PAGINATE_LIMIT = 100
 
 # Configure quantum connection details for networking
@@ -209,10 +209,10 @@ COMPRESS_OFFLINE = True
 #     ['Nagios','http://foo.com'],
 #     ['Ganglia','http://bar.com'],
 # ]
-<% if node["openstack-dashboard"]["plugins"] %>
+<% if node["openstack"]["dashboard"]["plugins"] %>
 import sys
 mod = sys.modules['openstack_dashboard.settings']
-<% node["openstack-dashboard"]["plugins"].each do |p| %>
+<% node["openstack"]["dashboard"]["plugins"].each do |p| %>
 mod.INSTALLED_APPS += ('<%= p %>', )
 <% end %>
 <% end %>

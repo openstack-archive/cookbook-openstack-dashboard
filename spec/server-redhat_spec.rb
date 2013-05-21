@@ -84,7 +84,7 @@ describe "openstack-dashboard::server" do
       it "sets the ServerName directive " do
         chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
         node = chef_run.node
-        node.set["openstack-dashboard"]["server_hostname"] = "spec-test-host"
+        node.set["openstack"]["dashboard"]["server_hostname"] = "spec-test-host"
         chef_run.converge "openstack-dashboard::server"
 
         expect(chef_run).to create_file_with_content @file.name, "spec-test-host"

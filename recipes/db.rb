@@ -25,6 +25,6 @@ class ::Chef::Recipe
 end
 
 db_create_with_user("dashboard",
-  node["openstack-dashboard"]["db"]["username"],
+  node["openstack"]["dashboard"]["db"]["username"],
   db_password("horizon")
 )
