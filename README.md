@@ -18,7 +18,7 @@ The following cookbooks are dependencies:
 * apache2
 * database
 * mysql / postgresql
-* openstack-common >= 0.1.8
+* openstack-common
 
 Usage
 =====
