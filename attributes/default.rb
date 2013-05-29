@@ -73,7 +73,7 @@ when "suse"
   default["openstack"]["dashboard"]["platform"] = {
     "mysql_python_packages" => ["python-mysql"],
     "postgresql_python_packages" => ["python-psycopg2"],
-    "horizon_packages" => ["openstack"]["dashboard"],
+    "horizon_packages" => ["openstack-dashboard"],
     "memcache_python_packages" => ["python-python-memcached"],
     "package_overrides" => ""
   }
