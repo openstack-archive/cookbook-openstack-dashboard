@@ -99,3 +99,6 @@ default["openstack"]["dashboard"]["session_backend"] = "memcached"
 
 default["openstack"]["dashboard"]["ssl_offload"] = "false"
 default["openstack"]["dashboard"]["plugins"] = nil
+
+default["openstack"]["dashboard"]["error_log"] = "openstack-dashboard-error.log"
+default["openstack"]["dashboard"]["access_log"] = "openstack-dashboard-access.log"
