@@ -46,6 +46,8 @@ default["openstack"]["dashboard"]["swift"]["enabled"] = "False"
 
 default["openstack"]["dashboard"]["theme"] = "default"
 
+default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/openstack-dashboard"
+
 case node["platform"]
 when "fedora", "centos", "redhat"
   default["openstack"]["dashboard"]["ssl"]["dir"] = "/etc/pki/tls"
@@ -59,7 +61,11 @@ when "fedora", "centos", "redhat"
     "memcache_python_packages" => ["python-memcached"],
     "package_overrides" => ""
   }
-
+  if node["platform"] == "fedora"
+    default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
+  else
+    default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard"
+  end
 when "suse"
   default["openstack"]["dashboard"]["ssl"]["dir"] = "/etc/ssl"
   default["openstack"]["dashboard"]["local_settings_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py"
@@ -71,7 +77,7 @@ when "suse"
     "memcache_python_packages" => ["python-python-memcached"],
     "package_overrides" => ""
   }
-
+  default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
 when "ubuntu"
   default["openstack"]["dashboard"]["ssl"]["dir"] = "/etc/ssl"
   default["openstack"]["dashboard"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"
@@ -83,6 +89,7 @@ when "ubuntu"
     "memcache_python_packages" => ["python-memcache"],
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
+  default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
 end
 
 default["openstack"]["dashboard"]["dash_path"] = "/usr/share/openstack-dashboard/openstack_dashboard"
