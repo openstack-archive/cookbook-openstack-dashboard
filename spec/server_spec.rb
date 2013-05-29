@@ -56,6 +56,25 @@ describe "openstack-dashboard::server" do
         expect(@chef_run).to create_file_with_content @file.name, "hostA"
       end
 
+      it "does not configure caching when backend == memcache and no servers provided" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+        ::Chef::Recipe.any_instance.stub(:memcached_servers).
+          and_return nil
+        chef_run.converge "openstack-dashboard::server"
+        expect(chef_run).not_to create_file_with_content @file.name,
+          "django.core.cache.backends.memcached.MemcachedCache"
+      end
+
+      it "does not configure caching when no servers provided" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
+        node = chef_run.node
+        ::Chef::Recipe.any_instance.stub(:memcached_servers).
+          and_return nil
+        chef_run.converge "openstack-dashboard::server"
+        expect(chef_run).not_to create_file_with_content @file.name,
+          "django.core.cache.backends.memcached.MemcachedCache"
+      end
+
       it "has some plugins enabled" do
         chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
         node = chef_run.node

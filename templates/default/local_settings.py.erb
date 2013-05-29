@@ -56,7 +56,9 @@ LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 <% case node["openstack"]["dashboard"]["session_backend"]
      when "file" %>
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-<%   when "memcached" %>
+<%   when "memcached"
+        if @memcached_servers
+%>
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 CACHES = {
     'default': {
@@ -68,7 +70,9 @@ CACHES = {
         ]
     }
 }
-<%   when "sql" %>
+<%      end
+    when "sql"
+%>
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 <% end %>
 
