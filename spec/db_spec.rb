@@ -1,4 +1,4 @@
-require "spec_helper"
+require_relative "spec_helper"
 
 describe "openstack-dashboard::db" do
   it "installs mysql packages" do
