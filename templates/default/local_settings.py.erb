@@ -4,6 +4,8 @@ import os
 
 from django.utils.translation import ugettext_lazy as _
 
+from openstack_dashboard import exceptions
+
 DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
 
@@ -23,18 +25,40 @@ LOGIN_REDIRECT_URL = WEBROOT+'/syspanel'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 <% end %>
 
-# Specify a regular expression to validate user passwords.
-# HORIZON_CONFIG = {
-#     "password_validator": {
-#         "regex": '.*',
-#         "help_text": _("Your password does not meet the requirements.")
-#     },
-#    'help_url': "http://docs.openstack.org"
-# }
+# If Horizon is being served through SSL, then uncomment the following two
+# settings to better secure the cookies from security exploits
+#CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+
+# Default OpenStack Dashboard configuration.
 HORIZON_CONFIG = {
     'dashboards': ('project', 'admin', 'settings',),
     'default_dashboard': 'project',
+    'user_home': 'openstack_dashboard.views.get_user_home',
+    'ajax_queue_limit': 10,
+    'auto_fade_alerts': {
+        'delay': 3000,
+        'fade_duration': 1500,
+        'types': ['alert-success', 'alert-info']
+    },
+    'help_url': "http://docs.openstack.org",
+    'exceptions': {'recoverable': exceptions.RECOVERABLE,
+                   'not_found': exceptions.NOT_FOUND,
+                   'unauthorized': exceptions.UNAUTHORIZED},
 }
+
+# Specify a regular expression to validate user passwords.
+# HORIZON_CONFIG["password_validator"] = {
+#     "regex": '.*',
+#     "help_text": _("Your password does not meet the requirements.")
+# }
+
+# Disable simplified floating IP address management for deployments with
+# multiple floating IP pools or complex network requirements.
+# HORIZON_CONFIG["simple_ip_management"] = False
+
+# Turn off browser autocompletion for the login form if so desired.
+# HORIZON_CONFIG["password_autocomplete"] = "off"
 
 LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -108,11 +132,23 @@ OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_
 # TODO(tres): Remove these once Keystone has an API to identify auth backend.
 OPENSTACK_KEYSTONE_BACKEND = {
     'name': 'native',
-    'can_edit_user': True
+    'can_edit_user': True,
+    'can_edit_project': True
 }
 
 OPENSTACK_HYPERVISOR_FEATURES = {
-    'can_set_mount_point': True
+    'can_set_mount_point': True,
+
+    # NOTE: as of Grizzly this is not yet supported in Nova so enabling this
+    # setting will not do anything useful
+    'can_encrypt_volumes': False
+}
+
+# The OPENSTACK_QUANTUM_NETWORK settings can be used to enable optional
+# services provided by quantum.  Currently only the load balancer service
+# is available.
+OPENSTACK_QUANTUM_NETWORK = {
+    'enable_lb': False
 }
 
 # OPENSTACK_ENDPOINT_TYPE specifies the endpoint type to use for the endpoints
@@ -186,6 +222,9 @@ LOGGING = {
                       'postgresql' => 'postgresql_psycopg2'}
    engine = django_backends[@db_info['db_type']] %>
 
+# A dictionary containing the settings for all databases to be used with
+# Django. It is a nested dictionary whose contents maps database aliases
+# to a dictionary containing the options for an individual database.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.<%= engine %>',
@@ -197,22 +236,18 @@ DATABASES = {
     },
 }
 
+# TODO(retr0h): May no longer be necessary.
+# https://bugs.launchpad.net/horizon/+bug/872684
 SWIFT_ENABLED = <%= node["openstack"]["dashboard"]["swift"]["enabled"] %>
 SWIFT_PAGINATE_LIMIT = 100
 
-# Configure quantum connection details for networking
-#QUANTUM_ENABLED = False
-#QUANTUM_URL = '%s'  % OPENSTACK_HOST
-#QUANTUM_PORT = '9696'
-#QUANTUM_TENANT = '1234'
-#QUANTUM_CLIENT_VERSION='0.1'
-
+# Boolean that decides if compression should also be done outside of the
+# request/response loop – independent from user requests. This allows to
+# pre-compress CSS and JavaScript files and works just like the automatic
+# compression with the {% compress %} tag.
 COMPRESS_OFFLINE = True
-# If you have external monitoring links
-# EXTERNAL_MONITORING = [
-#     ['Nagios','http://foo.com'],
-#     ['Ganglia','http://bar.com'],
-# ]
+
+# Add additional plugins.
 <% if node["openstack"]["dashboard"]["plugins"] %>
 import sys
 mod = sys.modules['openstack_dashboard.settings']
