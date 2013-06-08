@@ -166,16 +166,17 @@ package "openstack-dashboard-ubuntu-theme" do
   only_if { platform?("ubuntu")}
 end
 
-if platform?("debian","ubuntu") then
-  apache_site "000-default" do
-    enable false
-  end
-elsif platform?("fedora") then
-  apache_site "default" do
-    enable false
+apache_site "000-default" do
+  enable false
 
-    notifies :run, "execute[restore-selinux-context]", :immediately
-  end
+  only_if { platform?("debian","ubuntu") }
+end
+
+apache_site "default" do
+  enable false
+
+  notifies :run, "execute[restore-selinux-context]", :immediately
+  only_if { platform?("fedora") }
 end
 
 apache_site "openstack-dashboard" do

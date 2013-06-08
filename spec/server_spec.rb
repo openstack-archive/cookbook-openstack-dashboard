@@ -15,7 +15,13 @@ describe "openstack-dashboard::server" do
     end
 
     it "doesn't execute set-selinux-permissive" do
-      pending "TODO: how to properly test this will not run"
+      opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.stub_command(/.*/, false)
+      chef_run.converge "openstack-dashboard::server"
+      cmd = "/sbin/setenforce Permissive"
+
+      expect(chef_run).not_to execute_command cmd
     end
 
     it "installs apache packages" do
@@ -26,7 +32,13 @@ describe "openstack-dashboard::server" do
     end
 
     it "doesn't execute set-selinux-enforcing" do
-      pending "TODO: how to properly test this will not run"
+      opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.stub_command(/.*/, false)
+      chef_run.converge "openstack-dashboard::server"
+      cmd = "/sbin/setenforce Enforcing ; restorecon -R /etc/httpd"
+
+      expect(chef_run).not_to execute_command cmd
     end
 
     it "installs packages" do
@@ -61,6 +73,7 @@ describe "openstack-dashboard::server" do
         ::Chef::Recipe.any_instance.stub(:memcached_servers).
           and_return nil
         chef_run.converge "openstack-dashboard::server"
+
         expect(chef_run).not_to create_file_with_content @file.name,
           "django.core.cache.backends.memcached.MemcachedCache"
       end
@@ -70,14 +83,15 @@ describe "openstack-dashboard::server" do
         ::Chef::Recipe.any_instance.stub(:memcached_servers).
           and_return []
         chef_run.converge "openstack-dashboard::server"
+
         expect(chef_run).not_to create_file_with_content @file.name,
           "django.core.cache.backends.memcached.MemcachedCache"
       end
 
       it "has some plugins enabled" do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-        node = chef_run.node
-        node.set["openstack"]["dashboard"]["plugins"] = ["testPlugin1" ]
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["dashboard"]["plugins"] = ["testPlugin1" ]
+        end
         chef_run.converge "openstack-dashboard::server"
 
         expect(chef_run).to create_file_with_content @file.name, "testPlugin1"
@@ -124,6 +138,7 @@ describe "openstack-dashboard::server" do
 
     it "creates .blackhole dir with proper owner" do
       dir = "/usr/share/openstack-dashboard/openstack_dashboard/.blackhole"
+
       expect(@chef_run.directory(dir)).to be_owned_by "root"
     end
 
@@ -151,14 +166,13 @@ describe "openstack-dashboard::server" do
       end
 
       it "sets the ServerName directive " do
-        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS
-        node = chef_run.node
-        node.set["openstack"]["dashboard"]["server_hostname"] = "spec-test-host"
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["dashboard"]["server_hostname"] = "spec-test-host"
+        end
         chef_run.converge "openstack-dashboard::server"
 
         expect(chef_run).to create_file_with_content @file.name, "spec-test-host"
       end
-
 
       it "notifies restore-selinux-context" do
         expect(@file).to notify "execute[restore-selinux-context]", :run
@@ -166,7 +180,13 @@ describe "openstack-dashboard::server" do
     end
 
     it "does not delete openstack-dashboard.conf" do
-      pending "TODO: how to properly test this will not run"
+      opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.stub_command(/.*/, false)
+      chef_run.converge "openstack-dashboard::server"
+      file = "/etc/httpd/conf.d/openstack-dashboard.conf"
+
+      expect(chef_run).not_to delete_file file
     end
 
     it "removes openstack-dashboard-ubuntu-theme package" do
@@ -174,26 +194,20 @@ describe "openstack-dashboard::server" do
     end
 
     it "removes default virtualhost" do
-      chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "ubuntu",
-        :version   => "12.04",
-        :step_into => ["apache_site"],
-        :log_level => :fatal
-      ).converge "openstack-dashboard::server"
-
+      opts = ::UBUNTU_OPTS.merge(:step_into => ["apache_site"])
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.converge "openstack-dashboard::server"
       cmd = "/usr/sbin/a2dissite 000-default"
+
       expect(chef_run).to execute_command cmd
     end
 
     it "enables virtualhost" do
-      chef_run = ::ChefSpec::ChefRunner.new(
-        :platform  => "ubuntu",
-        :version   => "12.04",
-        :step_into => ["apache_site"],
-        :log_level => :fatal
-      ).converge "openstack-dashboard::server"
-
+      opts = ::UBUNTU_OPTS.merge(:step_into => ["apache_site"])
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.converge "openstack-dashboard::server"
       cmd = "/usr/sbin/a2ensite openstack-dashboard"
+
       expect(chef_run).to execute_command cmd
     end
 
@@ -202,7 +216,13 @@ describe "openstack-dashboard::server" do
     end
 
     it "doesn't execute restore-selinux-context" do
-      pending "TODO: how to properly test this will not run"
+      opts = ::UBUNTU_OPTS.merge(:evaluate_guards => true)
+      chef_run = ::ChefSpec::ChefRunner.new opts
+      chef_run.stub_command(/.*/, false)
+      chef_run.converge "openstack-dashboard::server"
+      cmd = "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
+
+      expect(chef_run).not_to execute_command cmd
     end
   end
 end
