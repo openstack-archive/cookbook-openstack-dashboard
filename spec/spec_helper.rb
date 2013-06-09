@@ -16,3 +16,10 @@ require "chefspec"
   :version => "12.3",
   :log_level => ::LOG_LEVEL
 }
+
+def dashboard_stubs
+  ::Chef::Recipe.any_instance.stub(:memcached_servers).
+    and_return ["hostA:port", "hostB:port"]
+  ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
+    and_return "test-pass"
+end

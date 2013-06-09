@@ -1,12 +1,7 @@
 require_relative "spec_helper"
 
 describe "openstack-dashboard::server" do
-  before do
-    ::Chef::Recipe.any_instance.stub(:memcached_servers).
-      and_return []
-    ::Chef::Recipe.any_instance.stub(:db_password).with("horizon").
-      and_return "test-pass"
-  end
+  before { dashboard_stubs }
 
   describe "opensuse" do
     context "mysql backend" do
