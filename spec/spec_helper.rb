@@ -1,6 +1,11 @@
 require "chefspec"
 
 ::LOG_LEVEL = :fatal
+::FEDORA_OPTS = {
+  :platform => "fedora",
+  :version => "18",
+  :log_level => ::LOG_LEVEL
+}
 ::REDHAT_OPTS = {
   :platform => "redhat",
   :version => "6.3",
