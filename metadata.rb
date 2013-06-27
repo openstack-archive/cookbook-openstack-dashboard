@@ -6,7 +6,6 @@ description      "Installs/Configures the OpenStack Dasboard (Horizon)"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "7.0.0"
 
-recipe           "openstack-dashboard::db", "Configures database for use with Horizon"
 recipe           "openstack-dashboard::server", "Sets up the Horizon dashboard within an Apache `mod_wsgi` container."
 
 %w{ ubuntu fedora redhat centos suse }.each do |os|
@@ -14,6 +13,4 @@ recipe           "openstack-dashboard::server", "Sets up the Horizon dashboard w
 end
 
 depends          "apache2"
-depends          "database"
-depends          "mysql"
 depends          "openstack-common", "~> 0.3.0"

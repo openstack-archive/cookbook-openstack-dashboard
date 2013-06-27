@@ -16,23 +16,10 @@ Cookbooks
 The following cookbooks are dependencies:
 
 * apache2
-* database
-* mysql / postgresql
 * openstack-common
 
 Usage
 =====
-
-db
---
-
-Configures database for use with Horizon
-
-```json
-"run_list": [
-    "recipe[openstack-dashboard::db]"
-]
-```
 
 server
 ------
