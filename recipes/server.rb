@@ -166,17 +166,19 @@ package "openstack-dashboard-ubuntu-theme" do
   only_if { platform?("ubuntu")}
 end
 
-apache_site "000-default" do
-  enable false
+# The `apache_site` provided by the apache2 cookbook
+# is not an LWRP. Guards do not apply to definitions.
+# http://tickets.opscode.com/browse/CHEF-778
+if platform?("debian","ubuntu") then
+  apache_site "000-default" do
+    enable false
+  end
+elsif platform?("fedora") then
+  apache_site "default" do
+    enable false
 
-  only_if { platform?("debian","ubuntu") }
-end
-
-apache_site "default" do
-  enable false
-
-  notifies :run, "execute[restore-selinux-context]", :immediately
-  only_if { platform?("fedora") }
+    notifies :run, "execute[restore-selinux-context]", :immediately
+  end
 end
 
 apache_site "openstack-dashboard" do
