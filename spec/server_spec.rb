@@ -95,6 +95,21 @@ describe "openstack-dashboard::server" do
       it "notifies apache2 restart" do
         expect(@file).to notify "service[apache2]", :restart
       end
+
+      it "does not configure ssl proxy when ssl_offload is false" do
+        expect(@chef_run).not_to(
+          create_file_with_content @file.name, "SECURE_PROXY_SSL_HEADER")
+      end
+
+      it "configures ssl proxy when ssl_offload is set to true" do
+        chef_run = ::ChefSpec::ChefRunner.new ::UBUNTU_OPTS do |n|
+          n.set["openstack"]["dashboard"]["ssl_offload"] = true
+        end
+        chef_run.converge "openstack-dashboard::server"
+
+        expect(chef_run).to(
+          create_file_with_content @file.name, "SECURE_PROXY_SSL_HEADER")
+      end
     end
 
     it "executes openstack-dashboard syncdb" do
