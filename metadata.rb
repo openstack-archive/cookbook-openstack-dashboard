@@ -13,4 +13,4 @@ recipe           "openstack-dashboard::server", "Sets up the Horizon dashboard w
 end
 
 depends          "apache2"
-depends          "openstack-common", "~> 0.3.0"
+depends          "openstack-common", "~> 0.4.0"
