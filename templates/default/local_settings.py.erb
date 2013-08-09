@@ -190,7 +190,11 @@ LOGGING = {
             'django.db.backends': {
                 'handlers': ['null'],
                 'propagate': False,
-                },
+            },
+            'requests': {
+                'handlers': ['null'],
+                'propagate': False,
+            },
             'horizon': {
                 'handlers': ['console'],
                 'propagate': False,
