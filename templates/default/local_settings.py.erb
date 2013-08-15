@@ -240,11 +240,6 @@ DATABASES = {
     },
 }
 
-# TODO(retr0h): May no longer be necessary.
-# https://bugs.launchpad.net/horizon/+bug/872684
-SWIFT_ENABLED = <%= node["openstack"]["dashboard"]["swift"]["enabled"] %>
-SWIFT_PAGINATE_LIMIT = 100
-
 # Boolean that decides if compression should also be done outside of the
 # request/response loop - independent from user requests. This allows to
 # pre-compress CSS and JavaScript files and works just like the automatic
