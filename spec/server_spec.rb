@@ -110,6 +110,10 @@ describe "openstack-dashboard::server" do
         expect(chef_run).to(
           create_file_with_content @file.name, "SECURE_PROXY_SSL_HEADER")
       end
+
+      it "has a help_url" do
+        expect(@chef_run).to create_file_with_content @file.name, "docs.openstack.org"
+      end
     end
 
     it "executes openstack-dashboard syncdb" do
