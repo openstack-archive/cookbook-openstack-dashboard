@@ -114,6 +114,11 @@ describe "openstack-dashboard::server" do
       it "has a help_url" do
         expect(@chef_run).to create_file_with_content @file.name, "docs.openstack.org"
       end
+
+      it "configures CSRF_COOKIE_SECURE & SESSION_COOKIE_SECURE when use_ssl is true" do
+        expect(@chef_run).to create_file_with_content @file.name, "CSRF_COOKIE_SECURE = True"
+        expect(@chef_run).to create_file_with_content @file.name, "SESSION_COOKIE_SECURE = True"
+      end
     end
 
     it "executes openstack-dashboard syncdb" do

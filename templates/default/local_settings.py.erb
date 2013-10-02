@@ -27,8 +27,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
 
 # If Horizon is being served through SSL, then uncomment the following two
 # settings to better secure the cookies from security exploits
-#CSRF_COOKIE_SECURE = True
-#SESSION_COOKIE_SECURE = True
+<% if node["openstack"]["dashboard"]["use_ssl"] %>
+CSRF_COOKIE_SECURE = <%= node["openstack"]["dashboard"]["csrf_cookie_secure"] ? "True" : "False" %>
+SESSION_COOKIE_SECURE = <%= node["openstack"]["dashboard"]["session_cookie_secure"] ? "True" : "False" %>
+<% end %>
 
 # Default OpenStack Dashboard configuration.
 HORIZON_CONFIG = {

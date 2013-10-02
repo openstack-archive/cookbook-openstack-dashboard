@@ -104,3 +104,6 @@ default["openstack"]["dashboard"]["error_log"] = "openstack-dashboard-error.log"
 default["openstack"]["dashboard"]["access_log"] = "openstack-dashboard-access.log"
 
 default["openstack"]["dashboard"]["help_url"] = "http://docs.openstack.org"
+
+default["openstack"]["dashboard"]["csrf_cookie_secure"] = true
+default["openstack"]["dashboard"]["session_cookie_secure"] = true
