@@ -83,12 +83,17 @@ when "ubuntu"
   default["openstack"]["dashboard"]["local_settings_path"] = "/etc/openstack-dashboard/local_settings.py"
   default["openstack"]["dashboard"]["static_path"] = "/usr/share/openstack-dashboard/openstack_dashboard/static"
   default["openstack"]["dashboard"]["platform"] = {
-    "horizon_packages" => ["lessc", "openstack-dashboard"],
     "mysql_python_packages" => ["python-mysqldb"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "memcache_python_packages" => ["python-memcache"],
     "package_overrides" => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
+  # lessc became node-less in 12.10
+  if node['lsb']['release'] > '12.04'
+    default["openstack"]["dashboard"]["platform"]["horizon_packages"] = ["node-less", "openstack-dashboard"]
+  else
+    default["openstack"]["dashboard"]["platform"]["horizon_packages"] = ["lessc", "openstack-dashboard"]
+  end
   default["openstack"]["dashboard"]["apache"]["sites-path"] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
 end
 
