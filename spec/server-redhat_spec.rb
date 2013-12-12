@@ -5,18 +5,15 @@ describe "openstack-dashboard::server" do
 
   describe "redhat" do
     before do
-      @chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS
+      redhat_stubs
+      @chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS
       @chef_run.converge "openstack-dashboard::server"
     end
 
     it "executes set-selinux-permissive" do
-      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
-      chef_run.stub_command(/.*/, true)
-      chef_run.converge "openstack-dashboard::server"
       cmd = "/sbin/setenforce Permissive"
 
-      expect(chef_run).to execute_command cmd
+      expect(@chef_run).to run_execute(cmd)
     end
 
     it "installs packages" do
@@ -25,13 +22,9 @@ describe "openstack-dashboard::server" do
     end
 
     it "executes set-selinux-enforcing" do
-      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
-      chef_run.stub_command(/.*/, true)
-      chef_run.converge "openstack-dashboard::server"
       cmd = "/sbin/setenforce Enforcing ; restorecon -R /etc/httpd"
 
-      expect(chef_run).to execute_command cmd
+      expect(@chef_run).to run_execute(cmd)
     end
 
     describe "local_settings" do
@@ -40,7 +33,8 @@ describe "openstack-dashboard::server" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "root", "root"
+        expect(@file.owner).to eq("root")
+        expect(@file.group).to eq("root")
       end
 
       it "has proper modes" do
@@ -48,7 +42,7 @@ describe "openstack-dashboard::server" do
       end
 
       it "rh specific template" do
-        expect(@chef_run).to create_file_with_content @file.name, "WEBROOT"
+        expect(@chef_run).to render_file(@file.name).with_content("WEBROOT")
       end
     end
 
@@ -59,8 +53,10 @@ describe "openstack-dashboard::server" do
       end
 
       it "has proper owner" do
-        expect(@crt).to be_owned_by "root", "root"
-        expect(@key).to be_owned_by "root", "root"
+        [@crt, @key].each do |file|
+          expect(file.owner).to eq("root")
+          expect(file.group).to eq("root")
+        end
       end
 
       it "has proper modes" do
@@ -69,8 +65,8 @@ describe "openstack-dashboard::server" do
       end
 
       it "notifies restore-selinux-context" do
-        expect(@crt).to notify "execute[restore-selinux-context]", :run
-        expect(@key).to notify "execute[restore-selinux-context]", :run
+        expect(@crt).to notify("execute[restore-selinux-context]").to(:run)
+        expect(@key).to notify("execute[restore-selinux-context]").to(:run)
       end
     end
 
@@ -81,7 +77,8 @@ describe "openstack-dashboard::server" do
       end
 
       it "has proper owner" do
-        expect(@file).to be_owned_by "root", "root"
+        expect(@file.owner).to eq("root")
+        expect(@file.group).to eq("root")
       end
 
       it "has proper modes" do
@@ -89,36 +86,28 @@ describe "openstack-dashboard::server" do
       end
 
       it "sets the ServerName directive " do
-        chef_run = ::ChefSpec::ChefRunner.new ::REDHAT_OPTS do |n|
+        chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS do |n|
           n.set["openstack"]["dashboard"]["server_hostname"] = "spec-test-host"
         end
         chef_run.converge "openstack-dashboard::server"
 
-        expect(chef_run).to create_file_with_content @file.name, "spec-test-host"
+        expect(chef_run).to render_file(@file.name).with_content("spec-test-host")
       end
 
       it "notifies restore-selinux-context" do
-        expect(@file).to notify "execute[restore-selinux-context]", :run
+        expect(@file).to notify("execute[restore-selinux-context]").to(:run)
       end
     end
 
     it "deletes openstack-dashboard.conf" do
-      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
-      chef_run.stub_command(/.*/, true)
-      chef_run.converge "openstack-dashboard::server"
       file = "/etc/httpd/conf.d/openstack-dashboard.conf"
 
-      expect(chef_run).to delete_file file
+      expect(@chef_run).to delete_file file
     end
 
     it "does not remove openstack-dashboard-ubuntu-theme package" do
-      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
-      chef_run.stub_command(/.*/, false)
-      chef_run.converge "openstack-dashboard::server"
 
-      expect(chef_run).not_to purge_package "openstack-dashboard-ubuntu-theme"
+      expect(@chef_run).not_to purge_package "openstack-dashboard-ubuntu-theme"
     end
 
     it "doesn't remove default apache site" do
@@ -126,13 +115,9 @@ describe "openstack-dashboard::server" do
     end
 
     it "doesn't execute restore-selinux-context" do
-      opts = ::REDHAT_OPTS.merge(:evaluate_guards => true)
-      chef_run = ::ChefSpec::ChefRunner.new opts
-      chef_run.stub_command(/.*/, false)
-      chef_run.converge "openstack-dashboard::server"
       cmd = "restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :"
 
-      expect(chef_run).not_to execute_command cmd
+      expect(@chef_run).not_to run_execute(cmd)
     end
   end
 end
