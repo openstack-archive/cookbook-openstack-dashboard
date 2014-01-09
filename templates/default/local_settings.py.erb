@@ -224,8 +224,9 @@ LOGGING = {
         }
 }
 
-<% django_backends = {'mysql' => 'mysql',
-                      'postgresql' => 'postgresql_psycopg2'}
+<% django_backends = {'mysql' => 'django.db.backends.mysql',
+                      'postgresql' => 'django.db.backends.postgresql_psycopg2',
+                      'db2' => 'ibm_db_django'}
    engine = django_backends[@db_info['db_type']] %>
 
 # A dictionary containing the settings for all databases to be used with
@@ -233,7 +234,7 @@ LOGGING = {
 # to a dictionary containing the options for an individual database.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.<%= engine %>',
+        'ENGINE': '<%= engine %>',
         'NAME': '<%= @db_info["db_name"] %>',
         'USER': '<%= node["openstack"]["dashboard"]["db"]["username"] %>',
         'PASSWORD': '<%= @db_pass %>',

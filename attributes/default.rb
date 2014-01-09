@@ -56,6 +56,7 @@ when "fedora", "centos", "redhat"
   # TODO(shep) - Fedora does not generate self signed certs by default
   default["openstack"]["dashboard"]["platform"] = {
     "mysql_python_packages" => ["MySQL-python"],
+    "db2_python_packages" => ["db2-odbc", "python-ibm-db", "python-ibm-db-django", "python-ibm-db-sa"],
     "postgresql_python_packages" => ["python-psycopg2"],
     "horizon_packages" => ["openstack-dashboard"],
     "memcache_python_packages" => ["python-memcached"],
