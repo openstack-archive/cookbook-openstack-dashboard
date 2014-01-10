@@ -235,5 +235,17 @@ describe "openstack-dashboard::server" do
 
       expect(@chef_run).not_to run_execute(cmd)
     end
+
+    it "has group write mode on path" do
+      path = @chef_run.directory("#{@chef_run.node['openstack']['dashboard']['dash_path']}/local")
+      expect(path.mode).to eq(02770)
+      expect(path.group).to eq(@chef_run.node['apache']['group'])
+    end
+
+    it "has group write mode on file" do
+      file = @chef_run.file("#{@chef_run.node['openstack']['dashboard']['dash_path']}/local/.secret_key_store")
+      expect(file.owner).to eq(@chef_run.node['apache']['user'])
+      expect(file.group).to eq(@chef_run.node['apache']['group'])
+    end
   end
 end

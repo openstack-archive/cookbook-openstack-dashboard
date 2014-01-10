@@ -131,6 +131,19 @@ cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["o
   notifies :run, "execute[restore-selinux-context]", :immediately
 end
 
+directory "#{node['openstack']['dashboard']['dash_path']}/local" do
+  owner "root"
+  group node['apache']['group']
+  mode 02770
+  action :create
+end
+
+# make sure this file has correct permission
+file "#{node['openstack']['dashboard']['dash_path']}/local/.secret_key_store" do
+  owner node['apache']['user']
+  group node['apache']['group']
+end
+
 # stop apache bitching
 directory "#{node["openstack"]["dashboard"]["dash_path"]}/.blackhole" do
   owner "root"
