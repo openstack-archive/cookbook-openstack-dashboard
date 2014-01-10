@@ -1,15 +1,28 @@
 <%= node["openstack"]["dashboard"]["custom_template_banner"] %>
-<VirtualHost *:80>
+
+<% unless node['apache']['listen_ports'].map(&:to_i).uniq.include?(node['openstack']['dashboard']['http_port'].to_i) %>
+Listen *:<%= node['openstack']['dashboard']['http_port'].to_i%>
+NameVirtualHost *:<%= node['openstack']['dashboard']['http_port'].to_i%>
+<% end -%>
+<VirtualHost *:<%= node['openstack']['dashboard']['http_port'] %>>
 <% if node["openstack"]["dashboard"]["server_hostname"] -%>
   ServerName <%= node["openstack"]["dashboard"]["server_hostname"] %>
 <% end -%>
 <% if node["openstack"]["dashboard"]["use_ssl"] %>
   RewriteEngine On
   RewriteCond %{HTTPS} off
+<%   if node['openstack']['dashboard']['http_port'].to_i != 80 or node['openstack']['dashboard']['https_port'].to_i != 443 %>
+  RewriteRule ^(.*)$ https://%{SERVER_NAME}:<%= node['openstack']['dashboard']['https_port'] %>%{REQUEST_URI} [L,R]
+<%   else -%>
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
+<%   end -%>
 </VirtualHost>
 
-<VirtualHost *:443>
+<% unless node['apache']['listen_ports'].map(&:to_i).uniq.include?(node['openstack']['dashboard']['https_port'].to_i) %>
+Listen *:<%= node['openstack']['dashboard']['https_port'].to_i%>
+NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
+<% end -%>
+<VirtualHost *:<%= node['openstack']['dashboard']['https_port'] %>>
 <%   if node["openstack"]["dashboard"]["server_hostname"] -%>
   ServerName <%= node["openstack"]["dashboard"]["server_hostname"] %>
 <%   end -%>

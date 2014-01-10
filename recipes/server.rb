@@ -5,6 +5,7 @@
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012-2013, AT&T Services, Inc.
+# Copyright 2013, IBM, Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -162,7 +163,8 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
     ssl_key_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}"
   )
 
-  notifies :run, 'execute[restore-selinux-context]', :immediately
+  notifies :run, "execute[restore-selinux-context]", :immediately
+  notifies :reload, "service[apache2]", :immediately
 end
 
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do

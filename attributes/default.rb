@@ -4,6 +4,7 @@
 # Attributes:: default
 #
 # Copyright 2012, AT&T, Inc.
+# Copyright 2013-2014, IBM, Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,6 +49,9 @@ default['openstack']['dashboard']['swift']['enabled'] = 'False'
 default['openstack']['dashboard']['theme'] = 'default'
 
 default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/openstack-dashboard"
+
+default['openstack']['dashboard']['http_port'] = 80
+default['openstack']['dashboard']['https_port'] = 443
 
 case node['platform']
 when 'fedora', 'centos', 'redhat'

@@ -47,6 +47,8 @@ Attributes
 * `openstack["dashboard"]["plugins"]` - Array of plugins to include via INSTALED\_APPS
 TODO: Add DB2 support on other platforms
 * `openstack["dashboard"]["platform"]["db2_python_packages"]` - Array of DB2 python packages, only available on redhat platform
+* `openstack['openstack']['dashboard']['http_port']` - Port that httpd should listen on. Default is 80.
+* `openstack['openstack']['dashboard']['https_port']` - Port that httpd should listen on for using ssl. Default is 443.
 
 Testing
 =====
@@ -70,6 +72,7 @@ License and Author
 | **Author**           |  Matt Ray (<matt@opscode.com>)                     |
 | **Author**           |  Sean Gallagher (<sean.gallagher@att.com>)         |
 | **Author**           |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
+| **Author**           |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |

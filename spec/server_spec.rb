@@ -185,6 +185,50 @@ describe "openstack-dashboard::server" do
         expect(chef_run).to render_file(@file.name).with_content("spec-test-host")
       end
 
+      it 'uses the apache default http port' do
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
+          n.set['openstack']['dashboard']['http_port'] = 80
+        end
+        chef_run.converge 'openstack-dashboard::server'
+
+        expect(chef_run).not_to render_file(@file.name).with_content('Listen *:80')
+        expect(chef_run).not_to render_file(@file.name).with_content('NameVirtualHost *:80')
+        expect(chef_run).to render_file(@file.name).with_content('<VirtualHost *:80>')
+      end
+
+      it 'uses the apache default https port' do
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
+          n.set['openstack']['dashboard']['https_port'] = 443
+        end
+        chef_run.converge 'openstack-dashboard::server'
+
+        expect(chef_run).not_to render_file(@file.name).with_content('Listen *:443')
+        expect(chef_run).not_to render_file(@file.name).with_content('NameVirtualHost *:443')
+        expect(chef_run).to render_file(@file.name).with_content('<VirtualHost *:443>')
+      end
+
+      it 'sets the http port' do
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
+          n.set['openstack']['dashboard']['http_port'] = 8080
+        end
+        chef_run.converge 'openstack-dashboard::server'
+
+        expect(chef_run).to render_file(@file.name).with_content('Listen *:8080')
+        expect(chef_run).to render_file(@file.name).with_content('NameVirtualHost *:8080')
+        expect(chef_run).to render_file(@file.name).with_content('<VirtualHost *:8080>')
+      end
+
+      it 'sets the https port' do
+        chef_run = ::ChefSpec::Runner.new ::UBUNTU_OPTS do |n|
+          n.set['openstack']['dashboard']['https_port'] = 4430
+        end
+        chef_run.converge 'openstack-dashboard::server'
+
+        expect(chef_run).to render_file(@file.name).with_content('Listen *:4430')
+        expect(chef_run).to render_file(@file.name).with_content('NameVirtualHost *:4430')
+        expect(chef_run).to render_file(@file.name).with_content('<VirtualHost *:4430>')
+      end
+
       it "notifies restore-selinux-context" do
         expect(@file).to notify("execute[restore-selinux-context]").to(:run)
       end
