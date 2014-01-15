@@ -134,7 +134,7 @@ cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["o
 end
 
 directory "#{node['openstack']['dashboard']['dash_path']}/local" do
-  owner "root"
+  owner 'root'
   group node['apache']['group']
   mode 02770
   action :create
@@ -163,8 +163,8 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
     ssl_key_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}"
   )
 
-  notifies :run, "execute[restore-selinux-context]", :immediately
-  notifies :reload, "service[apache2]", :immediately
+  notifies :run, 'execute[restore-selinux-context]', :immediately
+  notifies :reload, 'service[apache2]', :immediately
 end
 
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
