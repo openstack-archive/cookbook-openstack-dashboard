@@ -63,7 +63,7 @@ auth_admin_uri = ::URI.decode identity_admin_endpoint.to_s
 identity_endpoint = endpoint 'identity-api'
 auth_uri = ::URI.decode identity_endpoint.to_s
 
-db_pass = db_password 'horizon'
+db_pass = get_password 'db', 'horizon'
 db_info = db 'dashboard'
 
 python_packages = platform_options["#{db_info['db_type']}_python_packages"]

@@ -27,8 +27,9 @@ require 'chefspec/berkshelf'
 def dashboard_stubs
   ::Chef::Recipe.any_instance.stub(:memcached_servers)
     .and_return ['hostA:port', 'hostB:port']
-  ::Chef::Recipe.any_instance.stub(:db_password).with('horizon')
-    .and_return 'test-pass'
+  ::Chef::Recipe.any_instance.stub(:get_password)
+    .with('db', 'horizon')
+    .and_return 'test-passes'
 end
 
 def redhat_stubs
