@@ -474,7 +474,7 @@ SECURITY_GROUP_RULES = {
 <% django_backends = {'mysql' => 'django.db.backends.mysql',
                       'postgresql' => 'django.db.backends.postgresql_psycopg2',
                       'db2' => 'ibm_db_django'}
-   engine = django_backends[@db_info['db_type']] %>
+   engine = django_backends[@db_info['service_type']] %>
 
 # A dictionary containing the settings for all databases to be used with
 # Django. It is a nested dictionary whose contents maps database aliases
@@ -483,7 +483,7 @@ DATABASES = {
     'default': {
         'ENGINE': '<%= engine %>',
         'NAME': '<%= @db_info["db_name"] %>',
-        'USER': '<%= node["openstack"]["dashboard"]["db"]["username"] %>',
+        'USER': '<%= node["openstack"]["db"]["dashboard"]["username"] %>',
         'PASSWORD': '<%= @db_pass %>',
         'HOST': '<%= @db_info["host"] %>',
         'default-character-set': 'utf8'

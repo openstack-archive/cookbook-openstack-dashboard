@@ -28,11 +28,6 @@ default['openstack']['dashboard']['custom_template_banner'] = '
 
 default['openstack']['dashboard']['debug'] = false
 
-# This user's password is stored in an encrypted databag
-# and accessed with openstack-common cookbook library's
-# get_password routine.
-default['openstack']['dashboard']['db']['username'] = 'dash'
-
 # The Keystone role used by default for users logging into the dashboard
 default['openstack']['dashboard']['keystone_default_role'] = 'Member'
 
