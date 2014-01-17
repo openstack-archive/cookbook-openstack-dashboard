@@ -118,3 +118,23 @@ default['openstack']['dashboard']['help_url'] = 'http://docs.openstack.org'
 
 default['openstack']['dashboard']['csrf_cookie_secure'] = true
 default['openstack']['dashboard']['session_cookie_secure'] = true
+
+default['openstack']['dashboard']['keystone_multidomain_support'] = false
+default['openstack']['dashboard']['identity_api_version'] = 2.0
+default['openstack']['dashboard']['keystone_default_domain'] = 'Default'
+default['openstack']['dashboard']['console_type'] = 'AUTO'
+
+default['openstack']['dashboard']['log_level']['horizon'] = 'INFO'
+default['openstack']['dashboard']['log_level']['openstack_dashboard'] = 'INFO'
+default['openstack']['dashboard']['log_level']['novaclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['cinderclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['keystoneclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['glanceclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['neutronclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['heatclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['ceilometerclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['troveclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['swiftclient'] = 'INFO'
+default['openstack']['dashboard']['log_level']['openstack_auth'] = 'INFO'
+default['openstack']['dashboard']['log_level']['nose.plugins.manager'] = 'INFO'
+default['openstack']['dashboard']['log_level']['django'] = 'INFO'
