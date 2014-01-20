@@ -152,6 +152,15 @@ directory "#{node["openstack"]["dashboard"]["dash_path"]}/.blackhole" do
   action :create
 end
 
+# delete the openstack-dashboard.conf before reload apache2 service on fedora, redhat and centos
+# since this file is not valid on those platforms for the apache2 service.
+file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
+  action :delete
+  backup false
+
+  only_if { platform?('fedora', 'redhat', 'centos') } # :pragma-foodcritic: ~FC024 - won't fix this
+end
+
 template node['openstack']['dashboard']['apache']['sites-path'] do
   source 'dash-site.erb'
   owner  'root'
@@ -165,13 +174,6 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
 
   notifies :run, 'execute[restore-selinux-context]', :immediately
   notifies :reload, 'service[apache2]', :immediately
-end
-
-file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
-  action :delete
-  backup false
-
-  only_if { platform?('fedora', 'redhat', 'centos') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 # ubuntu includes their own branding - we need to delete this until ubuntu makes this a
