@@ -81,35 +81,6 @@ describe 'openstack-dashboard::server' do
       end
     end
 
-    describe 'openstack-dashboard virtual host' do
-      before do
-        f = '/etc/httpd/conf.d/openstack-dashboard'
-        @file = @chef_run.template f
-      end
-
-      it 'has proper owner' do
-        expect(@file.owner).to eq('root')
-        expect(@file.group).to eq('root')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', @file.mode)).to eq '644'
-      end
-
-      it 'sets the ServerName directive ' do
-        chef_run = ::ChefSpec::Runner.new ::REDHAT_OPTS do |n|
-          n.set['openstack']['dashboard']['server_hostname'] = 'spec-test-host'
-        end
-        chef_run.converge 'openstack-dashboard::server'
-
-        expect(chef_run).to render_file(@file.name).with_content('spec-test-host')
-      end
-
-      it 'notifies restore-selinux-context' do
-        expect(@file).to notify('execute[restore-selinux-context]').to(:run)
-      end
-    end
-
     it 'deletes openstack-dashboard.conf' do
       file = '/etc/httpd/conf.d/openstack-dashboard.conf'
 
@@ -119,10 +90,6 @@ describe 'openstack-dashboard::server' do
     it 'does not remove openstack-dashboard-ubuntu-theme package' do
 
       expect(@chef_run).not_to purge_package 'openstack-dashboard-ubuntu-theme'
-    end
-
-    it 'does not remove default apache site' do
-      pending 'TODO: how to properly test this'
     end
 
     it 'does not execute restore-selinux-context' do

@@ -189,7 +189,7 @@ if platform?('debian', 'ubuntu')
   apache_site '000-default' do
     enable false
   end
-elsif platform?('fedora') then
+elsif platform?('fedora', 'redhat', 'centos') then
   apache_site 'default' do
     enable false
 
