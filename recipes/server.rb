@@ -5,7 +5,7 @@
 #
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012-2013, AT&T Services, Inc.
-# Copyright 2013, IBM, Corp.
+# Copyright 2013-2014, IBM, Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,6 +82,15 @@ end
 
 memcached = memcached_servers
 
+# delete the openstack-dashboard.conf before reload apache2 service on fedora, redhat and centos
+# since this file is not valid on those platforms for the apache2 service.
+file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
+  action :delete
+  backup false
+
+  only_if { platform?('fedora', 'redhat', 'centos') } # :pragma-foodcritic: ~FC024 - won't fix this
+end
+
 template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
   owner  'root'
@@ -96,16 +105,15 @@ template node['openstack']['dashboard']['local_settings_path'] do
     memcached_servers: memcached
   )
 
-  notifies :restart, 'service[apache2]'
+  notifies :restart, 'service[apache2]', :immediately
 end
 
-# FIXME: this shouldn't run every chef run
 execute 'openstack-dashboard syncdb' do
   cwd node['openstack']['dashboard']['django_path']
   environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{node['openstack']['dashboard']['django_path']}:$PYTHONPATH"
   command 'python manage.py syncdb --noinput'
   action :run
-  # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
+  only_if { node['openstack']['dashboard']['session_backend'] == 'sql' }
 end
 
 cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["openstack"]["dashboard"]["ssl"]["cert"]}" do
@@ -144,6 +152,7 @@ end
 file node['openstack']['dashboard']['secret_key_path'] do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_group']
+  mode 00600
   unless node['openstack']['dashboard']['secret_key_content'].nil?
     content node['openstack']['dashboard']['secret_key_content']
     notifies :restart, 'service[apache2]'
@@ -154,15 +163,6 @@ end
 directory "#{node["openstack"]["dashboard"]["dash_path"]}/.blackhole" do
   owner 'root'
   action :create
-end
-
-# delete the openstack-dashboard.conf before reload apache2 service on fedora, redhat and centos
-# since this file is not valid on those platforms for the apache2 service.
-file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
-  action :delete
-  backup false
-
-  only_if { platform?('fedora', 'redhat', 'centos') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 template node['openstack']['dashboard']['apache']['sites-path'] do

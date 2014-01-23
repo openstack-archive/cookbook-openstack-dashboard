@@ -11,6 +11,12 @@ describe 'openstack-dashboard::server' do
       runner.converge(described_recipe)
     end
 
+    let(:chef_run_session_sql) do
+      runner_session_sql = ::ChefSpec::Runner.new ::UBUNTU_OPTS
+      runner_session_sql.node.set['openstack']['dashboard']['session_backend'] = 'sql'
+      runner_session_sql.converge(described_recipe)
+    end
+
     include_context 'non_redhat_stubs'
     include_context 'dashboard_stubs'
 
@@ -148,15 +154,22 @@ describe 'openstack-dashboard::server' do
 
     end
 
-    it 'executes openstack-dashboard syncdb' do
-      cmd = 'python manage.py syncdb --noinput'
-      expect(chef_run).to run_execute(cmd).with(
-        cwd: '/usr/share/openstack-dashboard',
-        environment: {
-          'PYTHONPATH' => '/etc/openstack-dashboard:' \
-                          '/usr/share/openstack-dashboard:' \
-                          '$PYTHONPATH'
-        }
+    it 'executes openstack-dashboard syncdb when session_backend is sql' do
+      sync_db_cmd = 'python manage.py syncdb --noinput'
+      sync_db_environment = {
+        'PYTHONPATH' => '/etc/openstack-dashboard:' \
+                        '/usr/share/openstack-dashboard:' \
+                        '$PYTHONPATH'
+      }
+
+      expect(chef_run).not_to run_execute(sync_db_cmd).with(
+        cwd: node['openstack']['dashboard']['django_path'],
+        environment: sync_db_environment
+      )
+
+      expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
+        cwd: node['openstack']['dashboard']['django_path'],
+        environment: sync_db_environment
       )
     end
 
@@ -348,6 +361,13 @@ describe 'openstack-dashboard::server' do
       path = chef_run.directory("#{chef_run.node['openstack']['dashboard']['dash_path']}/local")
       expect(path.mode).to eq(02770)
       expect(path.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
+    end
+
+    it 'has correct permission on file' do
+      file = chef_run.file("#{chef_run.node['openstack']['dashboard']['secret_key_path']}")
+      expect(file.owner).to eq(chef_run.node['openstack']['dashboard']['horizon_user'])
+      expect(file.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
+      expect(file.mode).to eq(00600)
     end
   end
 end

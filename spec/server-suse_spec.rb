@@ -45,9 +45,9 @@ describe 'openstack-dashboard::server' do
         expect(chef_run.directory(dir).owner).to eq('root')
       end
 
-      it 'executes openstack-dashboard syncdb' do
+      it 'does not execute openstack-dashboard syncdb by default' do
         cmd = 'python manage.py syncdb --noinput'
-        expect(chef_run).to run_execute(cmd).with(
+        expect(chef_run).not_to run_execute(cmd).with(
         cwd: '/srv/www/openstack-dashboard',
         environment: {
           'PYTHONPATH' => '/etc/openstack-dashboard:' \
