@@ -70,7 +70,7 @@ when 'fedora', 'centos', 'redhat'
   if node['platform'] == 'fedora'
     default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
   else
-    default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard"
+    default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
   end
 when 'suse'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
