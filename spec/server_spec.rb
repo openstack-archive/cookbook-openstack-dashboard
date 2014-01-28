@@ -203,6 +203,11 @@ describe 'openstack-dashboard::server' do
       it 'notifies restore-selinux-context' do
         expect(file).to notify('execute[restore-selinux-context]').to(:run)
       end
+
+      it 'sets the right Alias path for /static' do
+        expect(chef_run).to render_file(file.name).with_content(
+          %r{^\s+Alias /static /usr/share/openstack-dashboard/static$})
+      end
     end
 
     it 'does not delete openstack-dashboard.conf' do
