@@ -10,7 +10,7 @@ describe 'openstack-dashboard::server' do
         non_redhat_stubs
         @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS
         ::Chef::Recipe.any_instance.stub(:db).with('dashboard').and_return(
-          'db_type' => 'mysql', 'db_name' => 'flying_dolphin'
+          'service_type' => 'mysql', 'db_name' => 'flying_dolphin'
         )
 
         @chef_run.converge 'openstack-dashboard::server'
@@ -19,7 +19,7 @@ describe 'openstack-dashboard::server' do
       it 'installs mysql packages when mysql backend is configured' do
         @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS
         ::Chef::Recipe.any_instance.stub(:db).with('dashboard').and_return(
-          'db_type' => 'mysql', 'db_name' => 'flying_dolphin'
+          'service_type' => 'mysql', 'db_name' => 'flying_dolphin'
         )
         @chef_run.converge 'openstack-dashboard::server'
 
@@ -32,7 +32,7 @@ describe 'openstack-dashboard::server' do
         non_redhat_stubs
         @chef_run = ::ChefSpec::Runner.new ::OPENSUSE_OPTS
         ::Chef::Recipe.any_instance.stub(:db).with('dashboard').and_return(
-          'db_type' => 'postgresql', 'db_name' => 'flying_elephant'
+          'service_type' => 'postgresql', 'db_name' => 'flying_elephant'
         )
         @chef_run.converge 'openstack-dashboard::server'
       end
