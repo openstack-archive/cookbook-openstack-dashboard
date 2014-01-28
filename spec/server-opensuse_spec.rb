@@ -44,6 +44,18 @@ describe 'openstack-dashboard::server' do
         dir = '/srv/www/openstack-dashboard/openstack_dashboard/.blackhole'
         expect(chef_run.directory(dir).owner).to eq('root')
       end
+
+      it 'executes openstack-dashboard syncdb' do
+        cmd = 'python manage.py syncdb --noinput'
+        expect(chef_run).to run_execute(cmd).with(
+        cwd: '/srv/www/openstack-dashboard',
+        environment: {
+          'PYTHONPATH' => '/etc/openstack-dashboard:' \
+                          '/srv/www/openstack-dashboard:' \
+                          '$PYTHONPATH'
+          }
+          )
+      end
     end
   end
 end

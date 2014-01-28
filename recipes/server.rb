@@ -101,8 +101,8 @@ end
 
 # FIXME: this shouldn't run every chef run
 execute 'openstack-dashboard syncdb' do
-  cwd '/usr/share/openstack-dashboard'
-  environment 'PYTHONPATH' => '/etc/openstack-dashboard:/usr/share/openstack-dashboard:$PYTHONPATH'
+  cwd node['openstack']['dashboard']['django_path']
+  environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{node['openstack']['dashboard']['django_path']}:$PYTHONPATH"
   command 'python manage.py syncdb --noinput'
   action :run
   # not_if "/usr/bin/mysql -u root -e 'describe #{node["dash"]["db"]}.django_content_type'"
