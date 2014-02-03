@@ -78,6 +78,11 @@ describe 'openstack-dashboard::server' do
         expect(chef_run).to render_file(file.name).with_content('testPlugin1')
       end
 
+      it 'has some allowed hosts set' do
+        node.set['openstack']['dashboard']['allowed_hosts'] = ['dashboard.example.net']
+        expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["dashboard.example.net"\]/)
+      end
+
       it 'notifies apache2 restart' do
         expect(file).to notify('service[apache2]').to(:restart)
       end
@@ -98,6 +103,10 @@ describe 'openstack-dashboard::server' do
       it 'configures CSRF_COOKIE_SECURE & SESSION_COOKIE_SECURE when use_ssl is true' do
         expect(chef_run).to render_file(file.name).with_content('CSRF_COOKIE_SECURE = True')
         expect(chef_run).to render_file(file.name).with_content('SESSION_COOKIE_SECURE = True')
+      end
+
+      it 'sets the allowed hosts' do
+        expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["\*"\]/)
       end
     end
 
@@ -208,6 +217,15 @@ describe 'openstack-dashboard::server' do
         expect(chef_run).to render_file(file.name).with_content(
           %r{^\s+Alias /static /usr/share/openstack-dashboard/static$})
       end
+
+      it 'sets the WSGI daemon user' do
+        node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
+        expect(chef_run).to render_file(file.name).with_content('WSGIDaemonProcess dashboard user=somerandomuser')
+      end
+
+      it 'sets the WSGI daemon user to attribute default' do
+        expect(chef_run).to render_file(file.name).with_content('WSGIDaemonProcess dashboard user=horizon')
+      end
     end
 
     it 'does not delete openstack-dashboard.conf' do
@@ -260,13 +278,22 @@ describe 'openstack-dashboard::server' do
     it 'has group write mode on path' do
       path = chef_run.directory("#{chef_run.node['openstack']['dashboard']['dash_path']}/local")
       expect(path.mode).to eq(02770)
-      expect(path.group).to eq(chef_run.node['apache']['group'])
+      expect(path.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
     end
 
     it 'has group write mode on file' do
-      file = chef_run.file("#{chef_run.node['openstack']['dashboard']['dash_path']}/local/.secret_key_store")
-      expect(file.owner).to eq(chef_run.node['apache']['user'])
-      expect(file.group).to eq(chef_run.node['apache']['group'])
+      node.set['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
+      node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
+      node.set['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
+      file = chef_run.file('somerandompath')
+      expect(file.owner).to eq('somerandomuser')
+      expect(file.group).to eq('somerandomgroup')
+    end
+
+    it 'has group write mode on file with attribute defaults' do
+      file = chef_run.file('/var/lib/openstack-dashboard/secret_key')
+      expect(file.owner).to eq('horizon')
+      expect(file.group).to eq('horizon')
     end
   end
 end

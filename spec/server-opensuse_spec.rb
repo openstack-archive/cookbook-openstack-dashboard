@@ -57,5 +57,11 @@ describe 'openstack-dashboard::server' do
           )
       end
     end
+
+    it 'has group write mode on file with attribute defaults' do
+      file = chef_run.file('/srv/www/openstack-dashboard/openstack_dashboard/local/.secret_key_store')
+      expect(file.owner).to eq('wwwrun')
+      expect(file.group).to eq('www')
+    end
   end
 end

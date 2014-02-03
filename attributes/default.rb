@@ -39,6 +39,10 @@ default['openstack']['dashboard']['use_ssl'] = true
 default['openstack']['dashboard']['ssl']['cert'] = 'horizon.pem'
 default['openstack']['dashboard']['ssl']['key'] = 'horizon.key'
 
+# List of hosts/domains the dashboard can serve. This should be changed, a '*'
+# allows everything
+default['openstack']['dashboard']['allowed_hosts'] = ['*']
+
 default['openstack']['dashboard']['swift']['enabled'] = 'False'
 
 default['openstack']['dashboard']['theme'] = 'default'
@@ -50,6 +54,9 @@ default['openstack']['dashboard']['https_port'] = 443
 
 case node['platform']
 when 'fedora', 'centos', 'redhat'
+  default['openstack']['dashboard']['horizon_user'] = 'apache'
+  default['openstack']['dashboard']['horizon_group'] = 'apache'
+  default['openstack']['dashboard']['secret_key_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/pki/tls'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
@@ -68,6 +75,9 @@ when 'fedora', 'centos', 'redhat'
     default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
   end
 when 'suse'
+  default['openstack']['dashboard']['horizon_user'] = 'wwwrun'
+  default['openstack']['dashboard']['horizon_group'] = 'www'
+  default['openstack']['dashboard']['secret_key_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/srv/www/openstack-dashboard'
@@ -80,6 +90,9 @@ when 'suse'
   }
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
 when 'ubuntu'
+  default['openstack']['dashboard']['horizon_user'] = 'horizon'
+  default['openstack']['dashboard']['horizon_group'] = 'horizon'
+  default['openstack']['dashboard']['secret_key_path'] = '/var/lib/openstack-dashboard/secret_key'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'

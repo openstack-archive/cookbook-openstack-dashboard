@@ -135,15 +135,15 @@ end
 
 directory "#{node['openstack']['dashboard']['dash_path']}/local" do
   owner 'root'
-  group node['apache']['group']
+  group node['openstack']['dashboard']['horizon_group']
   mode 02770
   action :create
 end
 
 # make sure this file has correct permission
-file "#{node['openstack']['dashboard']['dash_path']}/local/.secret_key_store" do
-  owner node['apache']['user']
-  group node['apache']['group']
+file node['openstack']['dashboard']['secret_key_path'] do
+  owner node['openstack']['dashboard']['horizon_user']
+  group node['openstack']['dashboard']['horizon_group']
 end
 
 # stop apache bitching
