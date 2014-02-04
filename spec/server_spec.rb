@@ -109,7 +109,7 @@ describe 'openstack-dashboard::server' do
           'PYTHONPATH' => '/etc/openstack-dashboard:' \
                           '/usr/share/openstack-dashboard:' \
                           '$PYTHONPATH'
-        },
+        }
       )
     end
 
