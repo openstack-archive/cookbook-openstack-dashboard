@@ -69,8 +69,8 @@ when 'fedora', 'centos', 'redhat'
   end
 when 'suse'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
-  default['openstack']['dashboard']['local_settings_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py'
-  default['openstack']['dashboard']['static_path'] = '/usr/share/openstack-dashboard/static'
+  default['openstack']['dashboard']['local_settings_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py'
+  default['openstack']['dashboard']['static_path'] = '/srv/www/openstack-dashboard/static'
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysql'],
     'postgresql_python_packages' => ['python-psycopg2'],

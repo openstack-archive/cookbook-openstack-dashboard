@@ -26,7 +26,7 @@ describe 'openstack-dashboard::server' do
     context 'postgresql backend' do
 
       include_context 'postgresql_backend'
-      let(:file) { chef_run.template('/usr/share/openstack-dashboard/openstack_dashboard/local/local_settings.py') }
+      let(:file) { chef_run.template('/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py') }
 
       it 'installs packages' do
         expect(chef_run).to upgrade_package('openstack-dashboard')
