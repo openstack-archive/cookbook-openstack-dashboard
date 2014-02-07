@@ -18,9 +18,9 @@ UBUNTU_OPTS = {
   version: '12.04',
   log_level: LOG_LEVEL
 }
-OPENSUSE_OPTS = {
-  platform: 'opensuse',
-  version: '12.3',
+SUSE_OPTS = {
+  platform: 'suse',
+  version: '11.03',
   log_level: LOG_LEVEL
 }
 
