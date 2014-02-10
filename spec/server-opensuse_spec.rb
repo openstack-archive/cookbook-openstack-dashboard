@@ -41,7 +41,7 @@ describe 'openstack-dashboard::server' do
       end
 
       it 'creates .blackhole dir with proper owner' do
-        dir = '/usr/share/openstack-dashboard/openstack_dashboard/.blackhole'
+        dir = '/srv/www/openstack-dashboard/openstack_dashboard/.blackhole'
         expect(chef_run.directory(dir).owner).to eq('root')
       end
     end

@@ -52,7 +52,7 @@ case node['platform']
 when 'fedora', 'centos', 'redhat'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/pki/tls'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
-  default['openstack']['dashboard']['static_path'] = '/usr/share/openstack-dashboard/static'
+  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   # TODO(shep) - Fedora does not generate self signed certs by default
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['MySQL-python'],
@@ -70,7 +70,7 @@ when 'fedora', 'centos', 'redhat'
 when 'suse'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py'
-  default['openstack']['dashboard']['static_path'] = '/srv/www/openstack-dashboard/static'
+  default['openstack']['dashboard']['django_path'] = '/srv/www/openstack-dashboard'
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysql'],
     'postgresql_python_packages' => ['python-psycopg2'],
@@ -82,7 +82,7 @@ when 'suse'
 when 'ubuntu'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
-  default['openstack']['dashboard']['static_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/static'
+  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysqldb'],
     'postgresql_python_packages' => ['python-psycopg2'],
@@ -98,7 +98,8 @@ when 'ubuntu'
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
 end
 
-default['openstack']['dashboard']['dash_path'] = '/usr/share/openstack-dashboard/openstack_dashboard'
+default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
+default['openstack']['dashboard']['static_path'] = "#{node['openstack']['dashboard']['django_path']}/static"
 default['openstack']['dashboard']['stylesheet_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html'
 default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi/django.wsgi'
 default['openstack']['dashboard']['session_backend'] = 'memcached'
