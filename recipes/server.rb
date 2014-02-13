@@ -144,6 +144,10 @@ end
 file node['openstack']['dashboard']['secret_key_path'] do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_group']
+  unless node['openstack']['dashboard']['secret_key_content'].nil?
+    content node['openstack']['dashboard']['secret_key_content']
+    notifies :restart, 'service[apache2]'
+  end
 end
 
 # stop apache bitching

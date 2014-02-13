@@ -83,6 +83,14 @@ describe 'openstack-dashboard::server' do
         expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["dashboard.example.net"\]/)
       end
 
+      it 'has configurable secret_key_path setting' do
+        secret_key_path = '/some/random/path'
+        content = "SECRET_KEY = secret_key.generate_or_read_from_file(os.path.realpath('#{secret_key_path}')"
+        node.set['openstack']['dashboard']['secret_key_path'] = secret_key_path
+
+        expect(chef_run).to render_file(file.name).with_content(content)
+      end
+
       it 'notifies apache2 restart' do
         expect(file).to notify('service[apache2]').to(:restart)
       end
@@ -228,6 +236,37 @@ describe 'openstack-dashboard::server' do
       end
     end
 
+    describe 'secret key file' do
+      secret_key_path = '/var/lib/openstack-dashboard/secret_key'
+
+      it 'has group write mode on file with attribute defaults' do
+        file = chef_run.file(secret_key_path)
+        expect(file.owner).to eq('horizon')
+        expect(file.group).to eq('horizon')
+      end
+
+      it 'has group write mode on file' do
+        node.set['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
+        node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
+        node.set['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
+        file = chef_run.file('somerandompath')
+        expect(file.owner).to eq('somerandomuser')
+        expect(file.group).to eq('somerandomgroup')
+      end
+
+      it 'has configurable secret_key_content setting' do
+        node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
+        file = chef_run.file(secret_key_path)
+        expect(chef_run).to render_file(file.name).with_content('somerandomcontent')
+      end
+
+      it 'notifies apache2 restart when secret_key_content set' do
+        node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
+        file = chef_run.file(secret_key_path)
+        expect(file).to notify('service[apache2]').to(:restart)
+      end
+    end
+
     it 'does not delete openstack-dashboard.conf' do
       file = '/etc/httpd/conf.d/openstack-dashboard.conf'
 
@@ -279,21 +318,6 @@ describe 'openstack-dashboard::server' do
       path = chef_run.directory("#{chef_run.node['openstack']['dashboard']['dash_path']}/local")
       expect(path.mode).to eq(02770)
       expect(path.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
-    end
-
-    it 'has group write mode on file' do
-      node.set['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
-      node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
-      node.set['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
-      file = chef_run.file('somerandompath')
-      expect(file.owner).to eq('somerandomuser')
-      expect(file.group).to eq('somerandomgroup')
-    end
-
-    it 'has group write mode on file with attribute defaults' do
-      file = chef_run.file('/var/lib/openstack-dashboard/secret_key')
-      expect(file.owner).to eq('horizon')
-      expect(file.group).to eq('horizon')
     end
   end
 end
