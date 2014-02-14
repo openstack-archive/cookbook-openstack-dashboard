@@ -90,7 +90,7 @@ HORIZON_CONFIG = {
 # HORIZON_CONFIG["simple_ip_management"] = False
 
 # Turn off browser autocompletion for the login form if so desired.
-# HORIZON_CONFIG["password_autocomplete"] = "off"
+HORIZON_CONFIG["password_autocomplete"] = "<%= node['openstack']['dashboard']['password_autocomplete'] %>"
 
 LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -179,9 +179,9 @@ OPENSTACK_HYPERVISOR_FEATURES = {
 # services provided by neutron. Options currenly available are load
 # balancer service, security groups, quotas, VPN service.
 OPENSTACK_NEUTRON_NETWORK = {
-    'enable_lb': False,
+    'enable_lb': <%= node['openstack']['dashboard']['neutron']['enable_lb'] ? 'True' : 'False' %>,
     'enable_firewall': False,
-    'enable_quotas': True,
+    'enable_quotas': <%= node['openstack']['dashboard']['neutron']['enable_quotas'] ? 'True' : 'False' %>,
     'enable_vpn': False,
     # The profile_support option is used to detect if an external router can be
     # configured via the dashboard. When using specific plugins the
