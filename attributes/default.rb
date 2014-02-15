@@ -52,6 +52,8 @@ default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['d
 default['openstack']['dashboard']['http_port'] = 80
 default['openstack']['dashboard']['https_port'] = 443
 
+default['openstack']['dashboard']['secret_key_content'] = nil
+
 case node['platform']
 when 'fedora', 'centos', 'redhat'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
