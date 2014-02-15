@@ -149,3 +149,7 @@ default['openstack']['dashboard']['log_level']['swiftclient'] = 'INFO'
 default['openstack']['dashboard']['log_level']['openstack_auth'] = 'INFO'
 default['openstack']['dashboard']['log_level']['nose.plugins.manager'] = 'INFO'
 default['openstack']['dashboard']['log_level']['django'] = 'INFO'
+
+default['openstack']['dashboard']['password_autocomplete'] = 'on'
+default['openstack']['dashboard']['neutron']['enable_lb'] = false
+default['openstack']['dashboard']['neutron']['enable_quotas'] = true

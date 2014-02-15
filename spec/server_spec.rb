@@ -116,6 +116,36 @@ describe 'openstack-dashboard::server' do
       it 'sets the allowed hosts' do
         expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["\*"\]/)
       end
+
+      it 'has default enable_lbaas setting' do
+        expect(chef_run).to render_file(file.name).with_content('\'enable_lb\': False')
+      end
+
+      it 'has configurable enable_lbaas setting' do
+        node.set['openstack']['dashboard']['neutron']['enable_lb'] = true
+        expect(chef_run).to render_file(file.name).with_content('\'enable_lb\': True')
+      end
+
+      it 'has default enable_quotas setting' do
+        expect(chef_run).to render_file(file.name).with_content('\'enable_quotas\': True')
+      end
+
+      it 'has configurable enable_quotas setting' do
+        node.set['openstack']['dashboard']['neutron']['enable_quotas'] = false
+        expect(chef_run).to render_file(file.name).with_content('\'enable_quotas\': False')
+      end
+
+      it 'has default password_autocomplete setting' do
+        content = 'HORIZON_CONFIG["password_autocomplete"] = "on"'
+        expect(chef_run).to render_file(file.name).with_content(content)
+      end
+
+      it 'has default password_autocomplete setting' do
+        content = 'HORIZON_CONFIG["password_autocomplete"] = "off"'
+        node.set['openstack']['dashboard']['password_autocomplete'] = 'off'
+        expect(chef_run).to render_file(file.name).with_content(content)
+      end
+
     end
 
     it 'executes openstack-dashboard syncdb' do
