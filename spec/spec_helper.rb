@@ -63,3 +63,9 @@ shared_context 'mysql_backend' do
     .and_return('service_type' => 'mysql', 'db_name' => 'flying_dolphin')
   end
 end
+
+# README(galstrom21): This will remove any coverage warnings from
+#   dependent cookbooks
+ChefSpec::Coverage.filters << '*/openstack-dashboard'
+
+at_exit { ChefSpec::Coverage.report! }
