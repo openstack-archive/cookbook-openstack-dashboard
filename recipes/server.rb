@@ -113,7 +113,10 @@ execute 'openstack-dashboard syncdb' do
   environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{node['openstack']['dashboard']['django_path']}:$PYTHONPATH"
   command 'python manage.py syncdb --noinput'
   action :run
-  only_if { node['openstack']['dashboard']['session_backend'] == 'sql' }
+  only_if do
+    node['openstack']['dashboard']['session_backend'] == 'sql' &&
+    node['openstack']['db']['dashboard']['migrate']
+  end
 end
 
 cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["openstack"]["dashboard"]["ssl"]["cert"]}" do

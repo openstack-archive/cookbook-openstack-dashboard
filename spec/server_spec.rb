@@ -12,9 +12,8 @@ describe 'openstack-dashboard::server' do
     end
 
     let(:chef_run_session_sql) do
-      runner_session_sql = ::ChefSpec::Runner.new ::UBUNTU_OPTS
-      runner_session_sql.node.set['openstack']['dashboard']['session_backend'] = 'sql'
-      runner_session_sql.converge(described_recipe)
+      node.set['openstack']['dashboard']['session_backend'] = 'sql'
+      runner.converge(described_recipe)
     end
 
     include_context 'non_redhat_stubs'
@@ -154,7 +153,7 @@ describe 'openstack-dashboard::server' do
 
     end
 
-    it 'executes openstack-dashboard syncdb when session_backend is sql' do
+    describe 'openstack-dashboard syncdb' do
       sync_db_cmd = 'python manage.py syncdb --noinput'
       sync_db_environment = {
         'PYTHONPATH' => '/etc/openstack-dashboard:' \
@@ -162,15 +161,27 @@ describe 'openstack-dashboard::server' do
                         '$PYTHONPATH'
       }
 
-      expect(chef_run).not_to run_execute(sync_db_cmd).with(
-        cwd: node['openstack']['dashboard']['django_path'],
-        environment: sync_db_environment
-      )
+      it 'does not execute when session_backend is not sql' do
+        expect(chef_run).not_to run_execute(sync_db_cmd).with(
+          cwd: node['openstack']['dashboard']['django_path'],
+          environment: sync_db_environment
+          )
+      end
 
-      expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
-        cwd: node['openstack']['dashboard']['django_path'],
-        environment: sync_db_environment
-      )
+      it 'executes when session_backend is sql' do
+        expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
+          cwd: node['openstack']['dashboard']['django_path'],
+          environment: sync_db_environment
+          )
+      end
+
+      it 'does not execute when the migrate attribute is set to false' do
+        node.set['openstack']['db']['dashboard']['migrate'] = false
+        expect(chef_run_session_sql).not_to run_execute(sync_db_cmd).with(
+          cwd: node['openstack']['dashboard']['django_path'],
+          environment: sync_db_environment
+          )
+      end
     end
 
     describe 'certs' do
