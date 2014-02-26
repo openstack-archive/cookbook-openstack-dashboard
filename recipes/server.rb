@@ -156,7 +156,12 @@ file node['openstack']['dashboard']['secret_key_path'] do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_group']
   mode 00600
-  unless node['openstack']['dashboard']['secret_key_content'].nil?
+  # the only time the file should be created is if we have secret_key_content
+  # set, otherwise let apache create it when someone first accesses the
+  # dashboard
+  if node['openstack']['dashboard']['secret_key_content'].nil?
+    only_if { ::File.exists?(node['openstack']['dashboard']['secret_key_path']) }
+  else
     content node['openstack']['dashboard']['secret_key_content']
     notifies :restart, 'service[apache2]'
   end

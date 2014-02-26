@@ -99,7 +99,7 @@ describe 'openstack-dashboard::server' do
       expect(chef_run).to render_file(file.name).with_content('WSGIDaemonProcess dashboard user=apache')
     end
 
-    it 'has group write mode on file with attribute defaults' do
+    it 'has correct ownership on file with attribute defaults' do
       file = chef_run.file('/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store')
       expect(file.owner).to eq('apache')
       expect(file.group).to eq('apache')
