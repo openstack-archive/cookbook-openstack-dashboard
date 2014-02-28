@@ -290,16 +290,24 @@ describe 'openstack-dashboard::server' do
       end
     end
 
-    describe 'secret key file' do
+    describe 'secret_key_path file' do
       secret_key_path = '/var/lib/openstack-dashboard/secret_key'
+      let(:file) { chef_run.file(secret_key_path) }
 
-      it 'has group write mode on file with attribute defaults' do
-        file = chef_run.file(secret_key_path)
+      it 'has correct ownership' do
         expect(file.owner).to eq('horizon')
         expect(file.group).to eq('horizon')
       end
 
-      it 'has group write mode on file' do
+      it 'has correct mode' do
+        expect(file.mode).to eq(00600)
+      end
+
+      it 'does not notify apache2 restart' do
+        expect(file).not_to notify('service[apache2]').to(:restart)
+      end
+
+      it 'has configurable path and ownership settings' do
         node.set['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
         node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
         node.set['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
@@ -308,16 +316,18 @@ describe 'openstack-dashboard::server' do
         expect(file.group).to eq('somerandomgroup')
       end
 
-      it 'has configurable secret_key_content setting' do
-        node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
-        file = chef_run.file(secret_key_path)
-        expect(chef_run).to render_file(file.name).with_content('somerandomcontent')
-      end
+      describe 'secret_key_content set' do
+        before do
+          node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
+        end
 
-      it 'notifies apache2 restart when secret_key_content set' do
-        node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
-        file = chef_run.file(secret_key_path)
-        expect(file).to notify('service[apache2]').to(:restart)
+        it 'has configurable secret_key_content setting' do
+          expect(chef_run).to render_file(file.name).with_content('somerandomcontent')
+        end
+
+        it 'notifies apache2 restart when secret_key_content set' do
+          expect(file).to notify('service[apache2]').to(:restart)
+        end
       end
     end
 
@@ -372,13 +382,6 @@ describe 'openstack-dashboard::server' do
       path = chef_run.directory("#{chef_run.node['openstack']['dashboard']['dash_path']}/local")
       expect(path.mode).to eq(02770)
       expect(path.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
-    end
-
-    it 'has correct permission on file' do
-      file = chef_run.file("#{chef_run.node['openstack']['dashboard']['secret_key_path']}")
-      expect(file.owner).to eq(chef_run.node['openstack']['dashboard']['horizon_user'])
-      expect(file.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
-      expect(file.mode).to eq(00600)
     end
   end
 end
