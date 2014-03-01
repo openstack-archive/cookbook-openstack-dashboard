@@ -151,6 +151,14 @@ describe 'openstack-dashboard::server' do
         expect(chef_run).to render_file(file.name).with_content(content)
       end
 
+      it 'enables simple ip management' do
+        node.set['openstack']['dashboard']['simple_ip_management'] = true
+        expect(chef_run).to render_file(file.name).with_content('HORIZON_CONFIG["simple_ip_management"] = True')
+      end
+
+      it 'disables simple ip management' do
+        expect(chef_run).to render_file(file.name).with_content('HORIZON_CONFIG["simple_ip_management"] = False')
+      end
     end
 
     describe 'openstack-dashboard syncdb' do

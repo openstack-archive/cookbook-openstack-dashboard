@@ -45,6 +45,7 @@ Attributes
 * `openstack["dashboard"]["wsgi_path"]` - path for wsgi dir
 * `openstack["dashboard"]["ssl_offload"]` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
 * `openstack["dashboard"]["plugins"]` - Array of plugins to include via INSTALED\_APPS
+* `openstack["dashboard"]["simple_ip_management"]` - Boolean to enable or disable simplified floating IP address management
 TODO: Add DB2 support on other platforms
 * `openstack["dashboard"]["platform"]["db2_python_packages"]` - Array of DB2 python packages, only available on redhat platform
 * `openstack['openstack']['dashboard']['http_port']` - Port that httpd should listen on. Default is 80.
