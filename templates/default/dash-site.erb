@@ -69,3 +69,7 @@ NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
   LogLevel warn
   CustomLog <%= node["apache"]["log_dir"] %>/<%= node["openstack"]["dashboard"]["access_log"] %> combined
 </VirtualHost>
+
+<% unless node["openstack"]["dashboard"]["wsgi_socket_prefix"].nil? %>
+WSGISocketPrefix <%= node["openstack"]["dashboard"]["wsgi_socket_prefix"] %>
+<% end %>

@@ -117,6 +117,7 @@ default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard
 default['openstack']['dashboard']['static_path'] = "#{node['openstack']['dashboard']['django_path']}/static"
 default['openstack']['dashboard']['stylesheet_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html'
 default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi/django.wsgi'
+default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
 default['openstack']['dashboard']['session_backend'] = 'memcached'
 
 default['openstack']['dashboard']['ssl_offload'] = false

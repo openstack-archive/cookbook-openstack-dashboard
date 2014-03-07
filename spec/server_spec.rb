@@ -288,6 +288,15 @@ describe 'openstack-dashboard::server' do
       it 'sets the WSGI daemon user to attribute default' do
         expect(chef_run).to render_file(file.name).with_content('WSGIDaemonProcess dashboard user=horizon')
       end
+
+      it 'sets wsgi socket prefix' do
+        node.set['openstack']['dashboard']['wsgi_socket_prefix'] = '/var/run/wsgi'
+        expect(chef_run).to render_file(file.name).with_content('WSGISocketPrefix /var/run/wsgi')
+      end
+
+      it 'omits wsgi socket prefix' do
+        expect(chef_run).not_to render_file(file.name).with_content('WSGISocketPrefix')
+      end
     end
 
     describe 'secret_key_path file' do
