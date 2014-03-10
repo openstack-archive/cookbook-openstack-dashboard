@@ -43,6 +43,7 @@ Attributes
 * `openstack["dashboard"]["ssl"]["key"]` - name to use when creating the ssl key
 * `openstack["dashboard"]["dash_path"]` - base path for dashboard files (document root)
 * `openstack["dashboard"]["wsgi_path"]` - path for wsgi dir
+* `openstack["dashboard"]["wsgi_socket_prefix"]` - Location that will override the standard Apache runtime directory
 * `openstack["dashboard"]["ssl_offload"]` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
 * `openstack["dashboard"]["plugins"]` - Array of plugins to include via INSTALED\_APPS
 * `openstack["dashboard"]["simple_ip_management"]` - Boolean to enable or disable simplified floating IP address management
