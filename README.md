@@ -86,11 +86,12 @@ License and Author
 | **Author**           |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 | **Author**           |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
 | **Author**           |  Ionut Artarisi (<iartarisi@suse.cz>)              |
+| **Author**           |  Eric Zhou (<iartarisi@suse.cz>)                   |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
 | **Copyright**        |  Copyright (c) 2013, Opscode, Inc.                 |
-| **Copyright**        |  Copyright (c) 2013, IBM, Corp.                    |
+| **Copyright**        |  Copyright (c) 2013-2014, IBM, Corp.               |
 | **Copyright**        |  Copyright (c) 2013-2014, SUSE Linux GmbH.         |
 
 Licensed under the Apache License, Version 2.0 (the "License");

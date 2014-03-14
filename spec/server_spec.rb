@@ -159,6 +159,11 @@ describe 'openstack-dashboard::server' do
       it 'disables simple ip management' do
         expect(chef_run).to render_file(file.name).with_content('HORIZON_CONFIG["simple_ip_management"] = False')
       end
+
+      it 'has the identity auth uri settings' do
+        expect(chef_run).to render_file(file.name).with_content('OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v2.0"')
+        expect(chef_run).to render_file(file.name).with_content('OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v2.0"')
+      end
     end
 
     describe 'openstack-dashboard syncdb' do
