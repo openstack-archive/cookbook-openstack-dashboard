@@ -27,7 +27,7 @@ describe 'openstack-dashboard::server' do
 
     it 'installs db2 python packages if explicitly told' do
       node.set['openstack']['db']['dashboard']['service_type'] = 'db2'
-      %w{db2-odbc python-ibm-db python-ibm-db-django python-ibm-db-sa}.each do |pkg|
+      %w{python-ibm-db python-ibm-db-django python-ibm-db-sa}.each do |pkg|
         expect(chef_run).to upgrade_package(pkg)
       end
     end

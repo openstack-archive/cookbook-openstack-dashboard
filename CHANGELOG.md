@@ -2,6 +2,10 @@ openstack-dashboard Cookbook CHANGELOG
 ==============================
 This file is used to list changes made in each version of the openstack-dashboard cookbook.
 
+## 8.1.1
+### Bug
+* Fix the DB2 ODBC driver issue
+
 ## 8.1.0
 ### Blue print
 * Use the library method auth_uri_transform
