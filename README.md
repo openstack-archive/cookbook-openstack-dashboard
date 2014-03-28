@@ -1,14 +1,14 @@
 Description
 ===========
 
-Installs the OpenStack Dashboard service **Horizon** as part of the OpenStack reference deployment Chef for OpenStack. The http://github.com/mattray/chef-openstack-repo contains documentation for using this cookbook in the context of a full OpenStack deployment. Horizon is currently installed from packages.
+Installs the OpenStack Dashboard service **Horizon** as part of the OpenStack reference deployment Chef for OpenStack. The http://github.com/mattray/chef-openstack-repo contains documentation for using this cookbook in the context of a full OpenStack deployment. Horizon is currently installed from packages. This version is for deploying the 'Havana' release, the 'master' branch is currently working on the 'Icehouse' release.
 
 http://horizon.openstack.org
 
 Requirements
 ============
 
-* Chef 0.10.0 or higher required (for Chef environment use).
+* Chef 11 or higher is required.
 
 Cookbooks
 ---------
@@ -81,7 +81,7 @@ License and Author
 | **Author**           |  Evan Callicoat (<evan.callicoat@rackspace.com>)   |
 | **Author**           |  Jay Pipes (<jaypipes@att.com>)                    |
 | **Author**           |  John Dewey (<jdewey@att.com>)                     |
-| **Author**           |  Matt Ray (<matt@opscode.com>)                     |
+| **Author**           |  Matt Ray (<matt@getchef.com>)                     |
 | **Author**           |  Sean Gallagher (<sean.gallagher@att.com>)         |
 | **Author**           |  Chen Zhiwei (<zhiwchen@cn.ibm.com>)               |
 | **Author**           |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
@@ -90,7 +90,7 @@ License and Author
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
-| **Copyright**        |  Copyright (c) 2013, Opscode, Inc.                 |
+| **Copyright**        |  Copyright (c) 2013-2014, Chef Software, Inc.      |
 | **Copyright**        |  Copyright (c) 2013-2014, IBM, Corp.               |
 | **Copyright**        |  Copyright (c) 2013-2014, SUSE Linux GmbH.         |
 
