@@ -1,6 +1,11 @@
 openstack-dashboard Cookbook CHANGELOG
 ==============================
 This file is used to list changes made in each version of the openstack-dashboard cookbook.
+
+## 9.0.1
+### Bug
+* Fix the depends cookbook version issue in metadata.rb
+
 ## 9.0.0
 * Upgrade to Icehouse
 
