@@ -67,6 +67,7 @@ when 'fedora', 'centos', 'redhat'
     'mysql_python_packages' => ['MySQL-python'],
     'db2_python_packages' => %w{python-ibm-db python-ibm-db-django python-ibm-db-sa},
     'postgresql_python_packages' => ['python-psycopg2'],
+    'sqlite_python_packages' => [],
     'horizon_packages' => ['openstack-dashboard'],
     'memcache_python_packages' => ['python-memcached'],
     'package_overrides' => ''
@@ -86,6 +87,7 @@ when 'suse'
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysql'],
     'postgresql_python_packages' => ['python-psycopg2'],
+    'sqlite_python_packages' => [],
     'horizon_packages' => ['openstack-dashboard'],
     'memcache_python_packages' => ['python-python-memcached'],
     'package_overrides' => ''
@@ -102,6 +104,7 @@ when 'ubuntu'
     'mysql_python_packages' => ['python-mysqldb'],
     'postgresql_python_packages' => ['python-psycopg2'],
     'memcache_python_packages' => ['python-memcache'],
+    'sqlite_python_packages' => [],
     'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
   # lessc became node-less in 12.10

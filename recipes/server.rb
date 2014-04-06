@@ -125,7 +125,8 @@ execute 'openstack-dashboard syncdb' do
   action :run
   only_if do
     node['openstack']['dashboard']['session_backend'] == 'sql' &&
-    node['openstack']['db']['dashboard']['migrate']
+    node['openstack']['db']['dashboard']['migrate'] ||
+    db_info['service_type'] == 'sqlite'
   end
 end
 
