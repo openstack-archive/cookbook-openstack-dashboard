@@ -4,6 +4,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 
 ## 9.0.1
 ### Bug
+* Fix openstack_keystone_default_role default
 * Fix the depends cookbook version issue in metadata.rb
 
 ## 9.0.0
