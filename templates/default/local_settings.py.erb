@@ -9,7 +9,7 @@ from openstack_dashboard import exceptions
 DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
 
-<% if %w(fedora redhat centos scientific).include? node.platform -%>
+<% if %w(fedora rhel).include? node.platform_family -%>
 WEBROOT=''
 LOGIN_URL = WEBROOT+'/auth/login/'
 LOGOUT_URL = WEBROOT+'/auth/logout/'

@@ -98,7 +98,7 @@ file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
 
-  only_if { platform?('fedora', 'redhat', 'centos') } # :pragma-foodcritic: ~FC024 - won't fix this
+  only_if { platform_family?('fedora', 'rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 template node['openstack']['dashboard']['local_settings_path'] do
@@ -138,8 +138,8 @@ cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["ope
   notifies :run, 'execute[restore-selinux-context]', :immediately
 end
 
-case node['platform']
-when 'ubuntu', 'debian'
+case node['platform_family']
+when 'debian'
   grp = 'ssl-cert'
 else
   grp = 'root'
@@ -203,17 +203,17 @@ end
 package 'openstack-dashboard-ubuntu-theme' do
   action :purge
 
-  only_if { platform?('ubuntu') }
+  only_if { platform_family?('debian') }
 end
 
 # The `apache_site` provided by the apache2 cookbook
 # is not an LWRP. Guards do not apply to definitions.
 # http://tickets.opscode.com/browse/CHEF-778
-if platform?('debian', 'ubuntu')
+if platform_family?('debian')
   apache_site '000-default' do
     enable false
   end
-elsif platform?('fedora', 'redhat', 'centos') then
+elsif platform_family?('fedora', 'rhel') then
   apache_site 'default' do
     enable false
 
@@ -232,7 +232,7 @@ execute 'restore-selinux-context' do
   command 'restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :'
   action :nothing
 
-  only_if { platform?('fedora') }
+  only_if { platform_family?('fedora') }
 end
 
 # TODO(shep)
