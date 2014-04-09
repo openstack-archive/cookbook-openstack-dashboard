@@ -54,8 +54,8 @@ default['openstack']['dashboard']['https_port'] = 443
 
 default['openstack']['dashboard']['secret_key_content'] = nil
 
-case node['platform']
-when 'fedora', 'centos', 'redhat'
+case node['platform_family']
+when 'fedora', 'rhel'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
   default['openstack']['dashboard']['horizon_group'] = 'apache'
   default['openstack']['dashboard']['secret_key_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
@@ -71,7 +71,7 @@ when 'fedora', 'centos', 'redhat'
     'memcache_python_packages' => ['python-memcached'],
     'package_overrides' => ''
   }
-  if node['platform'] == 'fedora'
+  if node['platform_family'] == 'fedora'
     default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
   else
     default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
@@ -91,7 +91,7 @@ when 'suse'
     'package_overrides' => ''
   }
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
-when 'ubuntu'
+when 'debian'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
   default['openstack']['dashboard']['horizon_group'] = 'horizon'
   default['openstack']['dashboard']['secret_key_path'] = '/var/lib/openstack-dashboard/secret_key'
