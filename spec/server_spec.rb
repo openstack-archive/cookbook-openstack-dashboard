@@ -168,6 +168,13 @@ describe 'openstack-dashboard::server' do
         expect(chef_run).to render_file(file.name).with_content('OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v2.0"')
         expect(chef_run).to render_file(file.name).with_content('OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v2.0"')
       end
+
+      it 'supports sqlite as database backend' do
+        node.set['openstack']['db']['dashboard']['service_type'] = 'sqlite'
+        node.set['openstack']['db']['dashboard']['db_name'] = 'jabba'
+        expect(chef_run).to render_file(file.name).with_content('\'ENGINE\': \'django.db.backends.sqlite3\'')
+        expect(chef_run).to render_file(file.name).with_content('\'NAME\': \'jabba\'')
+      end
     end
 
     describe 'openstack-dashboard syncdb' do
@@ -195,6 +202,14 @@ describe 'openstack-dashboard::server' do
       it 'does not execute when the migrate attribute is set to false' do
         node.set['openstack']['db']['dashboard']['migrate'] = false
         expect(chef_run_session_sql).not_to run_execute(sync_db_cmd).with(
+          cwd: node['openstack']['dashboard']['django_path'],
+          environment: sync_db_environment
+          )
+      end
+
+      it 'executes when database backend is sqlite' do
+        node.set['openstack']['db']['dashboard']['service_type'] = 'sqlite'
+        expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
           )

@@ -472,6 +472,7 @@ SECURITY_GROUP_RULES = {
 }
 
 <% django_backends = {'mysql' => 'django.db.backends.mysql',
+                      'sqlite' => 'django.db.backends.sqlite3',
                       'postgresql' => 'django.db.backends.postgresql_psycopg2',
                       'db2' => 'ibm_db_django'}
    engine = django_backends[@db_info['service_type']] %>
@@ -483,9 +484,11 @@ DATABASES = {
     'default': {
         'ENGINE': '<%= engine %>',
         'NAME': '<%= @db_info["db_name"] %>',
+<% unless @db_info['service_type'] == 'sqlite' %>
         'USER': '<%= node["openstack"]["db"]["dashboard"]["username"] %>',
         'PASSWORD': '<%= @db_pass %>',
         'HOST': '<%= @db_info["host"] %>',
+<% end %>
         'default-character-set': 'utf8'
     },
 }
