@@ -39,8 +39,6 @@ Attributes
 * `openstack["dashboard"]["server_hostname"]` - sets the ServerName in the Apache config.
 * `openstack["dashboard"]["use_ssl"]` - toggle for using ssl with dashboard (default true)
 * `openstack["dashboard"]["ssl"]["dir"]` - directory where ssl certs are stored on this system
-* `openstack["dashboard"]["ssl"]["cert"]` - name to use when creating the ssl certificate
-* `openstack["dashboard"]["ssl"]["key"]` - name to use when creating the ssl key
 * `openstack["dashboard"]["dash_path"]` - base path for dashboard files (document root)
 * `openstack["dashboard"]["wsgi_path"]` - path for wsgi dir
 * `openstack["dashboard"]["wsgi_socket_prefix"]` - Location that will override the standard Apache runtime directory
@@ -51,6 +49,18 @@ TODO: Add DB2 support on other platforms
 * `openstack["dashboard"]["platform"]["db2_python_packages"]` - Array of DB2 python packages, only available on redhat platform
 * `openstack['openstack']['dashboard']['http_port']` - Port that httpd should listen on. Default is 80.
 * `openstack['openstack']['dashboard']['https_port']` - Port that httpd should listen on for using ssl. Default is 443.
+
+Certificate
+-----------
+* `openstack["dashboard"]["ssl"]["cert"]` - name to use when creating the ssl certificate
+* `openstack["dashboard"]["ssl"]["cert_url"]` - if using an existing certificate, this is the URL to its location
+* `openstack["dashboard"]["ssl"]["key"]` - name to use when creating the ssl key
+* `openstack["dashboard"]["ssl"]["key_url"]` - if using an existing certificate key, this is the URL to its location
+
+By default the openstack-dashboard cookbook ships with a self-signed certificate from a fake organization.
+It is possible to use a real production certificate from your organization by putting that certificate
+somewhere where the cookbook can download it from then simply passing in the URL of the certificate, and its
+corresponding key, using the 'cert_url' and 'key_url' attributes.
 
 Testing
 =====

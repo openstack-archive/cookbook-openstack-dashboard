@@ -130,29 +130,59 @@ execute 'openstack-dashboard syncdb' do
   end
 end
 
-cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["openstack"]["dashboard"]["ssl"]["cert"]}" do
-  source 'horizon.pem'
-  mode   00644
-  owner  'root'
-  group  'root'
+cert_file = "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}"
+cert_mode = 00644
+cert_owner = 'root'
+cert_group = 'root'
+if node['openstack']['dashboard']['ssl']['cert_url']
+  remote_file cert_file do
+    source node['openstack']['dashboard']['ssl']['cert_url']
+    mode cert_mode
+    owner  cert_owner
+    group  cert_group
 
-  notifies :run, 'execute[restore-selinux-context]', :immediately
-end
-
-case node['platform_family']
-when 'debian'
-  grp = 'ssl-cert'
+    notifies :run, 'execute[restore-selinux-context]', :immediately
+  end
 else
-  grp = 'root'
+  cookbook_file cert_file do
+    source 'horizon.pem'
+    mode cert_mode
+    owner  cert_owner
+    group  cert_group
+
+    notifies :run, 'execute[restore-selinux-context]', :immediately
+  end
 end
 
-cookbook_file "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}" do
-  source 'horizon.key'
-  mode   00640
-  owner  'root'
-  group  grp # Don't know about fedora
+key_file = "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}"
+key_mode = 00640
+key_owner = 'root'
+case node['platform_family']
+when 'debian' # Don't know about fedora
+  key_group = 'ssl-cert'
+else
+  key_group = 'root'
+end
 
-  notifies :run, 'execute[restore-selinux-context]', :immediately
+if node['openstack']['dashboard']['ssl']['key_url']
+  remote_file key_file do
+    source node['openstack']['dashboard']['ssl']['key_url']
+    mode key_mode
+    owner  key_owner
+    group  key_group
+
+    notifies :restart, 'service[apache2]', :immediately
+    notifies :run, 'execute[restore-selinux-context]', :immediately
+  end
+else
+  cookbook_file key_file do
+    source 'horizon.key'
+    mode   key_mode
+    owner  key_owner
+    group  key_group
+
+    notifies :run, 'execute[restore-selinux-context]', :immediately
+  end
 end
 
 directory "#{node['openstack']['dashboard']['dash_path']}/local" do

@@ -36,6 +36,12 @@ default['openstack']['dashboard']['keystone_service_chef_role'] = 'keystone'
 
 default['openstack']['dashboard']['server_hostname'] = nil
 default['openstack']['dashboard']['use_ssl'] = true
+default['openstack']['dashboard']['ssl']['cert_url'] = nil
+default['openstack']['dashboard']['ssl']['key_url'] = nil
+# When using a remote certificate and key, the names of the actual installed certificate
+# and key in the file system are determined by the following two attributes.
+# If you want the name of the installed files to match the name of the files from the URL,
+# they need to be manually set below, if not the conventional horizon.* names will be used.
 default['openstack']['dashboard']['ssl']['cert'] = 'horizon.pem'
 default['openstack']['dashboard']['ssl']['key'] = 'horizon.key'
 

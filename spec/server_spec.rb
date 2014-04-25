@@ -219,6 +219,7 @@ describe 'openstack-dashboard::server' do
     describe 'certs' do
       let(:crt) { chef_run.cookbook_file('/etc/ssl/certs/horizon.pem') }
       let(:key) { chef_run.cookbook_file('/etc/ssl/private/horizon.key') }
+      let(:remote_key) { chef_run.remote_file('/etc/ssl/private/horizon.key') }
 
       it 'has proper owner' do
         expect(crt.owner).to eq('root')
@@ -235,6 +236,19 @@ describe 'openstack-dashboard::server' do
       it 'notifies restore-selinux-context' do
         expect(crt).to notify('execute[restore-selinux-context]').to(:run)
         expect(key).to notify('execute[restore-selinux-context]').to(:run)
+      end
+
+      it 'does not download certs if not needed' do
+        expect(chef_run).not_to create_remote_file('/etc/ssl/certs/horizon.pem')
+        expect(chef_run).not_to create_remote_file('/etc/ssl/private/horizon.key')
+      end
+
+      it 'downloads certs if needed and restarts apache' do
+        node.set['openstack']['dashboard']['ssl']['cert_url'] = 'http://server/mycert.pem'
+        node.set['openstack']['dashboard']['ssl']['key_url'] = 'http://server/mykey.key'
+        expect(chef_run).to create_remote_file('/etc/ssl/certs/horizon.pem')
+        expect(chef_run).to create_remote_file('/etc/ssl/private/horizon.key')
+        expect(remote_key).to notify('service[apache2]').to(:restart)
       end
     end
 
