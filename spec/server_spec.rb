@@ -290,6 +290,27 @@ describe 'openstack-dashboard::server' do
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_DEFAULT_ROLE = "keystone_default_role_value"$/)
         end
 
+        context 'keystone_backend settings' do
+          %w(native ldap).each do |keystone_backend_name|
+            it "sets the backend name to #{keystone_backend_name}" do
+              node.set['openstack']['dashboard']['keystone_backend']['name'] = keystone_backend_name
+              expect(chef_run).to render_file(file.name).with_content(/^\s*'name': '#{keystone_backend_name}',$/)
+            end
+          end
+
+          %w(can_edit_user can_edit_group can_edit_project can_edit_domain can_edit_role).each do |keystone_setting|
+            it "enables the #{keystone_setting} keystone backend setting when the attribute is True" do
+              node.set['openstack']['dashboard']['keystone_backend'][keystone_setting] = true
+              expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{keystone_setting}\': True,$/)
+            end
+
+            it "disables the #{keystone_setting} keystone backend setting when the attribute is False" do
+              node.set['openstack']['dashboard']['keystone_backend'][keystone_setting] = false
+              expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{keystone_setting}\': False,$/)
+            end
+          end
+        end
+
         context 'neutron settings' do
           %w(enable_lb enable_quotas).each do |neutron_setting|
             it "enables the #{neutron_setting} setting when the attributes is True" do

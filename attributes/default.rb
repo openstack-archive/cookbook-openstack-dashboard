@@ -145,6 +145,13 @@ default['openstack']['dashboard']['identity_api_version'] = 2.0
 default['openstack']['dashboard']['keystone_default_domain'] = 'Default'
 default['openstack']['dashboard']['console_type'] = 'AUTO'
 
+default['openstack']['dashboard']['keystone_backend']['name'] = 'native'
+default['openstack']['dashboard']['keystone_backend']['can_edit_user'] = true
+default['openstack']['dashboard']['keystone_backend']['can_edit_group'] = true
+default['openstack']['dashboard']['keystone_backend']['can_edit_project'] = true
+default['openstack']['dashboard']['keystone_backend']['can_edit_domain'] = true
+default['openstack']['dashboard']['keystone_backend']['can_edit_role'] = true
+
 default['openstack']['dashboard']['log_level']['horizon'] = 'INFO'
 default['openstack']['dashboard']['log_level']['openstack_dashboard'] = 'INFO'
 default['openstack']['dashboard']['log_level']['novaclient'] = 'INFO'

@@ -163,12 +163,12 @@ OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_
 #
 # TODO(tres): Remove these once Keystone has an API to identify auth backend.
 OPENSTACK_KEYSTONE_BACKEND = {
-    'name': 'native',
-    'can_edit_user': True,
-    'can_edit_group': True,
-    'can_edit_project': True,
-    'can_edit_domain': True,
-    'can_edit_role': True
+    'name': '<%= node["openstack"]["dashboard"]["keystone_backend"]["name"] %>',
+    'can_edit_user': <%= node["openstack"]["dashboard"]["keystone_backend"]["can_edit_user"] ? "True" : "False" %>,
+    'can_edit_group': <%= node["openstack"]["dashboard"]["keystone_backend"]["can_edit_group"] ? "True" : "False" %>,
+    'can_edit_project': <%= node["openstack"]["dashboard"]["keystone_backend"]["can_edit_project"] ? "True" : "False" %>,
+    'can_edit_domain': <%= node["openstack"]["dashboard"]["keystone_backend"]["can_edit_domain"] ? "True" : "False" %>,
+    'can_edit_role': <%= node["openstack"]["dashboard"]["keystone_backend"]["can_edit_role"] ? "True" : "False" %>,
 }
 
 OPENSTACK_HYPERVISOR_FEATURES = {
