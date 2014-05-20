@@ -185,6 +185,16 @@ describe 'openstack-dashboard::server' do
           end
         end
 
+        it 'does not have urls set' do
+          [
+            /^LOGIN_URL =$/,
+            /^LOGOUT_URL =$/,
+            /^LOGIN_REDIRECT_URL =$/
+          ].each do |line|
+            expect(chef_run).to_not render_file(file.name).with_content(line)
+          end
+        end
+
         it 'has a identity api verision setting' do
           node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
           expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": identity_api_version_value$/)
@@ -582,9 +592,14 @@ describe 'openstack-dashboard::server' do
           expect(chef_run).to render_file(file.name).with_content(/\s*ServerAdmin apache_contact_value$/)
         end
 
+        it 'sets the WSGI script alias defaults' do
+          expect(chef_run).to render_file(file.name).with_content(%r(^\s*WSGIScriptAlias / /usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi$))
+        end
+
         it 'sets the WSGI script alias' do
           node.set['openstack']['dashboard']['wsgi_path'] = 'wsgi_path_value'
-          expect(chef_run).to render_file(file.name).with_content(/^\s*WSGIScriptAlias \/ wsgi_path_value$/)
+          node.set['openstack']['dashboard']['webroot'] = 'root'
+          expect(chef_run).to render_file(file.name).with_content(/^\s*WSGIScriptAlias root wsgi_path_value$/)
         end
 
         it 'sets the WSGI daemon process' do

@@ -28,7 +28,7 @@ NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
 <%   end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
-  WSGIScriptAlias / <%= node["openstack"]["dashboard"]["wsgi_path"] %>
+  WSGIScriptAlias <%= node["openstack"]["dashboard"]["webroot"] %> <%= node["openstack"]["dashboard"]["wsgi_path"] %>
   WSGIDaemonProcess dashboard user=<%= node['openstack']['dashboard']['horizon_user'] %> group=<%= node['openstack']['dashboard']['horizon_group'] %> processes=3 threads=10 python-path=<%= node["openstack"]["dashboard"]["dash_path"] %>
   WSGIProcessGroup dashboard
 

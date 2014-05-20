@@ -9,11 +9,14 @@ from openstack_dashboard import exceptions
 DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
 
-<% if %w(fedora rhel).include? node.platform_family -%>
-WEBROOT=''
-LOGIN_URL = WEBROOT+'/auth/login/'
-LOGOUT_URL = WEBROOT+'/auth/logout/'
-LOGIN_REDIRECT_URL = WEBROOT+'/admin'
+<% if node["openstack"]["dashboard"]["login_url"] %>
+LOGIN_URL = '<%= node['openstack']['dashboard']['login_url'] %>'
+<% end %>
+<% if node["openstack"]["dashboard"]["logout_url"] %>
+LOGOUT_URL = '<%= node['openstack']['dashboard']['logout_url'] %>'
+<% end %>
+<% if node["openstack"]["dashboard"]["login_redirect_url"] %>
+LOGIN_REDIRECT_URL = '<%= node['openstack']['dashboard']['login_redirect_url'] %>'
 <% end %>
 
 # Required for Django 1.5.

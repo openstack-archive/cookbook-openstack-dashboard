@@ -50,8 +50,14 @@ describe 'openstack-dashboard::server' do
         expect(sprintf('%o', file.mode)).to eq('644')
       end
 
-      it 'rh specific template' do
-        expect(chef_run).to render_file(file.name).with_content('WEBROOT')
+      it 'has urls set' do
+        [
+          %r(^LOGIN_URL = '/auth/login/'$),
+          %r(^LOGOUT_URL = '/auth/logout/'$),
+          /^LOGIN_REDIRECT_URL = '\/'$/
+        ].each do |line|
+          expect(chef_run).to render_file(file.name).with_content(line)
+        end
       end
     end
 

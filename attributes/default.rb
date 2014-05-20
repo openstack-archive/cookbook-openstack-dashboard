@@ -60,6 +60,8 @@ default['openstack']['dashboard']['https_port'] = 443
 
 default['openstack']['dashboard']['secret_key_content'] = nil
 
+default['openstack']['dashboard']['webroot'] = '/'
+
 case node['platform_family']
 when 'fedora', 'rhel'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
@@ -68,6 +70,9 @@ when 'fedora', 'rhel'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/pki/tls'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
+  default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
+  default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
+  default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
   # TODO(shep) - Fedora does not generate self signed certs by default
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['MySQL-python'],
@@ -90,6 +95,9 @@ when 'suse'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/srv/www/openstack-dashboard'
+  default['openstack']['dashboard']['login_url'] = nil
+  default['openstack']['dashboard']['logout_url'] = nil
+  default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysql'],
     'postgresql_python_packages' => ['python-psycopg2'],
@@ -106,6 +114,9 @@ when 'debian'
   default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
+  default['openstack']['dashboard']['login_url'] = nil
+  default['openstack']['dashboard']['logout_url'] = nil
+  default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['python-mysqldb'],
     'postgresql_python_packages' => ['python-psycopg2'],

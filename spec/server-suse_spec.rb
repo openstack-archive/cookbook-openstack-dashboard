@@ -23,6 +23,20 @@ describe 'openstack-dashboard::server' do
       end
     end
 
+    describe 'local_settings.py' do
+      let(:file) { chef_run.template('/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py') }
+
+      it 'does not have urls set' do
+        [
+          /^LOGIN_URL =$/,
+          /^LOGOUT_URL =$/,
+          /^LOGIN_REDIRECT_URL =$/
+        ].each do |line|
+          expect(chef_run).to_not render_file(file.name).with_content(line)
+        end
+      end
+    end
+
     context 'postgresql backend' do
 
       include_context 'postgresql_backend'
