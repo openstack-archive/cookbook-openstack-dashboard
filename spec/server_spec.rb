@@ -195,9 +195,21 @@ describe 'openstack-dashboard::server' do
           end
         end
 
-        it 'has a identity api verision setting' do
-          node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
-          expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": identity_api_version_value$/)
+        context 'identity api version setting' do
+          it 'is configurable directly' do
+            node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
+            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": identity_api_version_value$/)
+          end
+
+          it 'sets the proper value for v2.0 from common attributes' do
+            node.set['openstack']['api']['auth']['version'] = 'v2.0'
+            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": 2\.0$/)
+          end
+
+          it 'sets the proper value for v3.0 from common attributes' do
+            node.set['openstack']['api']['auth']['version'] = 'v3.0'
+            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": 3$/)
+          end
         end
 
         context 'keystone multidomain support' do
