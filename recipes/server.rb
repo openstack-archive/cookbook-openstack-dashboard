@@ -6,6 +6,7 @@
 # Copyright 2012, Rackspace US, Inc.
 # Copyright 2012-2013, AT&T Services, Inc.
 # Copyright 2013-2014, IBM, Corp.
+# Copyright 2014, SUSE Linux, GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,7 +77,7 @@ auth_uri = auth_uri_transform auth_uri, auth_version
 db_pass = get_password 'db', 'horizon'
 db_info = db 'dashboard'
 
-python_packages = platform_options["#{db_info['service_type']}_python_packages"]
+python_packages = node['openstack']['db']['python_packages'][db_info['service_type']]
 (platform_options['horizon_packages'] + python_packages).each do |pkg|
   package pkg do
     action :upgrade
