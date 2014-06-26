@@ -369,7 +369,7 @@ describe 'openstack-dashboard::server' do
                             'db_name' => "#{service_type}_db",
                             'host' => "#{service_type}_host")
               node.set['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
-              node.set['openstack']['dashboard']['platform'] = { "#{service_type}_python_packages" => %w(pkg1 pkg2) }
+              node.set['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
             end
 
             [/^\s*'ENGINE': '#{backend}',$/,
