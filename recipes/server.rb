@@ -82,13 +82,13 @@ end
 
 memcached = memcached_servers
 
-# delete the openstack-dashboard.conf before reload apache2 service on fedora, redhat and centos
+# delete the openstack-dashboard.conf before reload apache2 service on redhat and centos
 # since this file is not valid on those platforms for the apache2 service.
 file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
 
-  only_if { platform_family?('fedora', 'rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
+  only_if { platform_family?('rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
 template node['openstack']['dashboard']['local_settings_path'] do
@@ -148,7 +148,7 @@ key_file = "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['open
 key_mode = 00640
 key_owner = 'root'
 case node['platform_family']
-when 'debian' # Don't know about fedora
+when 'debian'
   key_group = 'ssl-cert'
 else
   key_group = 'root'
@@ -234,7 +234,7 @@ if platform_family?('debian')
   apache_site '000-default' do
     enable false
   end
-elsif platform_family?('fedora', 'rhel') then
+elsif platform_family?('rhel') then
   apache_site 'default' do
     enable false
 

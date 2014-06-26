@@ -63,7 +63,7 @@ default['openstack']['dashboard']['secret_key_content'] = nil
 default['openstack']['dashboard']['webroot'] = '/'
 
 case node['platform_family']
-when 'fedora', 'rhel'
+when 'rhel'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
   default['openstack']['dashboard']['horizon_group'] = 'apache'
   default['openstack']['dashboard']['secret_key_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
@@ -73,7 +73,6 @@ when 'fedora', 'rhel'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
-  # TODO(shep) - Fedora does not generate self signed certs by default
   default['openstack']['dashboard']['platform'] = {
     'mysql_python_packages' => ['MySQL-python'],
     'db2_python_packages' => %w{python-ibm-db python-ibm-db-django python-ibm-db-sa},
@@ -83,11 +82,7 @@ when 'fedora', 'rhel'
     'memcache_python_packages' => ['python-memcached'],
     'package_overrides' => ''
   }
-  if node['platform_family'] == 'fedora'
-    default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
-  else
-    default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
-  end
+  default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard"
 when 'suse'
   default['openstack']['dashboard']['horizon_user'] = 'wwwrun'
   default['openstack']['dashboard']['horizon_group'] = 'www'
