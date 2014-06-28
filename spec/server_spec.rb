@@ -221,6 +221,19 @@ describe 'openstack-dashboard::server' do
           end
         end
 
+        context 'temp dir override' do
+          context 'temp dir is nil' do
+            it 'does not override temp dir when it is nil' do
+              node.set['openstack']['dashboard']['file_upload_temp_dir'] = nil
+              expect(chef_run).not_to render_file(file.name).with_content(/^FILE_UPLOAD_TEMP_DIR =/)
+            end
+            it 'does override temp dir when it is not nil' do
+              node.set['openstack']['dashboard']['file_upload_temp_dir'] = '/foobar'
+              expect(chef_run).to render_file(file.name).with_content(/^FILE_UPLOAD_TEMP_DIR = "\/foobar"$/)
+            end
+          end
+        end
+
         context 'ssl settings' do
           context 'use_ssl enabled' do
             before do

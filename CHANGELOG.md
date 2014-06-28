@@ -14,10 +14,9 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Add sensitive flag to private key and certificate file resources
 * Add hash algorithm option to local_settings
 * Update user group for local_settings from root to horizon user group
-
 * Bump Chef gem to 11.16
-
 * Add sensitive flag to local_settings file resource
+* allow override of the temporary directory used for file uploads
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
