@@ -334,7 +334,7 @@ describe 'openstack-dashboard::server' do
         end
 
         context 'neutron settings' do
-          %w(enable_lb enable_quotas).each do |neutron_setting|
+          %w(enable_lb enable_quotas enable_firewall enable_vpn).each do |neutron_setting|
             it "enables the #{neutron_setting} setting when the attributes is True" do
               node.set['openstack']['dashboard']['neutron'][neutron_setting] = true
               expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{neutron_setting}\': True,$/)
