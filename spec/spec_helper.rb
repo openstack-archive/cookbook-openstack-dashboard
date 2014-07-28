@@ -23,9 +23,9 @@ SUSE_OPTS = {
 
 shared_context 'dashboard_stubs' do
   before do
-    Chef::Recipe.any_instance.stub(:memcached_servers)
+    allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers)
     .and_return ['hostA:port', 'hostB:port']
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
     .with('db', 'horizon')
     .and_return('test-passes')
   end

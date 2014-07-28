@@ -283,7 +283,7 @@ describe 'openstack-dashboard::server' do
             context 'without memcache servers' do
               [nil, []].each do |empty_value|
                 it "does not configure caching when backend == memcache and #{empty_value} provided as memcache servers" do
-                  Chef::Recipe.any_instance.stub(:memcached_servers)
+                  allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers)
                     .and_return(empty_value)
 
                   expect(chef_run).not_to render_file(file.name)
@@ -751,7 +751,7 @@ describe 'openstack-dashboard::server' do
     end
 
     it 'notifies apache2 restart' do
-      pending 'TODO: how to test when tied to an LWRP'
+      skip 'TODO: how to test when tied to an LWRP'
     end
 
     it 'does not execute restore-selinux-context' do
