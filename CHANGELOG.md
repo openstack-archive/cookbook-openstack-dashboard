@@ -2,6 +2,9 @@ openstack-dashboard Cookbook CHANGELOG
 ==============================
 This file is used to list changes made in each version of the openstack-dashboard cookbook.
 
+## 10.0.0
+* Upgrading to Juno
+
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
 * bump berkshelf to 2.0.18 to allow Supermarket support

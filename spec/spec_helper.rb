@@ -23,9 +23,9 @@ SUSE_OPTS = {
 
 shared_context 'dashboard_stubs' do
   before do
-    Chef::Recipe.any_instance.stub(:memcached_servers)
+    allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers)
     .and_return ['hostA:port', 'hostB:port']
-    Chef::Recipe.any_instance.stub(:get_password)
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
     .with('db', 'horizon')
     .and_return('test-passes')
   end
@@ -47,7 +47,7 @@ end
 
 shared_context 'postgresql_backend' do
   before do
-    Chef::Recipe.any_instance.stub(:db)
+    allow_any_instance_of(Chef::Recipe).to receive(:db)
     .with('dashboard')
     .and_return('service_type' => 'postgresql', 'db_name' => 'flying_elephant')
   end
@@ -55,7 +55,7 @@ end
 
 shared_context 'mysql_backend' do
   before do
-    Chef::Recipe.any_instance.stub(:db)
+    allow_any_instance_of(Chef::Recipe).to receive(:db)
     .with('dashboard')
     .and_return('service_type' => 'mysql', 'db_name' => 'flying_dolphin')
   end
