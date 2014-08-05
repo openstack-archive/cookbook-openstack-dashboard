@@ -6,6 +6,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Upgrading to Juno
 * Upgrading berkshelf from 2.0.18 to 3.1.5
 * Allow enable_filewall and enable_vpn to be configured via attributes
+* Sync conf files with Juno
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
