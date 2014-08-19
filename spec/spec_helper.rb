@@ -21,6 +21,12 @@ SUSE_OPTS = {
   log_level: LOG_LEVEL
 }
 
+# Build a regex for a section of lines
+def build_section(lines)
+  lines.map! { |line| Regexp.quote(line) }
+  /^#{lines.join('\n')}/
+end
+
 shared_context 'dashboard_stubs' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers)

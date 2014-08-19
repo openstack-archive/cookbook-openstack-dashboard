@@ -98,6 +98,36 @@ describe 'openstack-dashboard::server' do
           expect(chef_run).to render_file(file.name).with_content(/^custom_template_banner_value$/)
         end
 
+        context 'misc settings' do
+          before do
+            node.set['openstack']['dashboard']['misc_local_settings'] = {
+              'CUSTOM_CONFIG_A' => {
+                'variable1' => 'value1',
+                'variable2' => 'value2'
+              },
+              'CUSTOM_CONFIG_B' => {
+                'variable1' => 'value1',
+                'variable2' => 'value2'
+              }
+            }
+          end
+
+          it 'sets misc settings properly' do
+            [
+              ['CUSTOM_CONFIG_A = {',
+               '  \'variable1\': \'value1\',',
+               '  \'variable2\': \'value2\',',
+               '}'],
+              ['CUSTOM_CONFIG_B = {',
+               '  \'variable1\': \'value1\',',
+               '  \'variable2\': \'value2\',',
+               '}']
+            ].each do |content|
+              expect(chef_run).to render_file(file.name).with_content(build_section(content))
+            end
+          end
+        end
+
         context 'debug setting' do
           context 'set to true' do
             before do

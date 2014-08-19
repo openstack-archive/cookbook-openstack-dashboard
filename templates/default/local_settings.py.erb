@@ -589,3 +589,15 @@ mod = sys.modules['openstack_dashboard.settings']
 mod.INSTALLED_APPS += ('<%= p %>', )
 <% end %>
 <% end %>
+
+# Allow for misc sections to be added
+<% if node["openstack"]["dashboard"]["misc_local_settings"] %>
+<% node["openstack"]["dashboard"]["misc_local_settings"].each do |sec, opts| %>
+<%= sec %> = {
+<% opts.each do |key, value| %>
+  '<%= key %>': '<%= value %>',
+<% end %>
+}
+<% end %>
+<% end %>
+

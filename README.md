@@ -47,6 +47,7 @@ Attributes
 * `openstack['dashboard']['http_port']` - Port that httpd should listen on (default: 80)
 * `openstack['dashboard']['https_port']` - Port that httpd should listen on for using ssl (default: 443)
 * `openstack['dashboard']['password_autocomplete']` - Toggle browser autocompletion for login form ('on' or 'off', default: 'on')
+* `openstack['dashboard']['misc_local_settings']` - Additions to the local_settings conf file
 
 Identity
 --------

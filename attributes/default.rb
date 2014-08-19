@@ -178,3 +178,25 @@ default['openstack']['dashboard']['neutron']['enable_lb'] = false
 default['openstack']['dashboard']['neutron']['enable_quotas'] = true
 default['openstack']['dashboard']['neutron']['enable_firewall'] = false
 default['openstack']['dashboard']['neutron']['enable_vpn'] = false
+
+# Allow for misc sections to be added to the local_settings template
+# For example: {
+#                'CUSTOM_CONFIG_A' => {
+#                  'variable1': 'value1',
+#                  'variable2': 'value2'
+#                }
+#                'CUSTOM_CONFIG_B' => {
+#                  'variable1': 'value1',
+#                  'variable2': 'value2'
+#                }
+#              }
+# will generate:
+#  CUSTOM_CONFIG_A = {
+#    'varable1': 'value1',
+#    'varable2': 'value2',
+#  }
+#  CUSTOM_CONFIG_A = {
+#    'varable1': 'value1',
+#    'varable2': 'value2',
+#  }
+default['openstack']['dashboard']['misc_local_settings'] = nil
