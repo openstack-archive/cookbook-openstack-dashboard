@@ -68,6 +68,8 @@ db_pass = get_password 'db', 'horizon'
 db_info = db 'dashboard'
 
 python_packages = node['openstack']['db']['python_packages'][db_info['service_type']]
+# Add dashboard specific database packages
+python_packages += Array(node['openstack']['dashboard']['db_python_packages'][db_info['service_type']])
 (platform_options['horizon_packages'] + python_packages).each do |pkg|
   package pkg do
     action :upgrade
