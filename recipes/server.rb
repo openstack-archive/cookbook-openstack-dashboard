@@ -96,7 +96,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
   owner  'root'
   group  'root'
-  mode   00644
+  mode   00640
 
   variables(
     db_pass: db_pass,
