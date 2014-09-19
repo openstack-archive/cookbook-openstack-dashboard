@@ -520,7 +520,7 @@ describe 'openstack-dashboard::server' do
       let(:key) { chef_run.cookbook_file('/etc/ssl/private/horizon.key') }
       let(:remote_key) { chef_run.remote_file('/etc/ssl/private/horizon.key') }
 
-      it 'has proper owner' do
+      it 'has proper owner and group' do
         expect(crt.owner).to eq('root')
         expect(crt.group).to eq('root')
         expect(key.owner).to eq('root')
@@ -530,6 +530,11 @@ describe 'openstack-dashboard::server' do
       it 'has proper modes' do
         expect(sprintf('%o', crt.mode)).to eq('644')
         expect(sprintf('%o', key.mode)).to eq('640')
+      end
+
+      it 'has proper sensitvity' do
+        expect(crt.sensitive).to eq(true)
+        expect(key.sensitive).to eq(true)
       end
 
       it 'notifies restore-selinux-context' do
@@ -545,8 +550,18 @@ describe 'openstack-dashboard::server' do
       it 'downloads certs if needed and restarts apache' do
         node.set['openstack']['dashboard']['ssl']['cert_url'] = 'http://server/mycert.pem'
         node.set['openstack']['dashboard']['ssl']['key_url'] = 'http://server/mykey.key'
-        expect(chef_run).to create_remote_file('/etc/ssl/certs/horizon.pem')
-        expect(chef_run).to create_remote_file('/etc/ssl/private/horizon.key')
+        expect(chef_run).to create_remote_file('/etc/ssl/certs/horizon.pem').with(
+          sensitive: true,
+          user: 'root',
+          group: 'root',
+          mode: 0644
+        )
+        expect(chef_run).to create_remote_file('/etc/ssl/private/horizon.key').with(
+          sensitive: true,
+          user: 'root',
+          group: 'ssl-cert',
+          mode: 0640
+        )
         expect(remote_key).to notify('service[apache2]').to(:restart)
       end
     end

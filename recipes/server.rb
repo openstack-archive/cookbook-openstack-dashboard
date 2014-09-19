@@ -129,6 +129,7 @@ cert_owner = 'root'
 cert_group = 'root'
 if node['openstack']['dashboard']['ssl']['cert_url']
   remote_file cert_file do
+    sensitive true
     source node['openstack']['dashboard']['ssl']['cert_url']
     mode cert_mode
     owner  cert_owner
@@ -138,6 +139,7 @@ if node['openstack']['dashboard']['ssl']['cert_url']
   end
 else
   cookbook_file cert_file do
+    sensitive true
     source 'horizon.pem'
     mode cert_mode
     owner  cert_owner
@@ -159,6 +161,7 @@ end
 
 if node['openstack']['dashboard']['ssl']['key_url']
   remote_file key_file do
+    sensitive true
     source node['openstack']['dashboard']['ssl']['key_url']
     mode key_mode
     owner  key_owner
@@ -169,6 +172,7 @@ if node['openstack']['dashboard']['ssl']['key_url']
   end
 else
   cookbook_file key_file do
+    sensitive true
     source 'horizon.key'
     mode   key_mode
     owner  key_owner
