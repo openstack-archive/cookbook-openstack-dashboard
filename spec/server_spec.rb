@@ -158,6 +158,29 @@ describe 'openstack-dashboard::server' do
           end
         end
 
+        context 'config ssl_no_verify' do
+          context 'set to the default value' do
+            it 'has a True value for the OPENSTACK_SSL_NO_VERIFY attribute' do
+              expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = True$/)
+            end
+          end
+
+          context 'set to False' do
+            before do
+              node.set['openstack']['dashboard']['ssl_no_verify'] = 'False'
+            end
+
+            it 'has a False value for the OPENSTACK_SSL_NO_VERIFY attribute' do
+              expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = False$/)
+            end
+          end
+        end
+
+        it 'config ssl_cacert' do
+          node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
+          expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_CACERT = '\/path_to_cacert.pem'$/)
+        end
+
         it 'has some allowed hosts set' do
           node.set['openstack']['dashboard']['allowed_hosts'] = ['dashboard.example.net']
           expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["dashboard.example.net"\]$/)

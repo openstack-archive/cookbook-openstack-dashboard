@@ -161,9 +161,13 @@ OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_
 
 # Disable SSL certificate checks (useful for self-signed certificates):
 # OPENSTACK_SSL_NO_VERIFY = True
+OPENSTACK_SSL_NO_VERIFY = <%= node['openstack']['dashboard']['ssl_no_verify'] %>
 
 # The CA certificate to use to verify SSL connections
 # OPENSTACK_SSL_CACERT = '/path/to/cacert.pem'
+<% if node['openstack']['dashboard']['ssl_cacert'] %>
+OPENSTACK_SSL_CACERT = '<%= node['openstack']['dashboard']['ssl_cacert'] %>'
+<% end %>
 
 # The OPENSTACK_KEYSTONE_BACKEND settings can be used to identify the
 # capabilities of the auth backend for Keystone.

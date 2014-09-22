@@ -60,6 +60,9 @@ default['openstack']['dashboard']['https_port'] = 443
 
 default['openstack']['dashboard']['secret_key_content'] = nil
 
+default['openstack']['dashboard']['ssl_no_verify'] = 'True'
+default['openstack']['dashboard']['ssl_cacert'] = nil
+
 default['openstack']['dashboard']['webroot'] = '/'
 
 # Dashboard specific database packages
