@@ -50,6 +50,7 @@ Attributes
 * `openstack['dashboard']['ssl_no_verify']` - Disable SSL certificate checks (useful for self-signed certificates)
 * `openstack['dashboard']['ssl_cacert']` - The CA certificate to use to verify SSL connections
 * `openstack['dashboard']['misc_local_settings']` - Additions to the local_settings conf file
+* `openstack['dashboard']['hash_algorithm']` - Hash algorithm to use for hashing PKI tokens
 
 Identity
 --------

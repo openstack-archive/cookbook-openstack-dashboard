@@ -74,6 +74,12 @@ default['openstack']['dashboard']['db_python_packages'] = {
   sqlite: []
 }
 
+# The hash algorithm to use for authentication tokens. This must match the hash
+# algorithm that the identity (Keystone) server and the auth_token middleware
+# are using. Allowed values are the algorithms supported by Python's hashlib
+# library.
+default['openstack']['dashboard']['hash_algorithm'] = 'md5'
+
 case node['platform_family']
 when 'rhel'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
