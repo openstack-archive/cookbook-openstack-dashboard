@@ -13,6 +13,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Allow some ceitificate options to be configured
 * Add sensitive flag to private key and certificate file resources
 * Add hash algorithm option to local_settings
+* Update user group for local_settings from root to horizon user group
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook

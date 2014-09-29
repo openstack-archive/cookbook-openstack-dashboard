@@ -97,7 +97,7 @@ end
 template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
   owner  'root'
-  group  'root'
+  group  node['openstack']['dashboard']['horizon_group']
   mode   00640
 
   variables(

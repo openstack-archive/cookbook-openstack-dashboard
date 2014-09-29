@@ -43,7 +43,7 @@ describe 'openstack-dashboard::server' do
 
       it 'has proper owner' do
         expect(file.owner).to eq('root')
-        expect(file.group).to eq('root')
+        expect(file.group).to eq('apache')
       end
 
       it 'has proper modes' do
