@@ -13,6 +13,8 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Allow some ceitificate options to be configured
 * Add sensitive flag to private key and certificate file resources
 
+* Bump Chef gem to 11.16
+
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
 * bump berkshelf to 2.0.18 to allow Supermarket support
