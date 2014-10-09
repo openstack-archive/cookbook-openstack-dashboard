@@ -15,6 +15,8 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Add hash algorithm option to local_settings
 * Update user group for local_settings from root to horizon user group
 
+* Bump Chef gem to 11.16
+
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
 * bump berkshelf to 2.0.18 to allow Supermarket support
