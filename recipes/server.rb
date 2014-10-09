@@ -99,6 +99,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
   owner  'root'
   group  node['openstack']['dashboard']['horizon_group']
   mode   00640
+  sensitive true
 
   variables(
     db_pass: db_pass,

@@ -92,6 +92,10 @@ describe 'openstack-dashboard::server' do
         expect(sprintf('%o', file.mode)).to eq('640')
       end
 
+      it 'has proper sensitvity' do
+        expect(file.sensitive).to eq(true)
+      end
+
       context 'template contents' do
         it 'has the customer banner' do
           node.set['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
