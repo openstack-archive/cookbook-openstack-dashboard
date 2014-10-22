@@ -665,14 +665,25 @@ describe 'openstack-dashboard::server' do
             end
           end
 
-          it 'shows ssl certificate related directives' do
+          it 'shows ssl certificate related directives defaults' do
+            [/^\s*SSLEngine on$/,
+             %r(^\s*SSLCertificateFile /etc/ssl/certs/horizon.pem$),
+             %r(^\s*SSLCertificateKeyFile /etc/ssl/private/horizon.key$),
+             /^\s*SSLProtocol All -SSLv2 -SSLv3$/].each do |ssl_certificate_directive|
+              expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
+            end
+          end
+
+          it 'shows ssl certificate related directives overrides' do
             node.set['openstack']['dashboard']['ssl']['dir'] = 'ssl_dir_value'
             node.set['openstack']['dashboard']['ssl']['cert'] = 'ssl_cert_value'
             node.set['openstack']['dashboard']['ssl']['key'] = 'ssl_key_value'
+            node.set['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
 
             [/^\s*SSLEngine on$/,
              %r(^\s*SSLCertificateFile ssl_dir_value/certs/ssl_cert_value$),
-             %r(^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$)].each do |ssl_certificate_directive|
+             %r(^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$),
+             /^\s*SSLProtocol ssl_protocol_value$/].each do |ssl_certificate_directive|
               expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
             end
           end
