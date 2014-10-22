@@ -57,6 +57,14 @@ default['openstack']['dashboard']['theme'] = 'default'
 
 default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/openstack-dashboard"
 
+# Allow TRACE method
+#
+# Set to "extended" to also reflect the request body (only for testing and
+# diagnostic purposes).
+#
+# Set to one of:  On | Off | extended
+default['openstack']['dashboard']['traceenable'] = node['apache']['traceenable']
+
 default['openstack']['dashboard']['http_port'] = 80
 default['openstack']['dashboard']['https_port'] = 443
 

@@ -742,6 +742,12 @@ describe 'openstack-dashboard::server' do
             .with_content(%r(\s*DocumentRoot dash_path_value/.blackhole/$))
         end
 
+        it 'has TraceEnable set' do
+          node.set['openstack']['dashboard']['traceenable'] = 'value'
+          expect(chef_run).to render_file(file.name)
+            .with_content(/^  TraceEnable value$/)
+        end
+
         it 'sets the right Alias path for /static' do
           node.set['openstack']['dashboard']['static_path'] = 'static_path_value'
           expect(chef_run).to render_file(file.name).with_content(/^\s+Alias \/static static_path_value$/)

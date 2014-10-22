@@ -18,6 +18,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Add sensitive flag to local_settings file resource
 * allow override of the temporary directory used for file uploads
 * Set default to use only TLS for SSL. OpenStack security note OSSN-0039
+* Allow TraceEnable to be configured
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook
