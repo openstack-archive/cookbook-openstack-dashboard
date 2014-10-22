@@ -611,3 +611,7 @@ mod.INSTALLED_APPS += ('<%= p %>', )
 <% end %>
 <% end %>
 
+# define a custom tmp upload directory (override /tmp)
+<% if node["openstack"]["dashboard"]["file_upload_temp_dir"] %>
+FILE_UPLOAD_TEMP_DIR = "<%= node["openstack"]["dashboard"]["file_upload_temp_dir"] %>"
+<% end %>
