@@ -4,6 +4,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 
 ## 9.1.2
 * Set default to use only TLS for SSL. OpenStack security note OSSN-0039
+* Fix python-ibm-db-django package polluting common package attribute
 
 ## 9.1.1
 * Updated Berksfile.lock for the UTF8 issue in common
