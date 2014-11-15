@@ -283,20 +283,36 @@ describe 'openstack-dashboard::server' do
           end
         end
 
-        context 'identity api version setting' do
+        context 'identity and volume api version setting' do
           it 'is configurable directly' do
             node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": identity_api_version_value$/)
+            node.set['openstack']['dashboard']['volume_api_version'] = 'volume_api_version_value'
+            [
+              /^\s*"identity": identity_api_version_value,$/,
+              /^\s*"volume": volume_api_version_value$/
+            ].each do |line|
+              expect(chef_run).to render_file(file.name).with_content(line)
+            end
           end
 
-          it 'sets the proper value for v2.0 from common attributes' do
+          it 'sets the proper value for identity v2.0 with volume default v2 from common attributes' do
             node.set['openstack']['api']['auth']['version'] = 'v2.0'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": 2\.0$/)
+            [
+              /^\s*"identity": 2\.0,$/,
+              /^\s*"volume": 2$/
+            ].each do |line|
+              expect(chef_run).to render_file(file.name).with_content(line)
+            end
           end
 
-          it 'sets the proper value for v3.0 from common attributes' do
+          it 'sets the proper value for identity v3.0 with volume default v2 from common attributes' do
             node.set['openstack']['api']['auth']['version'] = 'v3.0'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*"identity": 3$/)
+            [
+              /^\s*"identity": 3,$/,
+              /^\s*"volume": 2$/
+            ].each do |line|
+              expect(chef_run).to render_file(file.name).with_content(line)
+            end
           end
         end
 

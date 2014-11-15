@@ -55,6 +55,7 @@ Attributes
 Identity
 --------
 * `openstack['dashboard']['identity_api_version']` - Force a specific Identity API version ('2.0' or '3', default: '2.0')
+* `openstack['dashboard']['volume_api_version']` - Force a specific Cinder API version (default: '2')
 * `openstack['dashboard']['keystone_multidomain_support']` - Boolean to enable multi-Domain support
 * `openstack['dashboard']['keystone_default_domain']` - Default Domain if using API v3 and on a single-domain model (default: 'Default')
 * `openstack['dashboard']['keystone_default_role']` - Default Keystone role assigned to project members (default: '_member_')
