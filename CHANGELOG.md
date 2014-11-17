@@ -20,6 +20,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Set default to use only TLS for SSL. OpenStack security note OSSN-0039
 * Allow TraceEnable to be configured
 * Allow volume_api_version to be configured for Horizon
+* Allow webserver to be configurable
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook

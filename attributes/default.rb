@@ -26,6 +26,8 @@ default['openstack']['dashboard']['custom_template_banner'] = '
 # Do not edit, changes will be overwritten
 '
 
+default['openstack']['dashboard']['server_type'] = 'apache2'
+
 default['openstack']['dashboard']['debug'] = false
 
 # The Keystone role used by default for users logging into the dashboard

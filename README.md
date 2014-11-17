@@ -21,10 +21,23 @@ The following cookbooks are dependencies:
 Usage
 =====
 
+horizon
+-------
+
+Sets up the packages needed to run the Horizon dashboard and its dependencies.
+Will be included from the `server` recipe.
+
+apache2-server
+--------------
+
+Installs the Apache webserver and sets up an `mod_wsgi` container to run the
+Horizon dashboard.  Will be included from the `server` recipe.
+
 server
 ------
 
-Sets up the Horizon dashboard within an Apache `mod_wsgi` container.
+Sets up the Horizon dashboard and a webserver of type `['openstack']['dashboard']['server_type']`
+to run it, default type is 'apache2'.
 
 ```json
 "run_list": [
@@ -35,8 +48,9 @@ Sets up the Horizon dashboard within an Apache `mod_wsgi` container.
 Attributes
 ==========
 
+* `openstack['dashboard']['server_type']` - Selects the type of webserver to install
 * `openstack['dashboard']['db']['username']` - Username for horizon database access
-* `openstack['dashboard']['server_hostname']` - Sets the ServerName in the Apache config
+* `openstack['dashboard']['server_hostname']` - Sets the ServerName in the webserver config
 * `openstack['dashboard']['allowed_hosts']` - List of host/domain names we can service (default: '\[\*\]')
 * `openstack['dashboard']['dash_path']` - Base path for dashboard files (document root)
 * `openstack['dashboard']['wsgi_path']` - Path for wsgi dir
@@ -115,12 +129,14 @@ License and Author
 | **Author**           |  Jian Hua Geng (<gengjh@cn.ibm.com>)               |
 | **Author**           |  Ionut Artarisi (<iartarisi@suse.cz>)              |
 | **Author**           |  Eric Zhou (<iartarisi@suse.cz>)                   |
+| **Author**           |  Jens Rosenboom (<j.rosenboom@x-ion.de>)           |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
 | **Copyright**        |  Copyright (c) 2013, Opscode, Inc.                 |
 | **Copyright**        |  Copyright (c) 2013-2014, IBM, Corp.               |
 | **Copyright**        |  Copyright (c) 2013-2014, SUSE Linux GmbH.         |
+| **Copyright**        |  Copyright (c) 2014, x-ion GmbH.                   |
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
