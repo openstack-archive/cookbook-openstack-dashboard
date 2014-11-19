@@ -38,6 +38,8 @@ default['openstack']['dashboard']['server_hostname'] = nil
 default['openstack']['dashboard']['use_ssl'] = true
 default['openstack']['dashboard']['ssl']['cert'] = 'horizon.pem'
 default['openstack']['dashboard']['ssl']['key'] = 'horizon.key'
+# Which versions of the SSL/TLS protocol will be accepted in new connections.
+default['openstack']['dashboard']['ssl']['protocol'] = 'All -SSLv2 -SSLv3'
 
 # List of hosts/domains the dashboard can serve. This should be changed, a '*'
 # allows everything

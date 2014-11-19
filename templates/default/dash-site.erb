@@ -58,6 +58,7 @@ NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
   SSLEngine on
   SSLCertificateFile <%= @ssl_cert_file %>
   SSLCertificateKeyFile <%= @ssl_key_file %>
+  SSLProtocol <%= node["openstack"]["dashboard"]["ssl"]["protocol"] %>
   <% end %>
 
   # Allow custom files to overlay the site (such as logo.png)
