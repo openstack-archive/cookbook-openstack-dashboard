@@ -132,7 +132,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     describe 'openstack-dashboard virtual host' do
-      let(:file) { chef_run.template('/etc/apache2/sites-available/openstack-dashboard') }
+      let(:file) { chef_run.template('/etc/apache2/sites-available/openstack-dashboard.conf') }
 
       it 'has proper owner' do
         expect(file.owner).to eq('root')
@@ -366,7 +366,7 @@ describe 'openstack-dashboard::apache2-server' do
     it 'calls apache_site to disable 000-default virtualhost' do
 
       resource = chef_run.find_resource('execute',
-                                        'a2dissite 000-default').to_hash
+                                        'a2dissite 000-default.conf').to_hash
       expect(resource).to include(
         action: 'run',
         params: {
@@ -379,7 +379,7 @@ describe 'openstack-dashboard::apache2-server' do
     it 'calls apache_site to enable openstack-dashboard virtualhost' do
 
       resource = chef_run.find_resource('execute',
-                                        'a2ensite openstack-dashboard').to_hash
+                                        'a2ensite openstack-dashboard.conf').to_hash
       expect(resource).to include(
         action: 'run',
         params: {

@@ -61,7 +61,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'sets the WSGI daemon user to attribute default' do
-      file = chef_run.template('/etc/httpd/sites-available/openstack-dashboard')
+      file = chef_run.template('/etc/httpd/sites-available/openstack-dashboard.conf')
       expect(chef_run).to render_file(file.name).with_content('WSGIDaemonProcess dashboard user=apache')
     end
 
