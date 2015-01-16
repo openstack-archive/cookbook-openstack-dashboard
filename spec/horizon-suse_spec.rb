@@ -57,13 +57,13 @@ describe 'openstack-dashboard::horizon' do
       it 'does not execute openstack-dashboard syncdb by default' do
         cmd = 'python manage.py syncdb --noinput'
         expect(chef_run).not_to run_execute(cmd).with(
-        cwd: '/srv/www/openstack-dashboard',
-        environment: {
-          'PYTHONPATH' => '/etc/openstack-dashboard:' \
-                          '/srv/www/openstack-dashboard:' \
-                          '$PYTHONPATH'
+          cwd: '/srv/www/openstack-dashboard',
+          environment: {
+            'PYTHONPATH' => '/etc/openstack-dashboard:' \
+                            '/srv/www/openstack-dashboard:' \
+                            '$PYTHONPATH'
           }
-          )
+        )
       end
     end
   end

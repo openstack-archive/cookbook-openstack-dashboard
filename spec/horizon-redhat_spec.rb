@@ -50,7 +50,6 @@ describe 'openstack-dashboard::horizon' do
     end
 
     it 'does not remove openstack-dashboard-ubuntu-theme package' do
-
       expect(chef_run).not_to purge_package('openstack-dashboard-ubuntu-theme')
     end
   end

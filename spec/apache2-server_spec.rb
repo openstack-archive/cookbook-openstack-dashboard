@@ -284,6 +284,17 @@ describe 'openstack-dashboard::apache2-server' do
           end
         end
 
+        context 'directory options' do
+          it 'sets default options for apache 2.2' do
+            expect(chef_run).to render_file(file.name).with_content(/^\s*Order allow,deny\n\s*allow from all$/)
+          end
+
+          it 'sets default options for apache 2.4' do
+            node.set['apache']['version'] = '2.4'
+            expect(chef_run).to render_file(file.name).with_content(/^\s*Require all granted$/)
+          end
+        end
+
         context 'log directives' do
           before do
             node.set['apache']['log_dir'] = 'log_dir_value'

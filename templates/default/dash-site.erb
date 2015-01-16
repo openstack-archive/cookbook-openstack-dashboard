@@ -44,15 +44,23 @@ NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
   <Directory <%= node["openstack"]["dashboard"]["dash_path"] %>>
     Options Indexes FollowSymLinks MultiViews
     AllowOverride None
+    <% if node['apache']['version'] == '2.4' -%>
+    Require all granted
+    <% else -%>
     Order allow,deny
     allow from all
+    <% end -%>
   </Directory>
 
   <Directory <%= node["openstack"]["dashboard"]["static_path"] %>>
-      Options FollowSymLinks MultiViews
-      AllowOverride None
-      Order allow,deny
-      allow from all
+    Options FollowSymLinks MultiViews
+    AllowOverride None
+    <% if node['apache']['version'] == '2.4' -%>
+    Require all granted
+    <% else -%>
+    Order allow,deny
+    allow from all
+    <% end -%>
   </Directory>
 
   <% if node["openstack"]["dashboard"]["use_ssl"] %>
