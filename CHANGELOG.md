@@ -22,6 +22,7 @@ This file is used to list changes made in each version of the openstack-dashboar
 * Allow volume_api_version to be configured for Horizon
 * Allow webserver to be configurable
 * Fix site template directory defaults for apache 2.4
+* Use common specific_endpoint routines (bug 1412919)
 
 ## 9.1
 * python_packages database client attributes have been moved to the -common cookbook

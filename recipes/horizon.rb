@@ -30,9 +30,9 @@ end
 
 platform_options = node['openstack']['dashboard']['platform']
 
-identity_admin_endpoint = endpoint 'identity-admin'
+identity_admin_endpoint = admin_endpoint 'identity-admin'
 auth_admin_uri = auth_uri_transform identity_admin_endpoint.to_s, node['openstack']['dashboard']['api']['auth']['version']
-identity_endpoint = endpoint 'identity-api'
+identity_endpoint = public_endpoint 'identity-api'
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['dashboard']['api']['auth']['version']
 
 db_pass = get_password 'db', 'horizon'
