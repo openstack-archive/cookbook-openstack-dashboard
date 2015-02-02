@@ -286,11 +286,11 @@ describe 'openstack-dashboard::apache2-server' do
 
         context 'directory options' do
           it 'sets default options for apache 2.2' do
+            node.set['apache']['version'] = '2.2'
             expect(chef_run).to render_file(file.name).with_content(/^\s*Order allow,deny\n\s*allow from all$/)
           end
 
           it 'sets default options for apache 2.4' do
-            node.set['apache']['version'] = '2.4'
             expect(chef_run).to render_file(file.name).with_content(/^\s*Require all granted$/)
           end
         end
