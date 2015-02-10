@@ -140,12 +140,7 @@ when 'debian'
     'memcache_python_packages' => ['python-memcache'],
     'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
-  # lessc became node-less in 12.10
-  if node['lsb']['release'] > '12.04'
-    default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
-  else
-    default['openstack']['dashboard']['platform']['horizon_packages'] = ['lessc', 'openstack-dashboard']
-  end
+  default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard.conf"
 end
 
