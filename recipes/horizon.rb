@@ -71,7 +71,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
     memcached_servers: memcached
   )
 
-  notifies :restart, "service[#{node['openstack']['dashboard']['server_type']}]", :immediately
+  notifies :restart, "service[#{node['openstack']['dashboard']['server_type']}]", :delayed
 end
 
 execute 'openstack-dashboard syncdb' do

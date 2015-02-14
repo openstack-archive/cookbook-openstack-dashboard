@@ -28,6 +28,10 @@ describe 'openstack-dashboard::horizon' do
     describe 'local_settings.py' do
       let(:file) { chef_run.template('/etc/openstack-dashboard/local_settings.py') }
 
+      it 'notifies web service to restart delayed' do
+        expect(file).to notify('service[apache2]').to(:restart).delayed
+      end
+
       it 'has proper owner' do
         expect(file.owner).to eq('root')
         expect(file.group).to eq('horizon')
