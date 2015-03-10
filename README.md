@@ -58,13 +58,13 @@ Attributes
 * `openstack['dashboard']['ssl_offload']` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
 * `openstack['dashboard']['plugins']` - Array of plugins to include via INSTALED\_APPS
 * `openstack['dashboard']['simple_ip_management']` - Boolean to enable or disable simplified floating IP address management
-* `openstack['dashboard']['http_port']` - Port that httpd should listen on (default: 80)
-* `openstack['dashboard']['https_port']` - Port that httpd should listen on for using ssl (default: 443)
 * `openstack['dashboard']['password_autocomplete']` - Toggle browser autocompletion for login form ('on' or 'off', default: 'off')
 * `openstack['dashboard']['ssl_no_verify']` - Disable SSL certificate checks (useful for self-signed certificates)
 * `openstack['dashboard']['ssl_cacert']` - The CA certificate to use to verify SSL connections
 * `openstack['dashboard']['misc_local_settings']` - Additions to the local_settings conf file
 * `openstack['dashboard']['hash_algorithm']` - Hash algorithm to use for hashing PKI tokens
+
+For listen addresses and ports, there are http and https bind endpoints defined in Common.
 
 Identity
 --------
@@ -130,11 +130,12 @@ License and Author
 | **Author**           |  Ionut Artarisi (<iartarisi@suse.cz>)              |
 | **Author**           |  Eric Zhou (<iartarisi@suse.cz>)                   |
 | **Author**           |  Jens Rosenboom (<j.rosenboom@x-ion.de>)           |
+| **Author**           |  Mark Vanderwiel (<vanderwl@us.ibm.com>)           |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
 | **Copyright**        |  Copyright (c) 2013, Opscode, Inc.                 |
-| **Copyright**        |  Copyright (c) 2013-2014, IBM, Corp.               |
+| **Copyright**        |  Copyright (c) 2013-2015, IBM, Corp.               |
 | **Copyright**        |  Copyright (c) 2013-2014, SUSE Linux GmbH.         |
 | **Copyright**        |  Copyright (c) 2014, x-ion GmbH.                   |
 
