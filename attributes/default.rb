@@ -67,9 +67,6 @@ default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['d
 # Set to one of:  On | Off | extended
 default['openstack']['dashboard']['traceenable'] = node['apache']['traceenable']
 
-default['openstack']['dashboard']['http_port'] = 80
-default['openstack']['dashboard']['https_port'] = 443
-
 default['openstack']['dashboard']['secret_key_content'] = nil
 
 default['openstack']['dashboard']['ssl_no_verify'] = 'True'

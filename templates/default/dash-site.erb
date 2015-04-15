@@ -1,32 +1,32 @@
 <%= node["openstack"]["dashboard"]["custom_template_banner"] %>
 
-<% unless node['apache']['listen_ports'].map(&:to_i).uniq.include?(node['openstack']['dashboard']['http_port'].to_i) %>
-Listen *:<%= node['openstack']['dashboard']['http_port'].to_i%>
-NameVirtualHost *:<%= node['openstack']['dashboard']['http_port'].to_i%>
+<% if node['apache']['version'] != '2.4' -%>
+NameVirtualHost <%= @http_bind_address %>:<%= @http_bind_port %>
 <% end -%>
-<VirtualHost *:<%= node['openstack']['dashboard']['http_port'] %>>
+
+<VirtualHost <%= @http_bind_address %>:<%= @http_bind_port %>>
 <% if node["openstack"]["dashboard"]["server_hostname"] -%>
   ServerName <%= node["openstack"]["dashboard"]["server_hostname"] %>
 <% end -%>
 <% if node["openstack"]["dashboard"]["use_ssl"] %>
   RewriteEngine On
   RewriteCond %{HTTPS} off
-<%   if node['openstack']['dashboard']['http_port'].to_i != 80 or node['openstack']['dashboard']['https_port'].to_i != 443 %>
-  RewriteRule ^(.*)$ https://%{SERVER_NAME}:<%= node['openstack']['dashboard']['https_port'] %>%{REQUEST_URI} [L,R]
-<%   else -%>
+  <% if @http_bind_port != 80 or @https_bind_port != 443 %>
+  RewriteRule ^(.*)$ https://%{SERVER_NAME}:<%= @https_bind_port %>%{REQUEST_URI} [L,R]
+  <% else -%>
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R]
-<%   end -%>
+  <% end -%>
   TraceEnable <%= node['openstack']['dashboard']['traceenable'] %>
 </VirtualHost>
 
-<% unless node['apache']['listen_ports'].map(&:to_i).uniq.include?(node['openstack']['dashboard']['https_port'].to_i) %>
-Listen *:<%= node['openstack']['dashboard']['https_port'].to_i%>
-NameVirtualHost *:<%= node['openstack']['dashboard']['https_port'].to_i%>
-<% end -%>
-<VirtualHost *:<%= node['openstack']['dashboard']['https_port'] %>>
-<%   if node["openstack"]["dashboard"]["server_hostname"] -%>
+  <% if node['apache']['version'] != '2.4' -%>
+NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
+  <% end -%>
+
+<VirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>>
+  <% if node["openstack"]["dashboard"]["server_hostname"] -%>
   ServerName <%= node["openstack"]["dashboard"]["server_hostname"] %>
-<%   end -%>
+  <% end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
   WSGIScriptAlias <%= node["openstack"]["dashboard"]["webroot"] %> <%= node["openstack"]["dashboard"]["wsgi_path"] %>

@@ -2,24 +2,18 @@
 require_relative 'spec_helper'
 
 shared_examples 'virtualhost port configurator' do |port_attribute_name, port_attribute_value|
-  let(:virtualhost_directive) { "<VirtualHost \\*:#{port_attribute_value}>" }
+  let(:virtualhost_directive) { "<VirtualHost 127.0.0.1:#{port_attribute_value}>" }
   before do
-    node.set['openstack']['dashboard'][port_attribute_name] = port_attribute_value
+    node.set['openstack']['endpoints'][port_attribute_name]['port'] = port_attribute_value
   end
 
-  it "sets Listen and NameVirtualHost directives when apache's listen_ports does not include #{port_attribute_value}" do
-    node.set['apache']['listen_ports'] = [port_attribute_value.to_i + 1]
-    %w(Listen NameVirtualHost).each do |directive|
-      expect(chef_run).to render_file(file.name).with_content(/^#{directive} \*:#{port_attribute_value}$/)
-    end
+  it 'does not set NameVirtualHost directives when apache 2.4' do
+    expect(chef_run).not_to render_file(file.name).with_content(/^NameVirtualHost/)
   end
 
-  it "does not set Listen and NameVirtualHost directives when apache's listen_ports include #{port_attribute_value}" do
-    node.set['apache']['listen_ports'] = [port_attribute_value]
-    chef_run.converge(described_recipe)
-    %w(Listen NameVirtualHost).each do |directive|
-      expect(chef_run).not_to render_file(file.name).with_content(/^#{directive} \*:#{port_attribute_value}$/)
-    end
+  it 'sets NameVirtualHost directives when apache 2.2' do
+    node.set['apache']['version'] = '2.2'
+    expect(chef_run).to render_file(file.name).with_content(/^NameVirtualHost 127.0.0.1:#{port_attribute_value}$/)
   end
 
   it 'sets the VirtualHost directive' do
@@ -152,38 +146,38 @@ describe 'openstack-dashboard::apache2-server' do
           expect(chef_run).to render_file(file.name).with_content(/^custom_template_banner_value$/)
         end
 
-        it_should_behave_like 'virtualhost port configurator', 'http_port', 8080
+        it_should_behave_like 'virtualhost port configurator', 'dashboard-http-bind', 8080
 
         context 'with use_ssl enabled' do
           before do
             node.set['openstack']['dashboard']['use_ssl'] = true
           end
 
-          it_should_behave_like 'virtualhost port configurator', 'https_port', 4433
+          it_should_behave_like 'virtualhost port configurator', 'dashboard-https-bind', 4433
 
           it 'shows rewrite ssl directive' do
             expect(chef_run).to render_file(file.name).with_content(rewrite_ssl_directive)
           end
 
           context 'rewrite rule' do
-            it 'shows the default rewrite rule when http_port is 80 and https_port is 443' do
-              node.set['openstack']['dashboard']['http_port'] = 80
-              node.set['openstack']['dashboard']['https_port'] = 443
+            it 'shows the default SSL rewrite rule when http_port is 80 and https_port is 443' do
+              node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
+              node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = 443
               expect(chef_run).to render_file(file.name).with_content(default_rewrite_rule)
             end
 
-            it 'shows the parameterized rewrite rule when http_port is different from 80' do
+            it 'shows the parameterized SSL rewrite rule when http_port is different from 80' do
               https_port_value = 443
-              node.set['openstack']['dashboard']['http_port'] = 81
-              node.set['openstack']['dashboard']['https_port'] = https_port_value
+              node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 81
+              node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
                 .with_content(%r(^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$))
             end
 
-            it 'shows the parameterized rewrite rule when https_port is different from 443' do
+            it 'shows the parameterized SSL rewrite rule when https_port is different from 443' do
               https_port_value = 444
-              node.set['openstack']['dashboard']['http_port'] = 80
-              node.set['openstack']['dashboard']['https_port'] = https_port_value
+              node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
+              node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
                 .with_content(%r(^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$))
             end
@@ -223,8 +217,8 @@ describe 'openstack-dashboard::apache2-server' do
           end
 
           it 'does not show the default rewrite rule' do
-            node.set['openstack']['dashboard']['http_port'] = 80
-            node.set['openstack']['dashboard']['https_port'] = 443
+            node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
+            node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = 443
             expect(chef_run).not_to render_file(file.name).with_content(default_rewrite_rule)
           end
 

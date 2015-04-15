@@ -41,6 +41,17 @@ execute 'set-selinux-permissive' do
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
+http_bind = endpoint 'dashboard-http-bind'
+https_bind = endpoint 'dashboard-https-bind'
+
+# This allow the apache2/templates/default/ports.conf.erb to setup the correct listeners.
+listen_addresses = [http_bind.host]
+listen_addresses += [https_bind.host] if node['openstack']['dashboard']['use_ssl']
+listen_ports = [http_bind.port]
+listen_ports += [https_bind.port] if node['openstack']['dashboard']['use_ssl']
+node.set['apache']['listen_addresses'] = listen_addresses
+node.set['apache']['listen_ports'] = listen_ports
+
 include_recipe 'apache2'
 include_recipe 'apache2::mod_wsgi'
 include_recipe 'apache2::mod_rewrite'
@@ -156,7 +167,11 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
 
   variables(
     ssl_cert_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["openstack"]["dashboard"]["ssl"]["cert"]}",
-    ssl_key_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}"
+    ssl_key_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}",
+    http_bind_address: http_bind.host,
+    http_bind_port: http_bind.port.to_i,
+    https_bind_address: https_bind.host,
+    https_bind_port: https_bind.port.to_i
   )
 
   notifies :run, 'execute[restore-selinux-context]', :immediately
