@@ -222,6 +222,10 @@ describe 'openstack-dashboard::horizon' do
           end
         end
 
+        it 'does have webroot set' do
+          expect(chef_run).to render_file(file.name).with_content(/^WEBROOT = \'\/\'$/)
+        end
+
         it 'does not have urls set' do
           [
             /^LOGIN_URL =$/,

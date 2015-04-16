@@ -9,6 +9,8 @@ from openstack_dashboard import exceptions
 DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
 
+WEBROOT = '<%= node['openstack']['dashboard']['webroot'] %>'
+
 <% if node["openstack"]["dashboard"]["login_url"] %>
 LOGIN_URL = '<%= node['openstack']['dashboard']['login_url'] %>'
 <% end %>
