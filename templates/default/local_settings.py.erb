@@ -162,6 +162,7 @@ OPENSTACK_KEYSTONE_URL = "<%= @auth_uri %>"
 OPENSTACK_KEYSTONE_ADMIN_URL = "<%= @auth_admin_uri %>"
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_default_role"] %>"
 
+<% if node["openstack"]["dashboard"]["use_ssl"] %>
 # Disable SSL certificate checks (useful for self-signed certificates):
 # OPENSTACK_SSL_NO_VERIFY = True
 OPENSTACK_SSL_NO_VERIFY = <%= node['openstack']['dashboard']['ssl_no_verify'] %>
@@ -170,6 +171,7 @@ OPENSTACK_SSL_NO_VERIFY = <%= node['openstack']['dashboard']['ssl_no_verify'] %>
 # OPENSTACK_SSL_CACERT = '/path/to/cacert.pem'
 <% if node['openstack']['dashboard']['ssl_cacert'] %>
 OPENSTACK_SSL_CACERT = '<%= node['openstack']['dashboard']['ssl_cacert'] %>'
+<% end %>
 <% end %>
 
 # The OPENSTACK_KEYSTONE_BACKEND settings can be used to identify the

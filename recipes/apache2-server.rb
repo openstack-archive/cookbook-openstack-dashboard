@@ -55,7 +55,7 @@ node.set['apache']['listen_ports'] = listen_ports
 include_recipe 'apache2'
 include_recipe 'apache2::mod_wsgi'
 include_recipe 'apache2::mod_rewrite'
-include_recipe 'apache2::mod_ssl'
+include_recipe 'apache2::mod_ssl' if node['openstack']['dashboard']['use_ssl']
 
 #
 # Workaround to re-enable selinux after installing apache on a fedora machine that has
@@ -78,62 +78,64 @@ file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
   only_if { platform_family?('rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
-cert_file = "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}"
-cert_mode = 00644
-cert_owner = 'root'
-cert_group = 'root'
-if node['openstack']['dashboard']['ssl']['cert_url']
-  remote_file cert_file do
-    sensitive true
-    source node['openstack']['dashboard']['ssl']['cert_url']
-    mode cert_mode
-    owner  cert_owner
-    group  cert_group
+if node['openstack']['dashboard']['use_ssl']
+  cert_file = "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}"
+  cert_mode = 00644
+  cert_owner = 'root'
+  cert_group = 'root'
+  if node['openstack']['dashboard']['ssl']['cert_url']
+    remote_file cert_file do
+      sensitive true
+      source node['openstack']['dashboard']['ssl']['cert_url']
+      mode cert_mode
+      owner  cert_owner
+      group  cert_group
 
-    notifies :run, 'execute[restore-selinux-context]', :immediately
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
+  else
+    cookbook_file cert_file do
+      sensitive true
+      source 'horizon.pem'
+      mode cert_mode
+      owner  cert_owner
+      group  cert_group
+
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
   end
-else
-  cookbook_file cert_file do
-    sensitive true
-    source 'horizon.pem'
-    mode cert_mode
-    owner  cert_owner
-    group  cert_group
 
-    notifies :run, 'execute[restore-selinux-context]', :immediately
+  key_file = "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}"
+  key_mode = 00640
+  key_owner = 'root'
+  case node['platform_family']
+  when 'debian'
+    key_group = 'ssl-cert'
+  else
+    key_group = 'root'
   end
-end
 
-key_file = "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}"
-key_mode = 00640
-key_owner = 'root'
-case node['platform_family']
-when 'debian'
-  key_group = 'ssl-cert'
-else
-  key_group = 'root'
-end
+  if node['openstack']['dashboard']['ssl']['key_url']
+    remote_file key_file do
+      sensitive true
+      source node['openstack']['dashboard']['ssl']['key_url']
+      mode key_mode
+      owner  key_owner
+      group  key_group
 
-if node['openstack']['dashboard']['ssl']['key_url']
-  remote_file key_file do
-    sensitive true
-    source node['openstack']['dashboard']['ssl']['key_url']
-    mode key_mode
-    owner  key_owner
-    group  key_group
+      notifies :restart, 'service[apache2]', :immediately
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
+  else
+    cookbook_file key_file do
+      sensitive true
+      source 'horizon.key'
+      mode   key_mode
+      owner  key_owner
+      group  key_group
 
-    notifies :restart, 'service[apache2]', :immediately
-    notifies :run, 'execute[restore-selinux-context]', :immediately
-  end
-else
-  cookbook_file key_file do
-    sensitive true
-    source 'horizon.key'
-    mode   key_mode
-    owner  key_owner
-    group  key_group
-
-    notifies :run, 'execute[restore-selinux-context]', :immediately
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
   end
 end
 
