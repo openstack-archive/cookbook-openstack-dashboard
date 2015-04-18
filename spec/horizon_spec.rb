@@ -437,7 +437,8 @@ describe 'openstack-dashboard::horizon' do
                 .with('dashboard')
                 .and_return('service_type' => service_type,
                             'db_name' => "#{service_type}_db",
-                            'host' => "#{service_type}_host")
+                            'host' => "#{service_type}_host",
+                            'port' => "#{service_type}_port")
               node.set['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
               node.set['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
             end
@@ -451,7 +452,8 @@ describe 'openstack-dashboard::horizon' do
 
             [/^\s*'USER': '#{service_type}_user',$/,
              /^\s*'PASSWORD': 'test-passes',$/,
-             /^\s*'HOST': '#{service_type}_host',$/].each do |cfg|
+             /^\s*'HOST': '#{service_type}_host',$/,
+             /^\s*'PORT': '#{service_type}_port',$/].each do |cfg|
               unless service_type == 'sqlite'
                 it "configures the #{service_type} backend with #{cfg}" do
                   expect(chef_run).to render_file(file.name).with_content(cfg)
