@@ -159,6 +159,21 @@ describe 'openstack-dashboard::apache2-server' do
 
         it_should_behave_like 'virtualhost port configurator', 'dashboard-http-bind', 8080
 
+        context 'cache_html' do
+          it 'prevents html page caching' do
+            expect(chef_run).to render_file(file.name).with_content(%r(^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$))
+            expect(chef_run).to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-cache env=NO_CACHE$/)
+            expect(chef_run).to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
+          end
+
+          it 'allows html page caching' do
+            node.set['openstack']['dashboard']['cache_html'] = true
+            expect(chef_run).not_to render_file(file.name).with_content(%r(^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$))
+            expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-cache env=NO_CACHE$/)
+            expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
+          end
+        end
+
         context 'with use_ssl enabled' do
           before do
             node.set['openstack']['dashboard']['use_ssl'] = true

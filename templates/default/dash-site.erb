@@ -79,6 +79,13 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
   LogLevel warn
   CustomLog <%= node["apache"]["log_dir"] %>/<%= node["openstack"]["dashboard"]["access_log"] %> combined
   TraceEnable <%= node['openstack']['dashboard']['traceenable'] %>
+  <% unless node["openstack"]["dashboard"]["cache_html"] %>
+  <% if node['apache']['version'] >= '2.4' -%>
+  SetEnvIfExpr "req('accept') =~/html/" NO_CACHE
+  <% end -%>
+  Header merge Cache-Control no-cache env=NO_CACHE
+  Header merge Cache-Control no-store env=NO_CACHE
+  <% end -%>
 </VirtualHost>
 
 <% unless node["openstack"]["dashboard"]["wsgi_socket_prefix"].nil? %>

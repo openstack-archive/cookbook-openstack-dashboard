@@ -30,6 +30,10 @@ default['openstack']['dashboard']['server_type'] = 'apache2'
 
 default['openstack']['dashboard']['debug'] = false
 
+# Don't cache html pages.
+# NOTE: This setting requires apache 2.4 or greater is used
+default['openstack']['dashboard']['cache_html'] = false
+
 # The Keystone role used by default for users logging into the dashboard
 default['openstack']['dashboard']['keystone_default_role'] = '_member_'
 
