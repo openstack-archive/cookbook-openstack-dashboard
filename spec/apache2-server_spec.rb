@@ -56,11 +56,16 @@ describe 'openstack-dashboard::apache2-server' do
       expect(chef_run).not_to run_execute(cmd)
     end
 
-    it 'installs apache packages' do
+    it 'includes apache packages' do
       expect(chef_run).to include_recipe('apache2')
       expect(chef_run).to include_recipe('apache2::mod_wsgi')
       expect(chef_run).to include_recipe('apache2::mod_rewrite')
       expect(chef_run).to include_recipe('apache2::mod_ssl')
+    end
+
+    it 'does not include the apache mod_ssl package when ssl disabled' do
+      node.set['openstack']['dashboard']['use_ssl'] = false
+      expect(chef_run).not_to include_recipe('apache2::mod_ssl')
     end
 
     it 'does not execute set-selinux-enforcing' do
@@ -116,6 +121,12 @@ describe 'openstack-dashboard::apache2-server' do
           mode: 0640
         )
         expect(remote_key).to notify('service[apache2]').to(:restart)
+      end
+
+      it 'does not mess with certs if ssl not enabled' do
+        node.set['openstack']['dashboard']['use_ssl'] = false
+        expect(chef_run).not_to create_cookbook_file(crt)
+        expect(chef_run).not_to create_cookbook_file(key)
       end
     end
 

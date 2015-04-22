@@ -127,11 +127,24 @@ describe 'openstack-dashboard::horizon' do
               expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = False$/)
             end
           end
+
+          context 'not set when ssl disabled' do
+            it 'has a True value for the OPENSTACK_SSL_NO_VERIFY attribute' do
+              node.set['openstack']['dashboard']['use_ssl'] = false
+              expect(chef_run).not_to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = True$/)
+            end
+          end
         end
 
         it 'config ssl_cacert' do
           node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_CACERT = '\/path_to_cacert.pem'$/)
+        end
+
+        it 'does not config ssl_cacert when ssl disabled' do
+          node.set['openstack']['dashboard']['use_ssl'] = false
+          node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
+          expect(chef_run).not_to render_file(file.name).with_content(/^OPENSTACK_SSL_CACERT = '\/path_to_cacert.pem'$/)
         end
 
         it 'has some allowed hosts set' do
