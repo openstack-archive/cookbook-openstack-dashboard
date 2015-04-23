@@ -63,12 +63,15 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
     <% end -%>
   </Directory>
 
-  <% if node["openstack"]["dashboard"]["use_ssl"] %>
+  <% if node["openstack"]["dashboard"]["use_ssl"] -%>
   SSLEngine on
   SSLCertificateFile <%= @ssl_cert_file %>
   SSLCertificateKeyFile <%= @ssl_key_file %>
   SSLProtocol <%= node["openstack"]["dashboard"]["ssl"]["protocol"] %>
-  <% end %>
+    <% if node["openstack"]["dashboard"]["ssl"]["ciphers"] -%>
+  SSLCipherSuite <%= node["openstack"]["dashboard"]["ssl"]["ciphers"] %>
+    <% end -%>
+  <% end -%>
 
   # Allow custom files to overlay the site (such as logo.png)
   RewriteEngine On

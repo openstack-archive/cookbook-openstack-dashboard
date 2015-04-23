@@ -52,6 +52,9 @@ default['openstack']['dashboard']['ssl']['cert'] = 'horizon.pem'
 default['openstack']['dashboard']['ssl']['key'] = 'horizon.key'
 # Which versions of the SSL/TLS protocol will be accepted in new connections.
 default['openstack']['dashboard']['ssl']['protocol'] = 'All -SSLv2 -SSLv3'
+# Which ciphers to use with the SSL/TLS protocol.
+# Example: 'RSA:HIGH:MEDIUM:!LOW:!kEDH:!aNULL:!ADH:!eNULL:!EXP:!SSLv2:!SEED:!CAMELLIA:!PSK!RC4:!RC4-MD5:!RC4-SHA'
+default['openstack']['dashboard']['ssl']['ciphers'] = nil
 
 # List of hosts/domains the dashboard can serve. This should be changed, a '*'
 # allows everything

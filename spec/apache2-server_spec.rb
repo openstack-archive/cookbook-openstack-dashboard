@@ -218,17 +218,23 @@ describe 'openstack-dashboard::apache2-server' do
             end
           end
 
-          it 'shows ssl certificate related directives overrides' do
+          it 'has no ssl ciphers configured by default' do
+            expect(chef_run).not_to render_file(file.name).with_content(/^\s*SSLCipherSuite.*$/)
+          end
+
+          it 'shows ssl related directives overrides' do
             node.set['openstack']['dashboard']['ssl']['dir'] = 'ssl_dir_value'
             node.set['openstack']['dashboard']['ssl']['cert'] = 'ssl_cert_value'
             node.set['openstack']['dashboard']['ssl']['key'] = 'ssl_key_value'
             node.set['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
+            node.set['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
 
             [/^\s*SSLEngine on$/,
              %r(^\s*SSLCertificateFile ssl_dir_value/certs/ssl_cert_value$),
              %r(^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$),
-             /^\s*SSLProtocol ssl_protocol_value$/].each do |ssl_certificate_directive|
-              expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
+             /^\s*SSLProtocol ssl_protocol_value$/,
+             /^\s*SSLCipherSuite ssl_ciphers_value$/].each do |ssl_directive|
+              expect(chef_run).to render_file(file.name).with_content(ssl_directive)
             end
           end
         end
