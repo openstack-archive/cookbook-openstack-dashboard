@@ -5,7 +5,7 @@ describe 'openstack-dashboard::horizon' do
 
   describe 'suse' do
 
-    let(:runner) { ChefSpec::Runner.new(SUSE_OPTS) }
+    let(:runner) { ChefSpec::SoloRunner.new(SUSE_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
       runner.converge('openstack-dashboard::server')

@@ -131,6 +131,7 @@ License and Author
 | **Author**           |  Eric Zhou (<iartarisi@suse.cz>)                   |
 | **Author**           |  Jens Rosenboom (<j.rosenboom@x-ion.de>)           |
 | **Author**           |  Mark Vanderwiel (<vanderwl@us.ibm.com>)           |
+| **Author**           |  Jan Klare (<j.klare@x-ion.de>)                    |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
