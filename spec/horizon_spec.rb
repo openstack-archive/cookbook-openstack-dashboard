@@ -310,6 +310,11 @@ describe 'openstack-dashboard::horizon' do
           expect(chef_run).to render_file(file.name).with_content(/\s*'help_url': "help_url_value",$/)
         end
 
+        it 'allows HORIZON_CONFIG to use INSTALLED_APPS to determine default dashboards' do
+          expect(chef_run).not_to render_file(file.name).with_content(/\s*'dashboards':/)
+          expect(chef_run).not_to render_file(file.name).with_content(/\s*'default_dashboard':/)
+        end
+
         context 'simple ip management' do
           it 'enables the setting when the attribute is set' do
             node.set['openstack']['dashboard']['simple_ip_management'] = true
