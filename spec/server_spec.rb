@@ -2,7 +2,6 @@
 require_relative 'spec_helper'
 
 describe 'openstack-dashboard::server' do
-
   let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
   let(:node) { runner.node }
   let(:chef_run) do
@@ -19,5 +18,4 @@ describe 'openstack-dashboard::server' do
   it 'by default installs the apache2 webserver' do
     expect(chef_run).to include_recipe('openstack-dashboard::apache2-server')
   end
-
 end

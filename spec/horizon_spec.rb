@@ -2,9 +2,7 @@
 require_relative 'spec_helper'
 
 describe 'openstack-dashboard::horizon' do
-
   describe 'ubuntu' do
-
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
@@ -28,21 +26,17 @@ describe 'openstack-dashboard::horizon' do
     describe 'local_settings.py' do
       let(:file) { chef_run.template('/etc/openstack-dashboard/local_settings.py') }
 
+      it 'creates local_settings' do
+        expect(chef_run).to create_template(file.name).with(
+          sensitive: true,
+          user: 'root',
+          group: 'horizon',
+          mode: 0640
+          )
+      end
+
       it 'notifies web service to restart delayed' do
         expect(file).to notify('service[apache2]').to(:restart).delayed
-      end
-
-      it 'has proper owner' do
-        expect(file.owner).to eq('root')
-        expect(file.group).to eq('horizon')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq('640')
-      end
-
-      it 'has proper sensitvity' do
-        expect(file.sensitive).to eq(true)
       end
 
       context 'template contents' do
@@ -375,11 +369,11 @@ describe 'openstack-dashboard::horizon' do
         end
 
         it 'has a keystone url' do
-          expect(chef_run).to render_file(file.name).with_content(%r(OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v2.0"))
+          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v2.0"})
         end
 
         it 'has a keystone admin url' do
-          expect(chef_run).to render_file(file.name).with_content(%r(OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v2.0"))
+          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v2.0"})
         end
 
         it 'has a keystone default role' do

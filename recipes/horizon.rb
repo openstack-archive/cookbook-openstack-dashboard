@@ -58,9 +58,9 @@ memcached = memcached_servers
 
 template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
-  owner  'root'
-  group  node['openstack']['dashboard']['horizon_group']
-  mode   00640
+  owner 'root'
+  group node['openstack']['dashboard']['horizon_group']
+  mode 00640
   sensitive true
 
   variables(
@@ -80,9 +80,9 @@ execute 'openstack-dashboard syncdb' do
   command 'python manage.py syncdb --noinput'
   action :run
   only_if do
-    node['openstack']['dashboard']['session_backend'] == 'sql' &&
-    node['openstack']['db']['dashboard']['migrate'] ||
-    db_info['service_type'] == 'sqlite'
+    (node['openstack']['dashboard']['session_backend'] == 'sql' &&
+     node['openstack']['db']['dashboard']['migrate'] ||
+     db_info['service_type'] == 'sqlite')
   end
 end
 

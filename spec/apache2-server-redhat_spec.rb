@@ -2,9 +2,7 @@
 require_relative 'spec_helper'
 
 describe 'openstack-dashboard::apache2-server' do
-
   describe 'redhat' do
-
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
@@ -30,16 +28,20 @@ describe 'openstack-dashboard::apache2-server' do
       let(:crt) { chef_run.cookbook_file('/etc/pki/tls/certs/horizon.pem') }
       let(:key) { chef_run.cookbook_file('/etc/pki/tls/private/horizon.key') }
 
-      it 'has proper owner' do
-        [crt, key].each do |file|
-          expect(file.owner).to eq('root')
-          expect(file.group).to eq('root')
-        end
+      it 'creates horizon.pem' do
+        expect(chef_run).to create_cookbook_file(crt.name).with(
+          user: 'root',
+          group: 'root',
+          mode: 0644
+          )
       end
 
-      it 'has proper modes' do
-        expect(sprintf('%o', crt.mode)).to eq('644')
-        expect(sprintf('%o', key.mode)).to eq('640')
+      it 'creates horizon.key' do
+        expect(chef_run).to create_cookbook_file(key.name).with(
+          user: 'root',
+          group: 'root',
+          mode: 0640
+          )
       end
 
       it 'notifies restore-selinux-context' do

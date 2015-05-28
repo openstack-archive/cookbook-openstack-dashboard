@@ -34,9 +34,7 @@ shared_examples 'virtualhost port configurator' do |port_attribute_name, port_at
 end
 
 describe 'openstack-dashboard::apache2-server' do
-
   describe 'ubuntu' do
-
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
@@ -86,8 +84,8 @@ describe 'openstack-dashboard::apache2-server' do
       end
 
       it 'has proper modes' do
-        expect(sprintf('%o', crt.mode)).to eq('644')
-        expect(sprintf('%o', key.mode)).to eq('640')
+        expect(crt.mode).to eq(0644)
+        expect(key.mode).to eq(0640)
       end
 
       it 'has proper sensitvity' do
@@ -139,13 +137,12 @@ describe 'openstack-dashboard::apache2-server' do
     describe 'openstack-dashboard virtual host' do
       let(:file) { chef_run.template('/etc/apache2/sites-available/openstack-dashboard.conf') }
 
-      it 'has proper owner' do
-        expect(file.owner).to eq('root')
-        expect(file.group).to eq('root')
-      end
-
-      it 'has proper modes' do
-        expect(sprintf('%o', file.mode)).to eq('644')
+      it 'creates openstack-dashboard.conf' do
+        expect(chef_run).to create_template(file.name).with(
+          user: 'root',
+          group: 'root',
+          mode: 0644
+          )
       end
 
       context 'template content' do
@@ -161,14 +158,14 @@ describe 'openstack-dashboard::apache2-server' do
 
         context 'cache_html' do
           it 'prevents html page caching' do
-            expect(chef_run).to render_file(file.name).with_content(%r(^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$))
+            expect(chef_run).to render_file(file.name).with_content(%r{^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$})
             expect(chef_run).to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-cache env=NO_CACHE$/)
             expect(chef_run).to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
           end
 
           it 'allows html page caching' do
             node.set['openstack']['dashboard']['cache_html'] = true
-            expect(chef_run).not_to render_file(file.name).with_content(%r(^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$))
+            expect(chef_run).not_to render_file(file.name).with_content(%r{^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$})
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-cache env=NO_CACHE$/)
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
           end
@@ -197,7 +194,7 @@ describe 'openstack-dashboard::apache2-server' do
               node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 81
               node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
-                .with_content(%r(^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$))
+                .with_content(%r{^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$})
             end
 
             it 'shows the parameterized SSL rewrite rule when https_port is different from 443' do
@@ -205,14 +202,14 @@ describe 'openstack-dashboard::apache2-server' do
               node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
               node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
-                .with_content(%r(^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$))
+                .with_content(%r{^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$})
             end
           end
 
           it 'shows ssl certificate related directives defaults' do
             [/^\s*SSLEngine on$/,
-             %r(^\s*SSLCertificateFile /etc/ssl/certs/horizon.pem$),
-             %r(^\s*SSLCertificateKeyFile /etc/ssl/private/horizon.key$),
+             %r{^\s*SSLCertificateFile /etc/ssl/certs/horizon.pem$},
+             %r{^\s*SSLCertificateKeyFile /etc/ssl/private/horizon.key$},
              /^\s*SSLProtocol All -SSLv2 -SSLv3$/].each do |ssl_certificate_directive|
               expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
             end
@@ -230,8 +227,8 @@ describe 'openstack-dashboard::apache2-server' do
             node.set['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
 
             [/^\s*SSLEngine on$/,
-             %r(^\s*SSLCertificateFile ssl_dir_value/certs/ssl_cert_value$),
-             %r(^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$),
+             %r{^\s*SSLCertificateFile ssl_dir_value/certs/ssl_cert_value$},
+             %r{^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$},
              /^\s*SSLProtocol ssl_protocol_value$/,
              /^\s*SSLCipherSuite ssl_ciphers_value$/].each do |ssl_directive|
               expect(chef_run).to render_file(file.name).with_content(ssl_directive)
@@ -269,7 +266,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'sets the WSGI script alias defaults' do
-          expect(chef_run).to render_file(file.name).with_content(%r(^\s*WSGIScriptAlias / /usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^\s*WSGIScriptAlias / /usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi$})
         end
 
         it 'sets the WSGI script alias' do
@@ -283,13 +280,13 @@ describe 'openstack-dashboard::apache2-server' do
           node.set['openstack']['dashboard']['horizon_group'] = 'horizon_group_value'
           node.set['openstack']['dashboard']['dash_path'] = 'dash_path_value'
           expect(chef_run).to render_file(file.name).with_content(
-           /^\s*WSGIDaemonProcess dashboard user=horizon_user_value group=horizon_group_value processes=3 threads=10 python-path=dash_path_value$/)
+            /^\s*WSGIDaemonProcess dashboard user=horizon_user_value group=horizon_group_value processes=3 threads=10 python-path=dash_path_value$/)
         end
 
         it 'has the default DocRoot' do
           node.set['openstack']['dashboard']['dash_path'] = 'dash_path_value'
           expect(chef_run).to render_file(file.name)
-            .with_content(%r(\s*DocumentRoot dash_path_value/.blackhole/$))
+            .with_content(%r{\s*DocumentRoot dash_path_value/.blackhole/$})
         end
 
         it 'has TraceEnable set' do
@@ -339,7 +336,7 @@ describe 'openstack-dashboard::apache2-server' do
 
         it 'sets wsgi socket prefix if wsgi_socket_prefix attribute is preset' do
           node.set['openstack']['dashboard']['wsgi_socket_prefix'] = '/var/run/wsgi'
-          expect(chef_run).to render_file(file.name).with_content(%r(^WSGISocketPrefix /var/run/wsgi$))
+          expect(chef_run).to render_file(file.name).with_content(%r{^WSGISocketPrefix /var/run/wsgi$})
         end
 
         it 'omits wsgi socket prefix if wsgi_socket_prefix attribute is not preset' do
@@ -401,7 +398,6 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'calls apache_site to disable 000-default virtualhost' do
-
       resource = chef_run.find_resource('execute',
                                         'a2dissite 000-default.conf').to_hash
       expect(resource).to include(
@@ -414,7 +410,6 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'calls apache_site to enable openstack-dashboard virtualhost' do
-
       resource = chef_run.find_resource('execute',
                                         'a2ensite openstack-dashboard.conf').to_hash
       expect(resource).to include(
@@ -436,6 +431,5 @@ describe 'openstack-dashboard::apache2-server' do
 
       expect(chef_run).not_to run_execute(cmd)
     end
-
   end
 end

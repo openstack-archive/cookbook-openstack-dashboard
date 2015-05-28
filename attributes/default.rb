@@ -113,7 +113,7 @@ when 'rhel'
     'memcache_python_packages' => ['python-memcached'],
     'package_overrides' => ''
   }
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard.conf"
+  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
 when 'suse'
   default['openstack']['dashboard']['horizon_user'] = 'wwwrun'
   default['openstack']['dashboard']['horizon_group'] = 'www'
@@ -129,7 +129,7 @@ when 'suse'
     'memcache_python_packages' => ['python-python-memcached'],
     'package_overrides' => ''
   }
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf"
+  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf"
 when 'debian'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
   default['openstack']['dashboard']['horizon_group'] = 'horizon'
@@ -145,7 +145,7 @@ when 'debian'
     'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
   }
   default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node["apache"]["dir"]}/sites-available/openstack-dashboard.conf"
+  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"

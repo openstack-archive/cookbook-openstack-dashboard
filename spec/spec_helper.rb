@@ -30,10 +30,10 @@ end
 shared_context 'dashboard_stubs' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers)
-    .and_return ['hostA:port', 'hostB:port']
+      .and_return ['hostA:port', 'hostB:port']
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
-    .with('db', 'horizon')
-    .and_return('test-passes')
+      .with('db', 'horizon')
+      .and_return('test-passes')
   end
 end
 
@@ -57,15 +57,15 @@ end
 shared_context 'postgresql_backend' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:db)
-    .with('dashboard')
-    .and_return('service_type' => 'postgresql', 'db_name' => 'flying_elephant')
+      .with('dashboard')
+      .and_return('service_type' => 'postgresql', 'db_name' => 'flying_elephant')
   end
 end
 
 shared_context 'mysql_backend' do
   before do
     allow_any_instance_of(Chef::Recipe).to receive(:db)
-    .with('dashboard')
-    .and_return('service_type' => 'mysql', 'db_name' => 'flying_dolphin')
+      .with('dashboard')
+      .and_return('service_type' => 'mysql', 'db_name' => 'flying_dolphin')
   end
 end

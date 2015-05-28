@@ -2,9 +2,7 @@
 require_relative 'spec_helper'
 
 describe 'openstack-dashboard::apache2-server' do
-
   describe 'suse' do
-
     let(:runner) { ChefSpec::SoloRunner.new(SUSE_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do

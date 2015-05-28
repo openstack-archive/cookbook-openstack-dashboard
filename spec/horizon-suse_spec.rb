@@ -2,9 +2,7 @@
 require_relative 'spec_helper'
 
 describe 'openstack-dashboard::horizon' do
-
   describe 'suse' do
-
     let(:runner) { ChefSpec::SoloRunner.new(SUSE_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
@@ -15,7 +13,6 @@ describe 'openstack-dashboard::horizon' do
     include_context 'dashboard_stubs'
 
     context 'mysql backend' do
-
       include_context 'mysql_backend'
 
       it 'installs mysql packages when mysql backend is configured' do
@@ -38,7 +35,6 @@ describe 'openstack-dashboard::horizon' do
     end
 
     context 'postgresql backend' do
-
       include_context 'postgresql_backend'
       let(:file) { chef_run.template('/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py') }
 

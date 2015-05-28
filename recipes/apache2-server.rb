@@ -71,7 +71,7 @@ end
 
 # delete the openstack-dashboard.conf before reload apache2 service on redhat and centos
 # since this file is not valid on those platforms for the apache2 service.
-file "#{node["apache"]["dir"]}/conf.d/openstack-dashboard.conf" do
+file "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
 
@@ -88,8 +88,8 @@ if node['openstack']['dashboard']['use_ssl']
       sensitive true
       source node['openstack']['dashboard']['ssl']['cert_url']
       mode cert_mode
-      owner  cert_owner
-      group  cert_group
+      owner cert_owner
+      group cert_group
 
       notifies :run, 'execute[restore-selinux-context]', :immediately
     end
@@ -98,8 +98,8 @@ if node['openstack']['dashboard']['use_ssl']
       sensitive true
       source 'horizon.pem'
       mode cert_mode
-      owner  cert_owner
-      group  cert_group
+      owner cert_owner
+      group cert_group
 
       notifies :run, 'execute[restore-selinux-context]', :immediately
     end
@@ -120,8 +120,8 @@ if node['openstack']['dashboard']['use_ssl']
       sensitive true
       source node['openstack']['dashboard']['ssl']['key_url']
       mode key_mode
-      owner  key_owner
-      group  key_group
+      owner key_owner
+      group key_group
 
       notifies :restart, 'service[apache2]', :immediately
       notifies :run, 'execute[restore-selinux-context]', :immediately
@@ -130,9 +130,9 @@ if node['openstack']['dashboard']['use_ssl']
     cookbook_file key_file do
       sensitive true
       source 'horizon.key'
-      mode   key_mode
-      owner  key_owner
-      group  key_group
+      mode key_mode
+      owner key_owner
+      group key_group
 
       notifies :run, 'execute[restore-selinux-context]', :immediately
     end
@@ -148,7 +148,7 @@ file node['openstack']['dashboard']['secret_key_path'] do
   # set, otherwise let apache create it when someone first accesses the
   # dashboard
   if node['openstack']['dashboard']['secret_key_content'].nil?
-    only_if { ::File.exists?(node['openstack']['dashboard']['secret_key_path']) }
+    only_if { ::File.exist?(node['openstack']['dashboard']['secret_key_path']) }
   else
     content node['openstack']['dashboard']['secret_key_content']
     notifies :restart, 'service[apache2]'
@@ -156,20 +156,20 @@ file node['openstack']['dashboard']['secret_key_path'] do
 end
 
 # stop apache bitching
-directory "#{node["openstack"]["dashboard"]["dash_path"]}/.blackhole" do
+directory "#{node['openstack']['dashboard']['dash_path']}/.blackhole" do
   owner 'root'
   action :create
 end
 
 template node['openstack']['dashboard']['apache']['sites-path'] do
   source 'dash-site.erb'
-  owner  'root'
-  group  'root'
-  mode   00644
+  owner 'root'
+  group 'root'
+  mode 00644
 
   variables(
-    ssl_cert_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/certs/#{node["openstack"]["dashboard"]["ssl"]["cert"]}",
-    ssl_key_file: "#{node["openstack"]["dashboard"]["ssl"]["dir"]}/private/#{node["openstack"]["dashboard"]["ssl"]["key"]}",
+    ssl_cert_file: "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}",
+    ssl_key_file: "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}",
     http_bind_address: http_bind.host,
     http_bind_port: http_bind.port.to_i,
     https_bind_address: https_bind.host,
@@ -183,11 +183,12 @@ end
 # The `apache_site` provided by the apache2 cookbook
 # is not an LWRP. Guards do not apply to definitions.
 # http://tickets.opscode.com/browse/CHEF-778
-if platform_family?('debian')
+case node['platform_family']
+when 'debian'
   apache_site '000-default' do
     enable false
   end
-elsif platform_family?('rhel') then
+when 'rhel'
   apache_site 'default' do
     enable false
 
