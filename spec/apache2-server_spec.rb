@@ -54,6 +54,11 @@ describe 'openstack-dashboard::apache2-server' do
       expect(chef_run).not_to run_execute(cmd)
     end
 
+    it 'set apache addresses and ports' do
+      expect(chef_run.node['apache']['listen_addresses']).to eq ['127.0.0.1']
+      expect(chef_run.node['apache']['listen_ports']).to eq [80, 443]
+    end
+
     it 'includes apache packages' do
       expect(chef_run).to include_recipe('apache2')
       expect(chef_run).to include_recipe('apache2::mod_wsgi')
