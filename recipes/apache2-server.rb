@@ -53,6 +53,7 @@ node.set['apache']['listen_addresses'] = listen_addresses.uniq
 node.set['apache']['listen_ports'] = listen_ports.uniq
 
 include_recipe 'apache2'
+include_recipe 'apache2::mod_headers'
 include_recipe 'apache2::mod_wsgi'
 include_recipe 'apache2::mod_rewrite'
 include_recipe 'apache2::mod_ssl' if node['openstack']['dashboard']['use_ssl']

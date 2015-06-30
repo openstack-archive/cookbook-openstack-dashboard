@@ -60,10 +60,13 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'includes apache packages' do
-      expect(chef_run).to include_recipe('apache2')
-      expect(chef_run).to include_recipe('apache2::mod_wsgi')
-      expect(chef_run).to include_recipe('apache2::mod_rewrite')
-      expect(chef_run).to include_recipe('apache2::mod_ssl')
+      %w(apache2
+         apache2::mod_headers
+         apache2::mod_wsgi
+         apache2::mod_rewrite
+         apache2::mod_ssl).each do |recipe|
+        expect(chef_run).to include_recipe(recipe)
+      end
     end
 
     it 'does not include the apache mod_ssl package when ssl disabled' do
