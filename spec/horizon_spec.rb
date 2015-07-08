@@ -403,16 +403,14 @@ describe 'openstack-dashboard::horizon' do
         end
 
         context 'neutron settings' do
-          %w(enable_lb enable_quotas enable_firewall enable_vpn).each do |neutron_setting|
-            it "enables the #{neutron_setting} setting when the attributes is True" do
-              node.set['openstack']['dashboard']['neutron'][neutron_setting] = true
-              expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{neutron_setting}\': True,$/)
-            end
+          it 'enables the enable_quotas setting when the attributes is True' do
+            node.set['openstack']['dashboard']['neutron']['enable_quotas'] = true
+            expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_quotas': True,$/)
+          end
 
-            it "disables the #{neutron_setting} setting when the attributes is False" do
-              node.set['openstack']['dashboard']['neutron'][neutron_setting] = false
-              expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{neutron_setting}\': False,$/)
-            end
+          it 'disables the enable_quotas setting when the attributes is False' do
+            node.set['openstack']['dashboard']['neutron']['enable_quotas'] = false
+            expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_quotas': False,$/)
           end
         end
 
