@@ -90,6 +90,9 @@ default['openstack']['dashboard']['db_python_packages'] = {
   sqlite: []
 }
 
+# Enable offline compression by default
+default['openstack']['dashboard']['compress_offline'] = 'True'
+
 # The hash algorithm to use for authentication tokens. This must match the hash
 # algorithm that the identity (Keystone) server and the auth_token middleware
 # are using. Allowed values are the algorithms supported by Python's hashlib

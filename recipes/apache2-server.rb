@@ -70,6 +70,12 @@ execute 'set-selinux-enforcing' do
   only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
 end
 
+# this is requiried when offline compression is enabled (the default)     
+execute 'reset-horizon-compression' do
+  command 'python /usr/share/openstack-dashboard/manage.py compress --force'
+  action :run
+end
+
 # delete the openstack-dashboard.conf before reload apache2 service on redhat and centos
 # since this file is not valid on those platforms for the apache2 service.
 file "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf" do
@@ -178,6 +184,9 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
   )
 
   notifies :run, 'execute[restore-selinux-context]', :immediately
+  if node['openstack']['dashboard']['compress_offline']
+    notifies :run, 'execute[reset-horizon-compression]', :immediately
+  end
   notifies :reload, 'service[apache2]', :immediately
 end
 

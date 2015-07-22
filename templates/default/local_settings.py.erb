@@ -584,7 +584,7 @@ DATABASES = {
 # request/response loop - independent from user requests. This allows to
 # pre-compress CSS and JavaScript files and works just like the automatic
 # compression with the {% compress %} tag.
-COMPRESS_OFFLINE = True
+COMPRESS_OFFLINE = <%= node['openstack']['dashboard']['compress_offline'] %> 
 
 # The hash algorithm to use for authentication tokens. This must
 # match the hash algorithm that the identity server and the
