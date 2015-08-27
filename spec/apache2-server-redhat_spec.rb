@@ -33,7 +33,7 @@ describe 'openstack-dashboard::apache2-server' do
           user: 'root',
           group: 'root',
           mode: 0644
-          )
+        )
       end
 
       it 'creates horizon.key' do
@@ -41,7 +41,7 @@ describe 'openstack-dashboard::apache2-server' do
           user: 'root',
           group: 'root',
           mode: 0640
-          )
+        )
       end
 
       it 'notifies restore-selinux-context' do

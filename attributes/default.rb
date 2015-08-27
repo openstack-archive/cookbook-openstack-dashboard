@@ -84,7 +84,6 @@ default['openstack']['dashboard']['webroot'] = '/'
 # Dashboard specific database packages
 # Put common ones here and platform specific ones below.
 default['openstack']['dashboard']['db_python_packages'] = {
-  db2: [],
   mysql: [],
   postgresql: [],
   sqlite: []
@@ -107,7 +106,6 @@ when 'rhel'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
-  default['openstack']['dashboard']['db_python_packages']['db2'] = ['python-ibm-db-django']
   default['openstack']['dashboard']['platform'] = {
     'horizon_packages' => ['openstack-dashboard'],
     'memcache_python_packages' => ['python-memcached'],

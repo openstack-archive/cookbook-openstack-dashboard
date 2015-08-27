@@ -150,7 +150,7 @@ describe 'openstack-dashboard::apache2-server' do
           user: 'root',
           group: 'root',
           mode: 0644
-          )
+        )
       end
 
       context 'template content' do
@@ -305,7 +305,7 @@ describe 'openstack-dashboard::apache2-server' do
 
         it 'sets the right Alias path for /static' do
           node.set['openstack']['dashboard']['static_path'] = 'static_path_value'
-          expect(chef_run).to render_file(file.name).with_content(/^\s+Alias \/static static_path_value$/)
+          expect(chef_run).to render_file(file.name).with_content(%r{^\s+Alias /static static_path_value$})
         end
 
         %w(dash_path static_path).each do |dir_attribute|
@@ -333,12 +333,12 @@ describe 'openstack-dashboard::apache2-server' do
 
           it 'sets de ErrorLog directive' do
             node.set['openstack']['dashboard']['error_log'] = 'error_log_value'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*ErrorLog log_dir_value\/error_log_value$/)
+            expect(chef_run).to render_file(file.name).with_content(%r{^\s*ErrorLog log_dir_value/error_log_value$})
           end
 
           it 'sets de CustomLog directive' do
             node.set['openstack']['dashboard']['access_log'] = 'access_log_value'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*CustomLog log_dir_value\/access_log_value combined$/)
+            expect(chef_run).to render_file(file.name).with_content(%r{^\s*CustomLog log_dir_value/access_log_value combined$})
           end
         end
 
@@ -409,7 +409,7 @@ describe 'openstack-dashboard::apache2-server' do
       resource = chef_run.find_resource('execute',
                                         'a2dissite 000-default.conf').to_hash
       expect(resource).to include(
-        action: 'run',
+        action: [:run],
         params: {
           enable: false,
           name: '000-default'
@@ -421,7 +421,7 @@ describe 'openstack-dashboard::apache2-server' do
       resource = chef_run.find_resource('execute',
                                         'a2ensite openstack-dashboard.conf').to_hash
       expect(resource).to include(
-        action: 'run',
+        action: [:run],
         params: {
           enable: true,
           notifies: [:reload, 'service[apache2]', :immediately],

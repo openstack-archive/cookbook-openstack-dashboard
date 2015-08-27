@@ -32,7 +32,7 @@ describe 'openstack-dashboard::horizon' do
           user: 'root',
           group: 'horizon',
           mode: 0640
-          )
+        )
       end
 
       it 'notifies web service to restart delayed' do
@@ -132,13 +132,13 @@ describe 'openstack-dashboard::horizon' do
 
         it 'config ssl_cacert' do
           node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
-          expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_CACERT = '\/path_to_cacert.pem'$/)
+          expect(chef_run).to render_file(file.name).with_content(%r{^OPENSTACK_SSL_CACERT = '/path_to_cacert.pem'$})
         end
 
         it 'does not config ssl_cacert when ssl disabled' do
           node.set['openstack']['dashboard']['use_ssl'] = false
           node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
-          expect(chef_run).not_to render_file(file.name).with_content(/^OPENSTACK_SSL_CACERT = '\/path_to_cacert.pem'$/)
+          expect(chef_run).not_to render_file(file.name).with_content(%r{^OPENSTACK_SSL_CACERT = '/path_to_cacert.pem'$})
         end
 
         it 'has some allowed hosts set' do
@@ -185,7 +185,7 @@ describe 'openstack-dashboard::horizon' do
             end
             it 'does override temp dir when it is not nil' do
               node.set['openstack']['dashboard']['file_upload_temp_dir'] = '/foobar'
-              expect(chef_run).to render_file(file.name).with_content(/^FILE_UPLOAD_TEMP_DIR = "\/foobar"$/)
+              expect(chef_run).to render_file(file.name).with_content(%r{^FILE_UPLOAD_TEMP_DIR = "/foobar"$})
             end
           end
         end
@@ -230,7 +230,7 @@ describe 'openstack-dashboard::horizon' do
         end
 
         it 'does have webroot set' do
-          expect(chef_run).to render_file(file.name).with_content(/^WEBROOT = \'\/\'$/)
+          expect(chef_run).to render_file(file.name).with_content(%r{^WEBROOT = '/'$})
         end
 
         it 'does not have urls set' do
@@ -426,8 +426,7 @@ describe 'openstack-dashboard::horizon' do
 
         { 'mysql' => 'django.db.backends.mysql',
           'sqlite' => 'django.db.backends.sqlite3',
-          'postgresql' => 'django.db.backends.postgresql_psycopg2',
-          'db2' => 'ibm_db_django' }.each do |service_type, backend|
+          'postgresql' => 'django.db.backends.postgresql_psycopg2' }.each do |service_type, backend|
           context "#{service_type} database settings" do
             before do
               allow_any_instance_of(Chef::Recipe).to receive(:db)
@@ -499,14 +498,14 @@ describe 'openstack-dashboard::horizon' do
         expect(chef_run).not_to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
-          )
+        )
       end
 
       it 'executes when session_backend is sql' do
         expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
-          )
+        )
       end
 
       it 'does not execute when the migrate attribute is set to false' do
@@ -514,7 +513,7 @@ describe 'openstack-dashboard::horizon' do
         expect(chef_run_session_sql).not_to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
-          )
+        )
       end
 
       it 'executes when database backend is sqlite' do
@@ -522,7 +521,7 @@ describe 'openstack-dashboard::horizon' do
         expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
-          )
+        )
       end
     end
 
