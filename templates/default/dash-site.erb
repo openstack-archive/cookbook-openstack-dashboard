@@ -34,6 +34,9 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
   WSGIProcessGroup dashboard
 
   DocumentRoot <%= node["openstack"]["dashboard"]["dash_path"] %>/.blackhole/
+  <% if node["openstack"]["dashboard"]["nuage"]["customization_module"]["enabled"] %>
+  Alias /static/nuage <%= node["openstack"]["dashboard"]["nuage"]["customization_module"]["static_path"] %>
+  <% end %>
   Alias /static <%= node["openstack"]["dashboard"]["static_path"] %>
 
   <Directory />
@@ -62,6 +65,19 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
     allow from all
     <% end -%>
   </Directory>
+
+  <% if node["openstack"]["dashboard"]["nuage"]["customization_module"]["enabled"] %>
+  <Directory <%= node["openstack"]["dashboard"]["nuage"]["customization_module"]["path"] %>>
+    Options FollowSymLinks
+    AllowOverride None
+    <% if node['apache']['version'] == '2.4' -%>
+    Require all granted
+    <% else -%>
+    Order allow,deny
+    allow from all
+    <% end -%>
+  </Directory>
+  <% end %>
 
   <% if node["openstack"]["dashboard"]["use_ssl"] -%>
   SSLEngine on

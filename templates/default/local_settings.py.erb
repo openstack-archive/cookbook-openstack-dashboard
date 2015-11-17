@@ -77,6 +77,9 @@ HORIZON_CONFIG = {
         'fade_duration': 1500,
         'types': ['alert-success', 'alert-info']
     },
+    <% if node["openstack"]["dashboard"]["nuage"]["customization_module"]["enabled"] %>
+    'customization_module': "<%= node["openstack"]["dashboard"]["nuage"]["customization_module"]["name"] %>",
+    <% end %>
     'help_url': "<%= node["openstack"]["dashboard"]["help_url"] %>",
     'exceptions': {'recoverable': exceptions.RECOVERABLE,
                    'not_found': exceptions.NOT_FOUND,

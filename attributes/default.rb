@@ -96,6 +96,14 @@ default['openstack']['dashboard']['db_python_packages'] = {
 # library.
 default['openstack']['dashboard']['hash_algorithm'] = 'md5'
 
+# ----------------------------- Nuage Networks Horizon Customization -------
+
+# Enable Nuage Networks Horizon Extensions
+default['openstack']['dashboard']['nuage']['customization_module']['enabled'] = false
+default['openstack']['dashboard']['nuage']['customization_module']['name'] = 'nuage_horizon.customization'
+
+# --------------------------------------------------------------------------
+
 case node['platform_family']
 when 'rhel'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
@@ -111,9 +119,12 @@ when 'rhel'
   default['openstack']['dashboard']['platform'] = {
     'horizon_packages' => ['openstack-dashboard'],
     'memcache_python_packages' => ['python-memcached'],
+    'nuage_horizon_packages' => ['nuage-openstack-horizon'],
     'package_overrides' => ''
   }
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
+  default['openstack']['dashboard']['nuage']['customization_module']['static_path'] = '/usr/lib/python2.7/site-packages/nuage_horizon/static/'
+  default['openstack']['dashboard']['nuage']['customization_module']['path'] = '/usr/lib/python2.7/site-packages/nuage_horizon'
 when 'suse'
   default['openstack']['dashboard']['horizon_user'] = 'wwwrun'
   default['openstack']['dashboard']['horizon_group'] = 'www'
@@ -127,9 +138,12 @@ when 'suse'
   default['openstack']['dashboard']['platform'] = {
     'horizon_packages' => ['openstack-dashboard'],
     'memcache_python_packages' => ['python-python-memcached'],
+    'nuage_horizon_packages' => ['nuage-openstack-horizon'],
     'package_overrides' => ''
   }
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf"
+  default['openstack']['dashboard']['nuage']['customization_module']['static_path'] = '/usr/lib/python2.7/site-packages/nuage_horizon/static/'
+  default['openstack']['dashboard']['nuage']['customization_module']['path'] = '/usr/lib/python2.7/site-packages/nuage_horizon'
 when 'debian'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
   default['openstack']['dashboard']['horizon_group'] = 'horizon'
@@ -142,10 +156,13 @@ when 'debian'
   default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
     'memcache_python_packages' => ['python-memcache'],
-    'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'"
+    'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'",
+    'nuage_horizon_packages' => ['nuage-openstack-horizon']
   }
   default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
+  default['openstack']['dashboard']['nuage']['customization_module']['static_path'] = '/usr/lib/python2.7/dist-packages/nuage_horizon/static/'
+  default['openstack']['dashboard']['nuage']['customization_module']['path'] = '/usr/lib/python2.7/dist-packages/nuage_horizon'
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"

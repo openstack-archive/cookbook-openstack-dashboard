@@ -48,6 +48,12 @@ python_packages += Array(node['openstack']['dashboard']['db_python_packages'][db
   end
 end
 
+if node['openstack']['dashboard']['nuage']['customization_module']['enabled']
+  platform_options['nuage_horizon_packages'].each do |pkg|
+    package pkg
+  end
+end
+
 if node['openstack']['dashboard']['session_backend'] == 'memcached'
   platform_options['memcache_python_packages'].each do |pkg|
     package pkg

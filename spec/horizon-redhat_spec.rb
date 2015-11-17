@@ -24,6 +24,11 @@ describe 'openstack-dashboard::horizon' do
       end
     end
 
+    it 'installs nuage packages if dashboard nuage customization module is enabled' do
+      node.set['openstack']['dashboard']['nuage']['customization_module']['enabled'] = true
+      expect(chef_run).to install_package('nuage-openstack-horizon')
+    end
+
     describe 'local_settings' do
       let(:file) { chef_run.template('/etc/openstack-dashboard/local_settings') }
 

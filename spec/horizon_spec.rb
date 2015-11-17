@@ -23,6 +23,11 @@ describe 'openstack-dashboard::horizon' do
       expect(chef_run).to upgrade_package('python-mysqldb')
     end
 
+    it 'installs nuage packages if dashboard nuage customazation module is enabled' do
+      node.set['openstack']['dashboard']['nuage']['customization_module']['enabled'] = true
+      expect(chef_run).to install_package('nuage-openstack-horizon')
+    end
+
     describe 'local_settings.py' do
       let(:file) { chef_run.template('/etc/openstack-dashboard/local_settings.py') }
 
