@@ -15,11 +15,6 @@ UBUNTU_OPTS = {
   version: '14.04',
   log_level: LOG_LEVEL
 }
-SUSE_OPTS = {
-  platform: 'suse',
-  version: '11.3',
-  log_level: LOG_LEVEL
-}
 
 # Build a regex for a section of lines
 def build_section(lines)

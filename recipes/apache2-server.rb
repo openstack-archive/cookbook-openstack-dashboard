@@ -41,16 +41,18 @@ execute 'set-selinux-permissive' do
   only_if "[ ! -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*enforcing') -eq 1 ]"
 end
 
-http_bind = endpoint 'dashboard-http-bind'
-https_bind = endpoint 'dashboard-https-bind'
-
+http_bind = node['openstack']['bind_service']['dashboard_http']
+https_bind = node['openstack']['bind_service']['dashboard_https']
 # This allow the apache2/templates/default/ports.conf.erb to setup the correct listeners.
-listen_addresses = node['apache']['listen_addresses'] - ['*'] + [http_bind.host]
-listen_addresses += [https_bind.host] if node['openstack']['dashboard']['use_ssl']
-listen_ports = node['apache']['listen_ports'] - ['80'] + [http_bind.port]
-listen_ports += [https_bind.port] if node['openstack']['dashboard']['use_ssl']
-node.set['apache']['listen_addresses'] = listen_addresses.uniq
-node.set['apache']['listen_ports'] = listen_ports.uniq
+http_listen = { http_bind.host => [http_bind.port.to_s] }
+if node['openstack']['dashboard']['use_ssl']
+  apache_listen = Chef::Mixin::DeepMerge.merge(http_listen, https_bind.host => [https_bind.port.to_s])
+else
+  apache_listen = http_listen
+end
+
+node.normal['apache']['listen'] =
+  Chef::Mixin::DeepMerge.merge(node['apache']['listen'], apache_listen)
 
 include_recipe 'apache2'
 include_recipe 'apache2::mod_headers'
@@ -75,7 +77,6 @@ end
 file "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf" do
   action :delete
   backup false
-
   only_if { platform_family?('rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
@@ -192,14 +193,12 @@ when 'debian'
 when 'rhel'
   apache_site 'default' do
     enable false
-
     notifies :run, 'execute[restore-selinux-context]', :immediately
   end
 end
 
 apache_site 'openstack-dashboard' do
   enable true
-
   notifies :run, 'execute[restore-selinux-context]', :immediately
   notifies :reload, 'service[apache2]', :immediately
 end
@@ -207,6 +206,5 @@ end
 execute 'restore-selinux-context' do
   command 'restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :'
   action :nothing
-
   only_if { platform_family?('fedora') }
 end
