@@ -8,7 +8,6 @@ describe 'openstack-dashboard::apache2-server' do
     let(:chef_run) do
       runner.converge(described_recipe)
     end
-
     include_context 'dashboard_stubs'
     include_context 'redhat_stubs'
 
@@ -23,33 +22,33 @@ describe 'openstack-dashboard::apache2-server' do
 
       expect(chef_run).to run_execute(cmd)
     end
-
     describe 'certs' do
-      let(:crt) { chef_run.cookbook_file('/etc/pki/tls/certs/horizon.pem') }
-      let(:key) { chef_run.cookbook_file('/etc/pki/tls/private/horizon.key') }
+      describe 'get seceret' do
+        let(:pem) { chef_run.file('/etc/pki/tls/certs/horizon.pem') }
+        let(:key) { chef_run.file('/etc/pki/tls/private/horizon.key') }
 
-      it 'creates horizon.pem' do
-        expect(chef_run).to create_cookbook_file(crt.name).with(
-          user: 'root',
-          group: 'root',
-          mode: 0644
-        )
-      end
+        it 'create files and restarts apache' do
+          expect(chef_run).to create_file('/etc/pki/tls/certs/horizon.pem').with(
+            user: 'root',
+            group: 'root',
+            mode: 0644
+          )
+          expect(chef_run).to create_file('/etc/pki/tls/private/horizon.key').with(
+            user: 'root',
+            group: 'root',
+            mode: 0640
+          )
+          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
+          expect(key).to notify('execute[restore-selinux-context]').to(:run)
+        end
 
-      it 'creates horizon.key' do
-        expect(chef_run).to create_cookbook_file(key.name).with(
-          user: 'root',
-          group: 'root',
-          mode: 0640
-        )
-      end
-
-      it 'notifies restore-selinux-context' do
-        expect(crt).to notify('execute[restore-selinux-context]').to(:run)
-        expect(key).to notify('execute[restore-selinux-context]').to(:run)
+        it 'does not mess with certs if ssl not enabled' do
+          node.set['openstack']['dashboard']['use_ssl'] = false
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
+          expect(chef_run).not_to create_file('/etc/pki/tls/private/horizon.key')
+        end
       end
     end
-
     it 'deletes openstack-dashboard.conf' do
       file = '/etc/httpd/conf.d/openstack-dashboard.conf'
 

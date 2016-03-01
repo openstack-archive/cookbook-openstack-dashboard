@@ -45,7 +45,6 @@ describe 'openstack-dashboard::apache2-server' do
       node.set['openstack']['dashboard']['session_backend'] = 'sql'
       runner.converge(described_recipe)
     end
-
     include_context 'non_redhat_stubs'
     include_context 'dashboard_stubs'
 
@@ -79,59 +78,72 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     describe 'certs' do
-      let(:crt) { chef_run.cookbook_file('/etc/ssl/certs/horizon.pem') }
-      let(:key) { chef_run.cookbook_file('/etc/ssl/private/horizon.key') }
-      let(:remote_key) { chef_run.remote_file('/etc/ssl/private/horizon.key') }
+      describe 'get seceret' do
+        let(:pem) { chef_run.file('/etc/ssl/certs/horizon.pem') }
+        let(:key) { chef_run.file('/etc/ssl/private/horizon.key') }
 
-      it 'has proper owner and group' do
-        expect(crt.owner).to eq('root')
-        expect(crt.group).to eq('root')
-        expect(key.owner).to eq('root')
-        expect(key.group).to eq('ssl-cert')
+        it 'create files and restarts apache' do
+          expect(chef_run).to create_file('/etc/ssl/certs/horizon.pem').with(
+            content: 'horizon_pem_value',
+            user: 'root',
+            group: 'root',
+            mode: 0644
+          )
+          expect(chef_run).to create_file('/etc/ssl/private/horizon.key').with(
+            content: 'horizon_key_value',
+            user: 'root',
+            group: 'ssl-cert',
+            mode: 0640
+          )
+          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
+          expect(key).to notify('execute[restore-selinux-context]').to(:run)
+        end
+
+        it 'does not mess with certs if ssl not enabled' do
+          node.set['openstack']['dashboard']['use_ssl'] = false
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
+        end
       end
+      describe 'get different seceret' do
+        let(:pem) { chef_run.file('/etc/anypath/any.pem') }
+        let(:key) { chef_run.file('/etc/anypath/any.key') }
 
-      it 'has proper modes' do
-        expect(crt.mode).to eq(0644)
-        expect(key.mode).to eq(0640)
-      end
+        before do
+          node.set['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/anypath'
+          node.set['openstack']['dashboard']['ssl']['key_dir'] = '/etc/anypath'
+          node.set['openstack']['dashboard']['ssl']['cert'] = 'any.pem'
+          node.set['openstack']['dashboard']['ssl']['key'] = 'any.key'
+          allow_any_instance_of(Chef::Recipe).to receive(:secret)
+            .with('certs', 'any.pem')
+            .and_return('any_pem_value')
+          allow_any_instance_of(Chef::Recipe).to receive(:secret)
+            .with('certs', 'any.key')
+            .and_return('any_key_value')
+          node.set['openstack']['dashboard']
+        end
+        it 'create files and restarts apache' do
+          expect(chef_run).to create_file('/etc/anypath/any.pem').with(
+            content: 'any_pem_value',
+            user: 'root',
+            group: 'root',
+            mode: 0644
+          )
+          expect(chef_run).to create_file('/etc/anypath/any.key').with(
+            content: 'any_key_value',
+            user: 'root',
+            group: 'ssl-cert',
+            mode: 0640
+          )
+          expect(key).to notify('execute[restore-selinux-context]').to(:run)
+          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
+        end
 
-      it 'has proper sensitvity' do
-        expect(crt.sensitive).to eq(true)
-        expect(key.sensitive).to eq(true)
-      end
-
-      it 'notifies restore-selinux-context' do
-        expect(crt).to notify('execute[restore-selinux-context]').to(:run)
-        expect(key).to notify('execute[restore-selinux-context]').to(:run)
-      end
-
-      it 'does not download certs if not needed' do
-        expect(chef_run).not_to create_remote_file('/etc/ssl/certs/horizon.pem')
-        expect(chef_run).not_to create_remote_file('/etc/ssl/private/horizon.key')
-      end
-
-      it 'downloads certs if needed and restarts apache' do
-        node.set['openstack']['dashboard']['ssl']['cert_url'] = 'http://server/mycert.pem'
-        node.set['openstack']['dashboard']['ssl']['key_url'] = 'http://server/mykey.key'
-        expect(chef_run).to create_remote_file('/etc/ssl/certs/horizon.pem').with(
-          sensitive: true,
-          user: 'root',
-          group: 'root',
-          mode: 0644
-        )
-        expect(chef_run).to create_remote_file('/etc/ssl/private/horizon.key').with(
-          sensitive: true,
-          user: 'root',
-          group: 'ssl-cert',
-          mode: 0640
-        )
-        expect(remote_key).to notify('service[apache2]').to(:restart)
-      end
-
-      it 'does not mess with certs if ssl not enabled' do
-        node.set['openstack']['dashboard']['use_ssl'] = false
-        expect(chef_run).not_to create_cookbook_file(crt)
-        expect(chef_run).not_to create_cookbook_file(key)
+        it 'does not mess with certs if ssl not enabled' do
+          node.set['openstack']['dashboard']['use_ssl'] = false
+          expect(chef_run).not_to create_file('/etc/anypath/any.key')
+          expect(chef_run).not_to create_file('/etc/anypath/any.pem')
+        end
       end
     end
 
@@ -223,24 +235,33 @@ describe 'openstack-dashboard::apache2-server' do
           it 'has no ssl ciphers configured by default' do
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*SSLCipherSuite.*$/)
           end
-
-          it 'shows ssl related directives overrides' do
-            node.set['openstack']['dashboard']['ssl']['dir'] = 'ssl_dir_value'
-            node.set['openstack']['dashboard']['ssl']['cert'] = 'ssl_cert_value'
-            node.set['openstack']['dashboard']['ssl']['key'] = 'ssl_key_value'
-            node.set['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
-            node.set['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
-
-            [/^\s*SSLEngine on$/,
-             %r{^\s*SSLCertificateFile ssl_dir_value/certs/ssl_cert_value$},
-             %r{^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl_key_value$},
-             /^\s*SSLProtocol ssl_protocol_value$/,
-             /^\s*SSLCipherSuite ssl_ciphers_value$/].each do |ssl_directive|
-              expect(chef_run).to render_file(file.name).with_content(ssl_directive)
+          # noinspection CookbookSourceRoot
+          context 'override attributes' do
+            before do
+              allow_any_instance_of(Chef::Recipe).to receive(:secret)
+                .with('certs', 'ssl.cert')
+                .and_return('ssl_cert_value')
+              allow_any_instance_of(Chef::Recipe).to receive(:secret)
+                .with('certs', 'ssl.key')
+                .and_return('ssl_key_value')
+              node.set['openstack']['dashboard']['ssl']['cert'] = 'ssl.cert'
+              node.set['openstack']['dashboard']['ssl']['key'] = 'ssl.key'
+              node.set['openstack']['dashboard']['ssl']['cert_dir'] = 'ssl_dir_value/certs'
+              node.set['openstack']['dashboard']['ssl']['key_dir'] = 'ssl_dir_value/private'
+              node.set['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
+              node.set['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
+            end
+            it 'shows ssl related directives overrides' do
+              [/^\s*SSLEngine on$/,
+               %r{^\s*SSLCertificateFile ssl_dir_value/certs/ssl.cert$},
+               %r{^\s*SSLCertificateKeyFile ssl_dir_value/private/ssl.key$},
+               /^\s*SSLProtocol ssl_protocol_value$/,
+               /^\s*SSLCipherSuite ssl_ciphers_value$/].each do |ssl_directive|
+                expect(chef_run).to render_file(file.name).with_content(ssl_directive)
+              end
             end
           end
         end
-
         context 'with use_ssl disabled' do
           before do
             node.set['openstack']['dashboard']['use_ssl'] = false
