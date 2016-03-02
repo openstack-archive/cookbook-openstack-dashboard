@@ -43,16 +43,16 @@ end
 
 http_bind = node['openstack']['bind_service']['dashboard_http']
 https_bind = node['openstack']['bind_service']['dashboard_https']
-# This allow the apache2/templates/default/ports.conf.erb to setup the correct listeners.
-http_listen = { http_bind.host => [http_bind.port.to_s] }
+# This allows the apache2/templates/default/ports.conf.erb to setup the correct listeners.
+# Need to convert from Chef::Node::ImmutableArray in order to be able to modify
+apache2_listen = Array(node['apache']['listen'])
+apache2_listen += ["#{http_bind.host}:#{http_bind.port}"]
+
 if node['openstack']['dashboard']['use_ssl']
-  apache_listen = Chef::Mixin::DeepMerge.merge(http_listen, https_bind.host => [https_bind.port.to_s])
-else
-  apache_listen = http_listen
+  apache2_listen += ["#{https_bind.host}:#{https_bind.port}"]
 end
 
-node.normal['apache']['listen'] =
-  Chef::Mixin::DeepMerge.merge(node['apache']['listen'], apache_listen)
+node.normal['apache']['listen'] = apache2_listen.uniq
 
 include_recipe 'apache2'
 include_recipe 'apache2::mod_headers'
