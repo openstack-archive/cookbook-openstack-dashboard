@@ -412,6 +412,16 @@ describe 'openstack-dashboard::horizon' do
             node.set['openstack']['dashboard']['neutron']['enable_quotas'] = false
             expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_quotas': False,$/)
           end
+          context 'lbaas setting' do
+            it 'enables the enable_lb setting when the attribute is true' do
+              node.set['openstack']['dashboard']['neutron']['enable_lb'] = true
+              expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_lb': True,$/)
+            end
+            it 'disables the enable_lb setting when the attribute is falase' do
+              node.set['openstack']['dashboard']['neutron']['enable_lb'] = false
+              expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_lb': False,$/)
+            end
+          end
         end
 
         %w(horizon openstack_dashboard novaclient cinderclient keystoneclient
