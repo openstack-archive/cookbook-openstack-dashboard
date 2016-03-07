@@ -52,8 +52,6 @@ default['openstack']['dashboard']['keystone_service_chef_role'] = 'keystone'
 
 default['openstack']['dashboard']['server_hostname'] = nil
 default['openstack']['dashboard']['use_ssl'] = true
-default['openstack']['dashboard']['ssl']['cert_url'] = nil
-default['openstack']['dashboard']['ssl']['key_url'] = nil
 # When using a remote certificate and key, the names of the actual installed certificate
 # and key in the file system are determined by the following two attributes.
 # If you want the name of the installed files to match the name of the files from the URL,
@@ -107,10 +105,12 @@ default['openstack']['dashboard']['hash_algorithm'] = 'md5'
 
 case node['platform_family']
 when 'rhel'
+  default['openstack']['dashboard']['key_group'] = 'root'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
   default['openstack']['dashboard']['horizon_group'] = 'apache'
   default['openstack']['dashboard']['secret_key_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
-  default['openstack']['dashboard']['ssl']['dir'] = '/etc/pki/tls'
+  default['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/pki/tls/certs/'
+  default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/pki/tls/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
@@ -122,27 +122,13 @@ when 'rhel'
     'package_overrides' => ''
   }
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
-when 'suse'
-  default['openstack']['dashboard']['horizon_user'] = 'wwwrun'
-  default['openstack']['dashboard']['horizon_group'] = 'www'
-  default['openstack']['dashboard']['secret_key_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
-  default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
-  default['openstack']['dashboard']['local_settings_path'] = '/srv/www/openstack-dashboard/openstack_dashboard/local/local_settings.py'
-  default['openstack']['dashboard']['django_path'] = '/srv/www/openstack-dashboard'
-  default['openstack']['dashboard']['login_url'] = nil
-  default['openstack']['dashboard']['logout_url'] = nil
-  default['openstack']['dashboard']['login_redirect_url'] = nil
-  default['openstack']['dashboard']['platform'] = {
-    'horizon_packages' => ['openstack-dashboard'],
-    'memcache_python_packages' => ['python-python-memcached'],
-    'package_overrides' => ''
-  }
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf"
 when 'debian'
+  default['openstack']['dashboard']['key_group'] = 'ssl-cert'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
   default['openstack']['dashboard']['horizon_group'] = 'horizon'
   default['openstack']['dashboard']['secret_key_path'] = '/var/lib/openstack-dashboard/secret_key'
-  default['openstack']['dashboard']['ssl']['dir'] = '/etc/ssl'
+  default['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/ssl/certs/'
+  default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/ssl/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   default['openstack']['dashboard']['login_url'] = nil
@@ -154,6 +140,8 @@ when 'debian'
   }
   default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
+else
+  default['openstack']['dashboard']['key_group'] = 'root'
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"

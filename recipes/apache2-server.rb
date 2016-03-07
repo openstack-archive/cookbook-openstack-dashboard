@@ -42,7 +42,10 @@ execute 'set-selinux-permissive' do
 end
 
 http_bind = node['openstack']['bind_service']['dashboard_http']
+http_bind_address = bind_address http_bind
 https_bind = node['openstack']['bind_service']['dashboard_https']
+https_bind_address = bind_address https_bind
+
 # This allows the apache2/templates/default/ports.conf.erb to setup the correct listeners.
 # Need to convert from Chef::Node::ImmutableArray in order to be able to modify
 apache2_listen = Array(node['apache']['listen'])
@@ -80,64 +83,37 @@ file "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf" do
   only_if { platform_family?('rhel') } # :pragma-foodcritic: ~FC024 - won't fix this
 end
 
+ssl_cert = secret('certs', node['openstack']['dashboard']['ssl']['cert'])
+ssl_key = secret('certs', node['openstack']['dashboard']['ssl']['key'])
+ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
+ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
+
 if node['openstack']['dashboard']['use_ssl']
-  cert_file = "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}"
   cert_mode = 00644
   cert_owner = 'root'
   cert_group = 'root'
-  if node['openstack']['dashboard']['ssl']['cert_url']
-    remote_file cert_file do
-      sensitive true
-      source node['openstack']['dashboard']['ssl']['cert_url']
-      mode cert_mode
-      owner cert_owner
-      group cert_group
+  file ssl_cert_file.to_s do
+    content ssl_cert
 
-      notifies :run, 'execute[restore-selinux-context]', :immediately
-    end
-  else
-    cookbook_file cert_file do
-      sensitive true
-      source 'horizon.pem'
-      mode cert_mode
-      owner cert_owner
-      group cert_group
+    mode cert_mode
+    owner cert_owner
+    group cert_group
 
-      notifies :run, 'execute[restore-selinux-context]', :immediately
-    end
+    notifies :run, 'execute[restore-selinux-context]', :immediately
   end
 
-  key_file = "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}"
   key_mode = 00640
   key_owner = 'root'
-  case node['platform_family']
-  when 'debian'
-    key_group = 'ssl-cert'
-  else
-    key_group = 'root'
-  end
+  key_group = node['openstack']['dashboard']['key_group']
 
-  if node['openstack']['dashboard']['ssl']['key_url']
-    remote_file key_file do
-      sensitive true
-      source node['openstack']['dashboard']['ssl']['key_url']
-      mode key_mode
-      owner key_owner
-      group key_group
+  file ssl_key_file.to_s do
+    content ssl_key
 
-      notifies :restart, 'service[apache2]', :immediately
-      notifies :run, 'execute[restore-selinux-context]', :immediately
-    end
-  else
-    cookbook_file key_file do
-      sensitive true
-      source 'horizon.key'
-      mode key_mode
-      owner key_owner
-      group key_group
+    mode key_mode
+    owner key_owner
+    group key_group
 
-      notifies :run, 'execute[restore-selinux-context]', :immediately
-    end
+    notifies :run, 'execute[restore-selinux-context]', :immediately
   end
 end
 
@@ -170,11 +146,11 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
   mode 00644
 
   variables(
-    ssl_cert_file: "#{node['openstack']['dashboard']['ssl']['dir']}/certs/#{node['openstack']['dashboard']['ssl']['cert']}",
-    ssl_key_file: "#{node['openstack']['dashboard']['ssl']['dir']}/private/#{node['openstack']['dashboard']['ssl']['key']}",
-    http_bind_address: http_bind.host,
+    ssl_cert_file: ssl_cert_file.to_s,
+    ssl_key_file: ssl_key_file.to_s,
+    http_bind_address: http_bind_address,
     http_bind_port: http_bind.port.to_i,
-    https_bind_address: https_bind.host,
+    https_bind_address: https_bind_address,
     https_bind_port: https_bind.port.to_i
   )
 

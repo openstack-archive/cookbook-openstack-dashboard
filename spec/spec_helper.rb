@@ -29,6 +29,12 @@ shared_context 'dashboard_stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:get_password)
       .with('db', 'horizon')
       .and_return('test-passes')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('certs', 'horizon.pem')
+      .and_return('horizon_pem_value')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('certs', 'horizon.key')
+      .and_return('horizon_key_value')
   end
 end
 
