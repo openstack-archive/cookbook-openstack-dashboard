@@ -63,18 +63,6 @@ include_recipe 'apache2::mod_wsgi'
 include_recipe 'apache2::mod_rewrite'
 include_recipe 'apache2::mod_ssl' if node['openstack']['dashboard']['use_ssl']
 
-#
-# Workaround to re-enable selinux after installing apache on a fedora machine that has
-# selinux enabled and is currently permissive and the configuration set to enforcing.
-# TODO(breu): get the other one working and this won't be necessary
-#
-execute 'set-selinux-enforcing' do
-  command '/sbin/setenforce Enforcing ; restorecon -R /etc/httpd'
-  action :run
-
-  only_if "[ -e /etc/httpd/conf/httpd.conf ] && [ -e /etc/redhat-release ] && [ $(/sbin/sestatus | grep -c '^Current mode:.*permissive') -eq 1 ] && [ $(/sbin/sestatus | grep -c '^Mode from config file:.*enforcing') -eq 1 ]"
-end
-
 # delete the openstack-dashboard.conf before reload apache2 service on redhat and centos
 # since this file is not valid on those platforms for the apache2 service.
 file "#{node['apache']['dir']}/conf.d/openstack-dashboard.conf" do

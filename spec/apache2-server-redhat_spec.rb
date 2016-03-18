@@ -17,11 +17,6 @@ describe 'openstack-dashboard::apache2-server' do
       expect(chef_run).to run_execute(cmd)
     end
 
-    it 'executes set-selinux-enforcing' do
-      cmd = '/sbin/setenforce Enforcing ; restorecon -R /etc/httpd'
-
-      expect(chef_run).to run_execute(cmd)
-    end
     describe 'certs' do
       describe 'get seceret' do
         let(:pem) { chef_run.file('/etc/pki/tls/certs/horizon.pem') }
