@@ -77,30 +77,29 @@ ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], nod
 ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
 
 if node['openstack']['dashboard']['use_ssl']
-  cert_mode = 00644
-  cert_owner = 'root'
-  cert_group = 'root'
-  file ssl_cert_file.to_s do
-    content ssl_cert
+  unless ssl_cert_file == ssl_key_file
+    cert_mode = 00644
+    cert_owner = 'root'
+    cert_group = 'root'
 
-    mode cert_mode
-    owner cert_owner
-    group cert_group
-
-    notifies :run, 'execute[restore-selinux-context]', :immediately
+    file ssl_cert_file do
+      content ssl_cert
+      mode cert_mode
+      owner cert_owner
+      group cert_group
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
   end
 
   key_mode = 00640
   key_owner = 'root'
   key_group = node['openstack']['dashboard']['key_group']
 
-  file ssl_key_file.to_s do
+  file ssl_key_file do
     content ssl_key
-
     mode key_mode
     owner key_owner
     group key_group
-
     notifies :run, 'execute[restore-selinux-context]', :immediately
   end
 end
