@@ -54,7 +54,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'set apache addresses and ports' do
-      expect(chef_run.node['apache']['listen']).to eq %w(*:80 0.0.0.0:80 0.0.0.0:443)
+      expect(chef_run.node['apache']['listen']).to eq %w(0.0.0.0:80 0.0.0.0:443)
     end
 
     it 'includes apache packages' do

@@ -49,8 +49,11 @@ https_bind_address = bind_address https_bind
 # This allows the apache2/templates/default/ports.conf.erb to setup the correct listeners.
 # Need to convert from Chef::Node::ImmutableArray in order to be able to modify
 apache2_listen = Array(node['apache']['listen'])
-apache2_listen += ["#{http_bind.host}:#{http_bind.port}"]
+# Remove the default apache2 cookbook port, as that is also the default for horizon, but with
+# a different address syntax.  *:80   vs  0.0.0.0:80
+apache2_listen -= ['*:80']
 
+apache2_listen += ["#{http_bind.host}:#{http_bind.port}"]
 if node['openstack']['dashboard']['use_ssl']
   apache2_listen += ["#{https_bind.host}:#{https_bind.port}"]
 end
