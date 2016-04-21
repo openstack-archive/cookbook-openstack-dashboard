@@ -78,7 +78,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     describe 'certs' do
-      describe 'get seceret' do
+      describe 'get secret' do
         let(:pem) { chef_run.file('/etc/ssl/certs/horizon.pem') }
         let(:key) { chef_run.file('/etc/ssl/private/horizon.key') }
 
@@ -98,6 +98,37 @@ describe 'openstack-dashboard::apache2-server' do
           expect(pem).to notify('execute[restore-selinux-context]').to(:run)
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
+      end
+
+      describe 'get secret with only one pem' do
+        let(:key) { chef_run.file('/etc/ssl/private/horizon.pem') }
+
+        before do
+          node.set['openstack']['dashboard']['ssl'].tap do |ssl|
+            ssl['cert_dir'] = ssl['key_dir'] = '/etc/ssl/private'
+            ssl['cert'] = ssl['key'] = 'horizon.pem'
+          end
+        end
+
+        it do
+          expect(chef_run).not_to create_file('/etc/ssl/private/horizon.pem')
+            .with(
+              content: 'horizon_pem_value',
+              user: 'root',
+              group: 'root',
+              mode: 0644
+            )
+        end
+
+        it do
+          expect(chef_run).to create_file('/etc/ssl/private/horizon.pem').with(
+            content: 'horizon_pem_value',
+            user: 'root',
+            group: 'ssl-cert',
+            mode: 0640
+          )
+          expect(key).to notify('execute[restore-selinux-context]').to(:run)
+        end
 
         it 'does not mess with certs if ssl not enabled' do
           node.set['openstack']['dashboard']['use_ssl'] = false
@@ -105,7 +136,8 @@ describe 'openstack-dashboard::apache2-server' do
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
         end
       end
-      describe 'get different seceret' do
+
+      describe 'get different secret' do
         let(:pem) { chef_run.file('/etc/anypath/any.pem') }
         let(:key) { chef_run.file('/etc/anypath/any.key') }
 
