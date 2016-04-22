@@ -6,10 +6,6 @@ description 'Installs/Configures the OpenStack Dashboard (Horizon)'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '13.0.0'
 
-recipe 'openstack-dashboard::horizon', 'Sets up the Horizon dashboard.'
-recipe 'openstack-dashboard::apache2-server', 'Sets up an Apache `mod_wsgi` container to run the dashboard.'
-recipe 'openstack-dashboard::server', 'Sets up the Horizon dashboard and webserver to run it.'
-
 %w(ubuntu redhat centos).each do |os|
   supports os
 end

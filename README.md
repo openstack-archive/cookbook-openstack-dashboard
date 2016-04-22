@@ -1,113 +1,61 @@
 Description
 ===========
 
-Installs the OpenStack Dashboard service **Horizon** as part of the OpenStack reference deployment Chef for OpenStack. The http://github.com/mattray/chef-openstack-repo contains documentation for using this cookbook in the context of a full OpenStack deployment. Horizon is currently installed from packages.
+Installs the OpenStack Dashboard service **Horizon** as part of the OpenStack
+reference deployment Chef for OpenStack. The
+https://github.com/openstack/openstack-chef-repo contains documentation for using
+this cookbook in the context of a full OpenStack deployment. Horizon is
+currently installed from packages.
 
-http://horizon.openstack.org
+http://docs.openstack.org/mitaka/config-reference/dashboard.html
 
 Requirements
 ============
 
-* Chef 0.10.0 or higher required (for Chef environment use).
+- Chef 12 or higher
+- chefdk 0.9.0 for testing (also includes berkshelf for cookbook dependency
+  resolution)
+
+Platform
+========
+
+- ubuntu
+- redhat
+- centos
 
 Cookbooks
----------
+=========
 
 The following cookbooks are dependencies:
 
-* apache2
-* openstack-common
-
-Usage
-=====
-
-horizon
--------
-
-Sets up the packages needed to run the Horizon dashboard and its dependencies.
-Will be included from the `server` recipe.
-
-apache2-server
---------------
-
-Installs the Apache webserver and sets up an `mod_wsgi` container to run the
-Horizon dashboard.  Will be included from the `server` recipe.
-
-server
-------
-
-Sets up the Horizon dashboard and a webserver of type `['openstack']['dashboard']['server_type']`
-to run it, default type is 'apache2'.
-
-```json
-"run_list": [
-    "recipe[openstack-dashboard::server]"
-]
-```
+- 'apache2', '~> 3.1'
+- 'openstack-common', '>= 13.0.0'
+- 'openstack-identity', '>= 13.0.0'
 
 Attributes
 ==========
 
-* `openstack['dashboard']['server_type']` - Selects the type of webserver to install
-* `openstack['dashboard']['db']['username']` - Username for horizon database access
-* `openstack['dashboard']['server_hostname']` - Sets the ServerName in the webserver config
-* `openstack['dashboard']['allowed_hosts']` - List of host/domain names we can service (default: '\[\*\]')
-* `openstack['dashboard']['dash_path']` - Base path for dashboard files (document root)
-* `openstack['dashboard']['wsgi_path']` - Path for wsgi dir
-* `openstack['dashboard']['wsgi_socket_prefix']` - Location that will override the standard Apache runtime directory
-* `openstack['dashboard']['ssl_offload']` - Set SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https') flag for offloading SSL
-* `openstack['dashboard']['plugins']` - Array of plugins to include via INSTALED\_APPS
-* `openstack['dashboard']['simple_ip_management']` - Boolean to enable or disable simplified floating IP address management
-* `openstack['dashboard']['password_autocomplete']` - Toggle browser autocompletion for login form ('on' or 'off', default: 'off')
-* `openstack['dashboard']['ssl_no_verify']` - Disable SSL certificate checks (useful for self-signed certificates)
-* `openstack['dashboard']['ssl_cacert']` - The CA certificate to use to verify SSL connections
-* `openstack['dashboard']['misc_local_settings']` - Additions to the local_settings conf file
-* `openstack['dashboard']['hash_algorithm']` - Hash algorithm to use for hashing PKI tokens
+Please see the extensive inline documentation in `attributes/*.rb` for
+descriptions of all the settable attributes for this cookbook.
 
-For listen addresses and ports, there are http and https bind endpoints defined in Common.
+Note that all attributes are in the `default['openstack']` "namespace"
 
-Identity
---------
-* `openstack['dashboard']['identity_api_version']` - Force a specific Identity API version ('2.0' or '3', default: '2.0')
-* `openstack['dashboard']['volume_api_version']` - Force a specific Cinder API version (default: '2')
-* `openstack['dashboard']['keystone_multidomain_support']` - Boolean to enable multi-Domain support
-* `openstack['dashboard']['keystone_default_domain']` - Default Domain if using API v3 and on a single-domain model (default: 'Default')
-* `openstack['dashboard']['keystone_default_role']` - Default Keystone role assigned to project members (default: '_member_')
-* `openstack['dashboard']['keystone_backend']['name']` - Keystone backend in use ('native' or 'ldap', default: 'native')
-* `openstack['dashboard']['keystone_backend']['can_edit_user']` - Boolean to allow some user-related identity operations (default: true)
-* `openstack['dashboard']['keystone_backend']['can_edit_group']` - Boolean to allow some group-related identity operations (default: true)
-* `openstack['dashboard']['keystone_backend']['can_edit_project']` - Boolean to allow some project-related identity operations (default: true)
-* `openstack['dashboard']['keystone_backend']['can_edit_domain']` - Boolean to allow some domain-related identity operations (default: true)
-* `openstack['dashboard']['keystone_backend']['can_edit_role']` - Boolean to allow some role-related identity operations (default: true)
+Recipes
+=======
 
-Certificate
------------
-* `openstack['dashboard']['use_ssl']` - Toggle for using ssl with dashboard (default: true)
-* `openstack['dashboard']['ssl']['dir']` - Directory where ssl certs are stored on this system (default: platform dependent)
-* `openstack['dashboard']['ssl']['cert']` - Name to use when creating the ssl certificate
-* `openstack['dashboard']['ssl']['cert_url']` - If using an existing certificate, this is the URL to its location
-* `openstack['dashboard']['ssl']['key']` - Name to use when creating the ssl key
-* `openstack['dashboard']['ssl']['key_url']` - If using an existing certificate key, this is the URL to its location
+## openstack-dashboard::horizon
+- Sets up the packages needed to run the Horizon dashboard and its dependencies.
+  Will be included from the `server` recipe.
 
-By default the openstack-dashboard cookbook ships with a self-signed certificate from a fake organization.
-It is possible to use a real production certificate from your organization by putting that certificate
-somewhere where the cookbook can download it from then simply passing in the URL of the certificate, and its
-corresponding key, using the 'cert_url' and 'key_url' attributes.
+## openstack-dashboard::apache2-server
+- Installs the Apache webserver and sets up an `mod_wsgi` container to run the
+  Horizon dashboard. Will be included from the `server` recipe.
 
-Testing
-=====
+## openstack-dashboard::server
+- Sets up the Horizon dashboard and a webserver of type
+  `['openstack']['dashboard']['server_type']` to run it, default type is
+  'apache2'.
 
-Please refer to the [TESTING.md](TESTING.md) for instructions for testing the cookbook.
-
-Berkshelf
-=====
-
-Berks will resolve version requirements and dependencies on first run and
-store these in Berksfile.lock. If new cookbooks become available you can run
-`berks update` to update the references in Berksfile.lock. Berksfile.lock will
-be included in stable branches to provide a known good set of dependencies.
-Berksfile.lock will not be included in development branches to encourage
-development against the latest cookbooks.
 
 License and Author
 ==================
@@ -131,7 +79,8 @@ License and Author
 | **Author**           |  Eric Zhou (<iartarisi@suse.cz>)                   |
 | **Author**           |  Jens Rosenboom (<j.rosenboom@x-ion.de>)           |
 | **Author**           |  Mark Vanderwiel (<vanderwl@us.ibm.com>)           |
-| **Author**           |  Jan Klare (<j.klare@x-ion.de>)                    |
+| **Author**           |  Jan Klare (<j.klare@cloudbau.de>)                 |
+| **Author**           |  Christoph Albers (<c.albers@x-ion.de>)            |
 |                      |                                                    |
 | **Copyright**        |  Copyright (c) 2012, Rackspace US, Inc.            |
 | **Copyright**        |  Copyright (c) 2012-2013, AT&T Services, Inc.      |
