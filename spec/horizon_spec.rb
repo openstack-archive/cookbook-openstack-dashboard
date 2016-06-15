@@ -243,6 +243,11 @@ describe 'openstack-dashboard::horizon' do
           end
         end
 
+        it 'has policy file path set' do
+          expect(chef_run).to render_file(file.name)
+            .with_content(%r{^POLICY_FILES_PATH = '/usr/share/openstack-dashboard/openstack_dashboard/conf'$})
+        end
+
         context 'identity and volume api version setting' do
           it 'is configurable directly' do
             node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'

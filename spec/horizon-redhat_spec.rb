@@ -37,6 +37,11 @@ describe 'openstack-dashboard::horizon' do
           expect(chef_run).to render_file(file.name).with_content(line)
         end
       end
+
+      it 'has policy file path set' do
+        expect(chef_run).to render_file(file.name)
+          .with_content(%r{^POLICY_FILES_PATH = '/etc/openstack-dashboard'$})
+      end
     end
 
     it 'does not remove openstack-dashboard-ubuntu-theme package' do
