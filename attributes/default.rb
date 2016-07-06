@@ -119,7 +119,7 @@ when 'rhel'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/pki/tls/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
-  default['openstack']['dashboard']['policy_files_path'] =  '/etc/openstack-dashboard'
+  default['openstack']['dashboard']['policy_files_path'] = '/etc/openstack-dashboard'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
