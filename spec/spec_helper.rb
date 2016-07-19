@@ -33,6 +33,9 @@ shared_context 'dashboard_stubs' do
       .with('certs', 'horizon.pem')
       .and_return('horizon_pem_value')
     allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('certs', 'horizon-chain.pem')
+      .and_return('horizon_chain_pem_value')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
       .with('certs', 'horizon.key')
       .and_return('horizon_key_value')
   end

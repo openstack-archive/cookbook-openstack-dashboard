@@ -58,6 +58,8 @@ default['openstack']['dashboard']['use_ssl'] = true
 # they need to be manually set below, if not the conventional horizon.* names will be used.
 default['openstack']['dashboard']['ssl']['cert'] = 'horizon.pem'
 default['openstack']['dashboard']['ssl']['key'] = 'horizon.key'
+# Optional Chain cert
+default['openstack']['dashboard']['ssl']['chain'] = nil
 # Which versions of the SSL/TLS protocol will be accepted in new connections.
 default['openstack']['dashboard']['ssl']['protocol'] = 'All -SSLv2 -SSLv3'
 # Which ciphers to use with the SSL/TLS protocol.

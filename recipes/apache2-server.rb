@@ -78,6 +78,12 @@ ssl_cert = secret('certs', node['openstack']['dashboard']['ssl']['cert'])
 ssl_key = secret('certs', node['openstack']['dashboard']['ssl']['key'])
 ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
 ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
+if node['openstack']['dashboard']['ssl']['chain']
+  ssl_chain = secret('certs', node['openstack']['dashboard']['ssl']['chain'])
+  ssl_chain_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['chain'])
+else
+  ssl_chain_file = nil
+end
 
 if node['openstack']['dashboard']['use_ssl']
   unless ssl_cert_file == ssl_key_file
@@ -87,6 +93,20 @@ if node['openstack']['dashboard']['use_ssl']
 
     file ssl_cert_file do
       content ssl_cert
+      mode cert_mode
+      owner cert_owner
+      group cert_group
+      notifies :run, 'execute[restore-selinux-context]', :immediately
+    end
+  end
+
+  if ssl_chain_file
+    cert_mode = 00644
+    cert_owner = 'root'
+    cert_group = 'root'
+
+    file ssl_chain_file do
+      content ssl_chain
       mode cert_mode
       owner cert_owner
       group cert_group
@@ -138,6 +158,7 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
   variables(
     ssl_cert_file: ssl_cert_file.to_s,
     ssl_key_file: ssl_key_file.to_s,
+    ssl_chain_file: ssl_chain_file.to_s,
     http_bind_address: http_bind_address,
     http_bind_port: http_bind.port.to_i,
     https_bind_address: https_bind_address,
