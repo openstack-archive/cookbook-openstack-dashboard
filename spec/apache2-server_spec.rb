@@ -99,7 +99,22 @@ describe 'openstack-dashboard::apache2-server' do
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
       end
+      context 'set ssl chain' do
+        before do
+          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+        end
+        let(:chain) { chef_run.file('/etc/ssl/certs/horizon-chain.pem') }
 
+        it 'create files and restarts apache' do
+          expect(chef_run).to create_file('/etc/ssl/certs/horizon-chain.pem').with(
+            content: 'horizon_chain_pem_value',
+            user: 'root',
+            group: 'root',
+            mode: 0644
+          )
+          expect(chain).to notify('execute[restore-selinux-context]').to(:run)
+        end
+      end
       describe 'get secret with only one pem' do
         let(:key) { chef_run.file('/etc/ssl/private/horizon.pem') }
 
@@ -132,8 +147,10 @@ describe 'openstack-dashboard::apache2-server' do
 
         it 'does not mess with certs if ssl not enabled' do
           node.set['openstack']['dashboard']['use_ssl'] = false
+          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon-chain.pem')
         end
       end
 
@@ -170,11 +187,29 @@ describe 'openstack-dashboard::apache2-server' do
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
           expect(pem).to notify('execute[restore-selinux-context]').to(:run)
         end
-
+        context 'set ssl chain' do
+          let(:chain) { chef_run.file('/etc/anypath/any-chain.pem') }
+          before do
+            node.set['openstack']['dashboard']['ssl']['chain'] = 'any-chain.pem'
+            allow_any_instance_of(Chef::Recipe).to receive(:secret)
+              .with('certs', 'any-chain.pem')
+              .and_return('any_chain_pem_value')
+          end
+          it 'create files and restarts apache' do
+            expect(chef_run).to create_file('/etc/anypath/any-chain.pem').with(
+              content: 'any_chain_pem_value',
+              user: 'root',
+              group: 'root',
+              mode: 0644
+            )
+            expect(chain).to notify('execute[restore-selinux-context]').to(:run)
+          end
+        end
         it 'does not mess with certs if ssl not enabled' do
           node.set['openstack']['dashboard']['use_ssl'] = false
           expect(chef_run).not_to create_file('/etc/anypath/any.key')
           expect(chef_run).not_to create_file('/etc/anypath/any.pem')
+          expect(chef_run).not_to create_file('/etc/anypath/any-chain.pem')
         end
       end
     end
@@ -262,8 +297,16 @@ describe 'openstack-dashboard::apache2-server' do
              /^\s*SSLProtocol All -SSLv2 -SSLv3$/].each do |ssl_certificate_directive|
               expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
             end
+            expect(chef_run).to_not render_file(file.name)
+              .with_content(/SSLCertificateChainFile/)
           end
-
+          context 'set ssl chain' do
+            it 'shows chain directive' do
+              node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+              expect(chef_run).to render_file(file.name)
+                .with_content(%r{^\s*SSLCertificateChainFile /etc/ssl/certs/horizon-chain.pem$})
+            end
+          end
           it 'has no ssl ciphers configured by default' do
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*SSLCipherSuite.*$/)
           end
@@ -291,6 +334,8 @@ describe 'openstack-dashboard::apache2-server' do
                /^\s*SSLCipherSuite ssl_ciphers_value$/].each do |ssl_directive|
                 expect(chef_run).to render_file(file.name).with_content(ssl_directive)
               end
+              expect(chef_run).to_not render_file(file.name)
+                .with_content(/SSLCertificateChainFile/)
             end
           end
         end
@@ -315,6 +360,8 @@ describe 'openstack-dashboard::apache2-server' do
              /^\s*SSLCertificateKeyFile/].each do |ssl_certificate_directive|
               expect(chef_run).not_to render_file(file.name).with_content(ssl_certificate_directive)
             end
+            expect(chef_run).to_not render_file(file.name)
+              .with_content(/SSLCertificateChainFile/)
           end
         end
 
