@@ -211,6 +211,13 @@ describe 'openstack-dashboard::apache2-server' do
           expect(chef_run).not_to create_file('/etc/anypath/any.pem')
           expect(chef_run).not_to create_file('/etc/anypath/any-chain.pem')
         end
+        it 'does not create certs if certs data bag is disabled' do
+          node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
+          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
+          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon-chain.pem')
+        end
       end
     end
 
