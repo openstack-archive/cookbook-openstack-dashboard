@@ -65,6 +65,9 @@ default['openstack']['dashboard']['ssl']['protocol'] = 'All -SSLv2 -SSLv3'
 # Which ciphers to use with the SSL/TLS protocol.
 # Example: 'RSA:HIGH:MEDIUM:!LOW:!kEDH:!aNULL:!ADH:!eNULL:!EXP:!SSLv2:!SEED:!CAMELLIA:!PSK!RC4:!RC4-MD5:!RC4-SHA'
 default['openstack']['dashboard']['ssl']['ciphers'] = nil
+# Use the 'certs' databag for managing certs to disable it to use something
+# external
+default['openstack']['dashboard']['ssl']['use_data_bag'] = true
 
 # List of hosts/domains the dashboard can serve. This should be changed, a '*'
 # allows everything
