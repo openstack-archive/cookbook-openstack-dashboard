@@ -314,6 +314,27 @@ describe 'openstack-dashboard::apache2-server' do
                 .with_content(%r{^\s*SSLCertificateChainFile /etc/ssl/certs/horizon-chain.pem$})
             end
           end
+          context 'set use_data_bag to false' do
+            it 'shows ssl certificate related directives defaults' do
+              node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
+              [/^\s*SSLEngine on$/,
+               %r{^\s*SSLCertificateFile /etc/ssl/certs/horizon.pem$},
+               %r{^\s*SSLCertificateKeyFile /etc/ssl/private/horizon.key$},
+               /^\s*SSLProtocol All -SSLv2 -SSLv3$/].each do |ssl_certificate_directive|
+                expect(chef_run).to render_file(file.name).with_content(ssl_certificate_directive)
+              end
+              expect(chef_run).to_not render_file(file.name)
+                .with_content(/SSLCertificateChainFile/)
+            end
+            context 'set ssl chain' do
+              it 'shows chain directive' do
+                node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
+                node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+                expect(chef_run).to render_file(file.name)
+                  .with_content(%r{^\s*SSLCertificateChainFile /etc/ssl/certs/horizon-chain.pem$})
+              end
+            end
+          end
           it 'has no ssl ciphers configured by default' do
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*SSLCipherSuite.*$/)
           end

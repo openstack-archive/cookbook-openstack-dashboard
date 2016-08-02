@@ -77,15 +77,15 @@ end
 if node['openstack']['dashboard']['ssl']['use_data_bag']
   ssl_cert = secret('certs', node['openstack']['dashboard']['ssl']['cert'])
   ssl_key = secret('certs', node['openstack']['dashboard']['ssl']['key'])
-  ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
-  ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
   if node['openstack']['dashboard']['ssl']['chain']
     ssl_chain = secret('certs', node['openstack']['dashboard']['ssl']['chain'])
-    ssl_chain_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['chain'])
-  else
-    ssl_chain_file = nil
   end
 end
+ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
+ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
+ssl_chain_file = if node['openstack']['dashboard']['ssl']['chain']
+                   File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['chain'])
+                 end
 
 if node['openstack']['dashboard']['use_ssl'] &&
    node['openstack']['dashboard']['ssl']['use_data_bag']
