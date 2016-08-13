@@ -51,6 +51,7 @@ default['openstack']['dashboard']['keystone_default_role'] = '_member_'
 default['openstack']['dashboard']['keystone_service_chef_role'] = 'keystone'
 
 default['openstack']['dashboard']['server_hostname'] = nil
+default['openstack']['dashboard']['server_aliases'] = []
 default['openstack']['dashboard']['use_ssl'] = true
 # When using a remote certificate and key, the names of the actual installed certificate
 # and key in the file system are determined by the following two attributes.
