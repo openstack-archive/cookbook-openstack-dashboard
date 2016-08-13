@@ -31,6 +31,20 @@ shared_examples 'virtualhost port configurator' do |port_attribute_name, port_at
       expect(chef_run).not_to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerName$/)
     end
   end
+  context 'server_aliases' do
+    it 'sets the value if the server_aliases is present' do
+      node.set['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value)
+      expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias server_aliases_value$/)
+    end
+    it 'sets the value if multiple server_aliases is present' do
+      node.set['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value1 server_aliases_value2)
+      expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias server_aliases_value1 server_aliases_value2$/)
+    end
+    it 'does not set the value if the server_aliases is not present' do
+      node.set['openstack']['dashboard']['server_hostname'] = []
+      expect(chef_run).not_to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias$/)
+    end
+  end
 end
 
 describe 'openstack-dashboard::apache2-server' do
@@ -261,6 +275,8 @@ describe 'openstack-dashboard::apache2-server' do
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
           end
         end
+
+        it_should_behave_like 'virtualhost port configurator', 'dashboard-http-bind', 80
 
         context 'with use_ssl enabled' do
           before do
