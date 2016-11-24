@@ -4,7 +4,10 @@ import os
 
 from django.utils.translation import ugettext_lazy as _
 
+from horizon.utils import secret_key
+
 from openstack_dashboard import exceptions
+from openstack_dashboard.settings import HORIZON_CONFIG
 
 DEBUG = <%= node["openstack"]["dashboard"]["debug"] ? "True" : "False" %>
 TEMPLATE_DEBUG = DEBUG
@@ -156,9 +159,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #     ('http://cluster2.example.com:5000/v2.0', 'cluster2'),
 # ]
 
+OPENSTACK_HOST = "<%= @host %>"
 OPENSTACK_KEYSTONE_URL = "<%= @auth_uri %>"
 OPENSTACK_KEYSTONE_ADMIN_URL = "<%= @auth_admin_uri %>"
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_default_role"] %>"
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_ADMIN_ROLES = ["admin"]
 
 <% if node["openstack"]["dashboard"]["use_ssl"] %>
 # Disable SSL certificate checks (useful for self-signed certificates):
@@ -221,6 +228,12 @@ OPENSTACK_NEUTRON_NETWORK = {
     # in this list will be available to choose from when creating a network.
     # Network types include local, flat, vlan, gre, and vxlan.
     'supported_provider_types': ['*'],
+}
+
+# The OPENSTACK_HEAT_STACK settings can be used to disable password
+# field required while launching the stack.
+OPENSTACK_HEAT_STACK = {
+    'enable_user_pass': <%= node['openstack']['dashboard']['heat_stack']['eanable_user_pass'] ? 'True' : 'False' %>,
 }
 
 # The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
@@ -323,6 +336,13 @@ LOGGING = {
     # if nothing is specified here and disable_existing_loggers is True,
     # django.db.backends will still log unless it is disabled explicitly.
     'disable_existing_loggers': False,
+    'formatters': {
+        'operation': {
+            # The format of "%(message)s" is defined by
+            # OPERATION_LOG_OPTIONS['format']
+            'format': '%(asctime)s %(message)s'
+        },
+    },
     'handlers': {
         'null': {
             'level': 'DEBUG',
@@ -332,6 +352,11 @@ LOGGING = {
             # Set the level to "DEBUG" for verbose output logging.
             'level': '<%= node["openstack"]["dashboard"]["debug"] ? "DEBUG" : "INFO" %>',
             'class': 'logging.StreamHandler',
+        },
+        'operation': {
+        'level': '<%= node["openstack"]["dashboard"]["debug"] ? "DEBUG" : "INFO" %>',
+        'class': 'logging.StreamHandler',
+        'formatter': 'operation',
         },
     },
     'loggers': {
@@ -349,6 +374,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': '<%= node["openstack"]["dashboard"]["log_level"]["horizon"] %>',
             'propagate': False,
+        },
+        'horizon.operation_log': {
+        'handlers': ['operation'],
+        'level': '<%= node["openstack"]["dashboard"]["log_level"]["horizon_log"] %>',
+        'propagate': False,
         },
         'openstack_dashboard': {
             'handlers': ['console'],
@@ -550,6 +580,17 @@ FLAVOR_EXTRA_KEYS = {
     ]
 }
 
+# You may remove settings from this list for security purposes, but do so at
+# the risk of breaking a built-in horizon feature. These settings are required
+# for horizon to function properly. Only remove them if you know what you
+# are doing. These settings may in the future be moved to be defined within
+# the enabled panel configuration.
+# You should not add settings to this list for out of tree extensions.
+# See: https://wiki.openstack.org/wiki/Horizon/RESTAPI
+REST_API_REQUIRED_SETTINGS = ['OPENSTACK_HYPERVISOR_FEATURES',
+'LAUNCH_INSTANCE_DEFAULTS',
+'OPENSTACK_IMAGE_FORMATS']
+
 # Indicate to the Sahara data processing service whether or not
 # automatic floating IP allocation is in effect.  If it is not
 # in effect, the user will be prompted to choose a floating IP
@@ -584,7 +625,7 @@ DATABASES = {
 # request/response loop - independent from user requests. This allows to
 # pre-compress CSS and JavaScript files and works just like the automatic
 # compression with the {% compress %} tag.
-COMPRESS_OFFLINE = True
+COMPRESS_OFFLINE = False
 
 # The hash algorithm to use for authentication tokens. This must
 # match the hash algorithm that the identity server and the

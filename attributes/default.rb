@@ -159,7 +159,7 @@ default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard'][
 default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
 default['openstack']['dashboard']['session_backend'] = 'memcached'
 
-default['openstack']['dashboard']['ssl_offload'] = false
+default['openstack']['dashboard']['ssl_offload'] = true
 default['openstack']['dashboard']['plugins'] = nil
 
 default['openstack']['dashboard']['file_upload_temp_dir'] = nil
@@ -194,6 +194,7 @@ default['openstack']['dashboard']['keystone_backend']['can_edit_domain'] = true
 default['openstack']['dashboard']['keystone_backend']['can_edit_role'] = true
 
 default['openstack']['dashboard']['log_level']['horizon'] = 'INFO'
+default['openstack']['dashboard']['log_level']['horizon_log'] = 'INFO'
 default['openstack']['dashboard']['log_level']['openstack_dashboard'] = 'INFO'
 default['openstack']['dashboard']['log_level']['novaclient'] = 'INFO'
 default['openstack']['dashboard']['log_level']['cinderclient'] = 'INFO'
@@ -207,6 +208,8 @@ default['openstack']['dashboard']['log_level']['swiftclient'] = 'INFO'
 default['openstack']['dashboard']['log_level']['openstack_auth'] = 'INFO'
 default['openstack']['dashboard']['log_level']['nose.plugins.manager'] = 'INFO'
 default['openstack']['dashboard']['log_level']['django'] = 'INFO'
+
+default['openstack']['dashboard']['heat_stack']['eanable_user_pass'] = true
 
 default['openstack']['dashboard']['password_autocomplete'] = 'off'
 default['openstack']['dashboard']['simple_ip_management'] = false
