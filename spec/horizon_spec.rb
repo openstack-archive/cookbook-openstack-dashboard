@@ -260,16 +260,6 @@ describe 'openstack-dashboard::horizon' do
             end
           end
 
-          it 'sets the proper value for identity v2.0 with volume default v2 from common attributes' do
-            node.set['openstack']['api']['auth']['version'] = 'v2.0'
-            [
-              /^\s*"identity": 2\.0,$/,
-              /^\s*"volume": 2$/
-            ].each do |line|
-              expect(chef_run).to render_file(file.name).with_content(line)
-            end
-          end
-
           it 'sets the proper value for identity v3.0 with volume default v2 from common attributes' do
             node.set['openstack']['api']['auth']['version'] = 'v3.0'
             [
@@ -374,11 +364,11 @@ describe 'openstack-dashboard::horizon' do
         end
 
         it 'has a keystone url' do
-          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v2.0"})
+          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v3"})
         end
 
         it 'has a keystone admin url' do
-          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v2.0"})
+          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v3"})
         end
 
         it 'has a keystone default role' do
