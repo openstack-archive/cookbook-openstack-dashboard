@@ -35,6 +35,17 @@ auth_admin_uri = auth_uri_transform identity_admin_endpoint.to_s, node['openstac
 identity_endpoint = public_endpoint 'identity'
 auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['dashboard']['api']['auth']['version']
 
+http_bind = node['openstack']['bind_service']['dashboard_http']
+http_bind_address = bind_address http_bind
+https_bind = node['openstack']['bind_service']['dashboard_https']
+https_bind_address = bind_address https_bind
+
+horizon_host = if node['openstack']['dashboard']['use_ssl']
+                 http_bind_address
+               else
+                 https_bind_address
+               end
+
 db_pass = get_password 'db', 'horizon'
 db_info = db 'dashboard'
 
@@ -68,7 +79,8 @@ template node['openstack']['dashboard']['local_settings_path'] do
     db_info: db_info,
     auth_uri: auth_uri,
     auth_admin_uri: auth_admin_uri,
-    memcached_servers: memcached
+    memcached_servers: memcached,
+    host: horizon_host
   )
 
   notifies :restart, "service[#{node['openstack']['dashboard']['server_type']}]", :delayed
