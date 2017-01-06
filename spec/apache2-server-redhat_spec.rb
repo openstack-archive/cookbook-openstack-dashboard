@@ -18,7 +18,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     describe 'certs' do
-      describe 'get seceret' do
+      describe 'get secret' do
         let(:pem) { chef_run.file('/etc/pki/tls/certs/horizon.pem') }
         let(:key) { chef_run.file('/etc/pki/tls/private/horizon.key') }
 

@@ -35,6 +35,9 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
   <% end -%>
 <% end %>
   ServerAdmin <%= node["apache"]["contact"] %>
+  # Note(jr): This is needed when SSL is used for the services, see
+  # https://bugs.launchpad.net/openstack-ansible/+bug/1624791/comments/17
+  WSGIApplicationGroup %{GLOBAL}
   WSGIScriptAlias <%= node["openstack"]["dashboard"]["webroot"] %> <%= node["openstack"]["dashboard"]["wsgi_path"] %>
   WSGIDaemonProcess dashboard user=<%= node['openstack']['dashboard']['horizon_user'] %> group=<%= node['openstack']['dashboard']['horizon_group'] %> processes=3 threads=10 python-path=<%= node["openstack"]["dashboard"]["dash_path"] %>
   WSGIProcessGroup dashboard

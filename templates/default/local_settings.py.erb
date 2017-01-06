@@ -162,9 +162,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 OPENSTACK_HOST = "<%= @host %>"
 OPENSTACK_KEYSTONE_URL = "<%= @auth_uri %>"
 OPENSTACK_KEYSTONE_ADMIN_URL = "<%= @auth_admin_uri %>"
-OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "<%= node["openstack"]["dashboard"]["keystone_default_role"] %>"
-OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 OPENSTACK_KEYSTONE_ADMIN_ROLES = ["admin"]
 
 <% if node["openstack"]["dashboard"]["use_ssl"] %>
@@ -203,7 +201,7 @@ OPENSTACK_KEYSTONE_BACKEND = {
 # can_set_mount_point to True will add the option to set the mount point
 # from the UI.
 OPENSTACK_HYPERVISOR_FEATURES = {
-    'can_set_mount_point': True,
+    'can_set_mount_point': False,
     'can_set_password': False,
 }
 
