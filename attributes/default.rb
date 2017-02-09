@@ -173,6 +173,7 @@ default['openstack']['dashboard']['csrf_cookie_secure'] = true
 default['openstack']['dashboard']['session_cookie_secure'] = true
 
 default['openstack']['dashboard']['keystone_multidomain_support'] = false
+default['openstack']['dashboard']['keystone_default_domain'] = 'default'
 default['openstack']['dashboard']['api']['auth']['version'] = node['openstack']['api']['auth']['version']
 
 case node['openstack']['dashboard']['api']['auth']['version']
@@ -183,7 +184,6 @@ when 'v3.0'
 end
 
 default['openstack']['dashboard']['volume_api_version'] = 2
-default['openstack']['dashboard']['keystone_default_domain'] = 'Default'
 default['openstack']['dashboard']['console_type'] = 'AUTO'
 
 default['openstack']['dashboard']['keystone_backend']['name'] = 'native'

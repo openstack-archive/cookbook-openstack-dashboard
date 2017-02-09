@@ -61,9 +61,13 @@ OPENSTACK_API_VERSIONS = {
 # will require user to enter the Domain name in addition to username for login.
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = <%= node["openstack"]["dashboard"]["keystone_multidomain_support"] ? "True" : "False" %>
 
+<% if node["openstack"]["dashboard"]["identity_api_version"] == 3 %>
 # Overrides the default domain used when running on single-domain model
 # with Keystone V3. All entities will be created in the default domain.
-<% if node["openstack"]["dashboard"]["identity_api_version"] == 3 %>
+# NOTE: This value must be the ID of the default domain, NOT the name.
+# Also, you will most likely have a value in the keystone policy file like this
+#    "cloud_admin": "rule:admin_required and domain_id:<your domain id>"
+# This value must match the domain id specified there.
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "<%= node["openstack"]["dashboard"]["keystone_default_domain"] %>"
 <% end %>
 
@@ -118,7 +122,13 @@ SECRET_KEY = secret_key.generate_or_read_from_file(os.path.realpath('<%= node['o
 
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
-# memcached set CACHE_BACKED to something like 'memcached://127.0.0.1:11211/'
+# memcached set CACHES to something like
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#    },
+#}
 <% case node["openstack"]["dashboard"]["session_backend"]
      when "file" %>
 SESSION_ENGINE = 'django.contrib.sessions.backends.file'
@@ -559,23 +569,6 @@ SECURITY_GROUP_RULES = {
         'from_port': '3389',
         'to_port': '3389',
     },
-}
-
-FLAVOR_EXTRA_KEYS = {
-    'flavor_keys': [
-        ('quota:disk_read_bytes_sec', _('Quota: Read bytes')),
-        ('quota:disk_write_bytes_sec', _('Quota: Write bytes')),
-        ('quota:cpu_quota', _('Quota: CPU')),
-        ('quota:cpu_period', _('Quota: CPU period')),
-        ('quota:vif_inbound_average', _('Quota: Inbound average')),
-        ('quota:vif_outbound_average', _('Quota: Outbound average')),
-        ('hw:cpu_sockets', _('Quota: CPU sockets')),
-        ('hw:cpu_cores', _('Quota: CPU cores')),
-        ('hw:cpu_threads', _('Quota: CPU threads')),
-        ('hw:cpu_max_sockets', _('Quota: Max CPU sockets')),
-        ('hw:cpu_max_cores', _('Quota: Max CPU cores')),
-        ('hw:cpu_max_threads', _('Quota: Max CPU threads')),
-    ]
 }
 
 # You may remove settings from this list for security purposes, but do so at
