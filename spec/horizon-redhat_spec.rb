@@ -6,7 +6,7 @@ describe 'openstack-dashboard::horizon' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      runner.converge('openstack-dashboard::server')
+      runner.converge(described_recipe)
     end
 
     include_context 'dashboard_stubs'

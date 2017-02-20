@@ -52,16 +52,15 @@ Recipes
 
 ## openstack-dashboard::horizon
 - Sets up the packages needed to run the Horizon dashboard and its dependencies.
-  Will be included from the `server` recipe.
+  Includes openstack-dashboard::apache2-server recipe.
 
 ## openstack-dashboard::apache2-server
 - Installs the Apache webserver and sets up an `mod_wsgi` container to run the
-  Horizon dashboard. Will be included from the `server` recipe.
+  Horizon dashboard.
 
-## openstack-dashboard::server
-- Sets up the Horizon dashboard and a webserver of type
-  `['openstack']['dashboard']['server_type']` to run it, default type is
-  'apache2'.
+## openstack-dashboard::neutron-lbaas-dashboard
+- Installs the python neutron-lbaas-dashboard package. Includes
+  openstack-dashboard::horizon recipe at the beginning.
 
 
 License and Author

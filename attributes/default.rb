@@ -37,7 +37,6 @@ default['openstack']['bind_service']['dashboard_https']['port'] = '443'
 
 # ********************************************************************************
 
-default['openstack']['dashboard']['server_type'] = 'apache2'
 default['openstack']['dashboard']['debug'] = false
 
 # Don't cache html pages.
@@ -236,3 +235,5 @@ default['openstack']['dashboard']['neutron']['enable_lb'] = false
 #    'varable2': 'value2',
 #  }
 default['openstack']['dashboard']['misc_local_settings'] = nil
+# version of python neutron-lbaas-dashboard package to install
+default['openstack']['dashboard']['lbaas']['version'] = '1.0.0'

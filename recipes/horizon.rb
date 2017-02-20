@@ -41,9 +41,9 @@ https_bind = node['openstack']['bind_service']['dashboard_https']
 https_bind_address = bind_address https_bind
 
 horizon_host = if node['openstack']['dashboard']['use_ssl']
-                 http_bind_address
-               else
                  https_bind_address
+               else
+                 http_bind_address
                end
 
 db_pass = get_password 'db', 'horizon'
@@ -65,6 +65,7 @@ if node['openstack']['dashboard']['session_backend'] == 'memcached'
   end
 end
 
+django_path = node['openstack']['dashboard']['django_path']
 memcached = memcached_servers
 
 template node['openstack']['dashboard']['local_settings_path'] do
@@ -83,12 +84,12 @@ template node['openstack']['dashboard']['local_settings_path'] do
     host: horizon_host
   )
 
-  notifies :restart, "service[#{node['openstack']['dashboard']['server_type']}]", :delayed
+  notifies :restart, 'service[apache2]', :delayed
 end
 
 execute 'openstack-dashboard syncdb' do
-  cwd node['openstack']['dashboard']['django_path']
-  environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{node['openstack']['dashboard']['django_path']}:$PYTHONPATH"
+  cwd django_path
+  environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{django_path}:$PYTHONPATH"
   command 'python manage.py syncdb --noinput'
   action :run
   only_if do
@@ -113,6 +114,13 @@ package 'openstack-dashboard-ubuntu-theme' do
   only_if { platform_family?('debian') }
 end
 
-# TODO(shep)
-# Horizon has a forced dependency on there being a volume service endpoint in your keystone catalog
-# https://answers.launchpad.net/horizon/+question/189551
+# resource can be triggered from other recipes (e.g. in
+# recipe/neutron-lbaas-dashboard.rb)
+execute 'openstack-dashboard collectstatic' do
+  cwd django_path
+  environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{django_path}:$PYTHONPATH"
+  command 'python manage.py collectstatic --noinput'
+  action :nothing
+end
+
+include_recipe 'openstack-dashboard::apache2-server'

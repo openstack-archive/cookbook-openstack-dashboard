@@ -6,12 +6,12 @@ describe 'openstack-dashboard::horizon' do
     let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
     let(:chef_run) do
-      runner.converge('openstack-dashboard::server')
+      runner.converge(described_recipe)
     end
 
     let(:chef_run_session_sql) do
       node.set['openstack']['dashboard']['session_backend'] = 'sql'
-      runner.converge('openstack-dashboard::server')
+      runner.converge(described_recipe)
     end
 
     include_context 'non_redhat_stubs'

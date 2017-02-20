@@ -15,3 +15,4 @@ end
 depends 'apache2', '~> 3.2'
 depends 'openstack-common', '>= 14.0.0'
 depends 'openstack-identity', '>= 14.0.0'
+depends 'poise-python', '~> 1.5.1'
