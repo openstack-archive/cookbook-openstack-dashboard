@@ -115,7 +115,7 @@ package 'openstack-dashboard-ubuntu-theme' do
 end
 
 # resource can be triggered from other recipes (e.g. in
-# recipe/neutron-lbaas-dashboard.rb)
+# recipes/neutron-lbaas-dashboard.rb)
 execute 'openstack-dashboard collectstatic' do
   cwd django_path
   environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{django_path}:$PYTHONPATH"
