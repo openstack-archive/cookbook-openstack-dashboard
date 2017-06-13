@@ -6,7 +6,7 @@ source_url 'https://github.com/openstack/cookbook-openstack-dashboard' if respon
 license 'Apache 2.0'
 description 'Installs/Configures the OpenStack Dashboard (Horizon)'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '14.0.0'
+version '14.0.1'
 
 %w(ubuntu redhat centos).each do |os|
   supports os

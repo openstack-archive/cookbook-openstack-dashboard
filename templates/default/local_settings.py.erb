@@ -226,6 +226,7 @@ OPENSTACK_CINDER_FEATURES = {
 # balancer service, security groups, quotas, VPN service.
 OPENSTACK_NEUTRON_NETWORK = {
     'enable_lb': <%= node['openstack']['dashboard']['neutron']['enable_lb'].to_s.capitalize %>,
+    'enable_vpn': <%= node['openstack']['dashboard']['neutron']['enable_vpn'].to_s.capitalize %>,
     'enable_quotas': <%= node['openstack']['dashboard']['neutron']['enable_quotas'] ? 'True' : 'False' %>,
     # The profile_support option is used to detect if an external router can be
     # configured via the dashboard. When using specific plugins the
