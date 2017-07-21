@@ -26,16 +26,16 @@ describe 'openstack-dashboard::neutron-lbaas-dashboard' do
 
     it do
       expect(chef_run).to create_remote_file(
-        '/usr/share/openstack-dashboard/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py'
+        "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py"
       ).with(
         mode: 00644,
         owner: 'root',
-        source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/mitaka/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
+        source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/ocata/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
       )
     end
 
     it do
-      expect(chef_run.remote_file('/usr/share/openstack-dashboard/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py'))
+      expect(chef_run.remote_file("#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py"))
         .to notify('execute[openstack-dashboard collectstatic]')
     end
   end
