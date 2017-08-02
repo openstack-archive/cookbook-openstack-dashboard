@@ -34,6 +34,6 @@ end
 remote_file "#{django_path}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py" do
   source 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/ocata/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
   owner 'root'
-  mode 00644
+  mode 0o0644
   notifies :run, 'execute[openstack-dashboard collectstatic]'
 end

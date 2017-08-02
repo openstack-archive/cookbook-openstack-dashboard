@@ -90,7 +90,7 @@ ssl_chain_file = if node['openstack']['dashboard']['ssl']['chain']
 if node['openstack']['dashboard']['use_ssl'] &&
    node['openstack']['dashboard']['ssl']['use_data_bag']
   unless ssl_cert_file == ssl_key_file
-    cert_mode = 00644
+    cert_mode = 0o0644
     cert_owner = 'root'
     cert_group = 'root'
 
@@ -104,7 +104,7 @@ if node['openstack']['dashboard']['use_ssl'] &&
   end
 
   if ssl_chain_file
-    cert_mode = 00644
+    cert_mode = 0o0644
     cert_owner = 'root'
     cert_group = 'root'
 
@@ -117,7 +117,7 @@ if node['openstack']['dashboard']['use_ssl'] &&
     end
   end
 
-  key_mode = 00640
+  key_mode = 0o0640
   key_owner = 'root'
   key_group = node['openstack']['dashboard']['key_group']
 
@@ -134,7 +134,7 @@ end
 file node['openstack']['dashboard']['secret_key_path'] do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_group']
-  mode 00600
+  mode 0o0600
   # the only time the file should be created is if we have secret_key_content
   # set, otherwise let apache create it when someone first accesses the
   # dashboard
@@ -156,7 +156,7 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
   source 'dash-site.erb'
   owner 'root'
   group 'root'
-  mode 00644
+  mode 0o0644
 
   variables(
     ssl_cert_file: ssl_cert_file.to_s,

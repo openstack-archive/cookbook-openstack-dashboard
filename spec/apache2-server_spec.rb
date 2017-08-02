@@ -101,13 +101,13 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0644
+            mode: 0o644
           )
           expect(chef_run).to create_file('/etc/ssl/private/horizon.key').with(
             content: 'horizon_key_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0640
+            mode: 0o640
           )
           expect(pem).to notify('execute[restore-selinux-context]').to(:run)
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
@@ -124,7 +124,7 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_chain_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0644
+            mode: 0o644
           )
           expect(chain).to notify('execute[restore-selinux-context]').to(:run)
         end
@@ -145,7 +145,7 @@ describe 'openstack-dashboard::apache2-server' do
               content: 'horizon_pem_value',
               user: 'root',
               group: 'root',
-              mode: 0644
+              mode: 0o644
             )
         end
 
@@ -154,7 +154,7 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_pem_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0640
+            mode: 0o640
           )
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
@@ -190,13 +190,13 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'any_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0644
+            mode: 0o644
           )
           expect(chef_run).to create_file('/etc/anypath/any.key').with(
             content: 'any_key_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0640
+            mode: 0o640
           )
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
           expect(pem).to notify('execute[restore-selinux-context]').to(:run)
@@ -214,7 +214,7 @@ describe 'openstack-dashboard::apache2-server' do
               content: 'any_chain_pem_value',
               user: 'root',
               group: 'root',
-              mode: 0644
+              mode: 0o644
             )
             expect(chain).to notify('execute[restore-selinux-context]').to(:run)
           end
@@ -248,7 +248,7 @@ describe 'openstack-dashboard::apache2-server' do
         expect(chef_run).to create_template(file.name).with(
           user: 'root',
           group: 'root',
-          mode: 0644
+          mode: 0o644
         )
       end
 
@@ -429,7 +429,8 @@ describe 'openstack-dashboard::apache2-server' do
           node.set['openstack']['dashboard']['horizon_group'] = 'horizon_group_value'
           node.set['openstack']['dashboard']['dash_path'] = 'dash_path_value'
           expect(chef_run).to render_file(file.name).with_content(
-            /^\s*WSGIDaemonProcess dashboard user=horizon_user_value group=horizon_group_value processes=3 threads=10 python-path=dash_path_value$/)
+            /^\s*WSGIDaemonProcess dashboard user=horizon_user_value group=horizon_group_value processes=3 threads=10 python-path=dash_path_value$/
+          )
         end
 
         it 'has the default DocRoot' do
@@ -509,7 +510,7 @@ describe 'openstack-dashboard::apache2-server' do
       end
 
       it 'has correct mode' do
-        expect(file.mode).to eq(00600)
+        expect(file.mode).to eq(0o0600)
       end
 
       it 'does not notify apache2 restart' do

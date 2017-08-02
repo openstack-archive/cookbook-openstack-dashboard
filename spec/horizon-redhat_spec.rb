@@ -24,7 +24,7 @@ describe 'openstack-dashboard::horizon' do
         expect(chef_run).to create_template(file.name).with(
           user: 'root',
           group: 'apache',
-          mode: 0640
+          mode: 0o640
         )
       end
 

@@ -28,7 +28,7 @@ describe 'openstack-dashboard::neutron-lbaas-dashboard' do
       expect(chef_run).to create_remote_file(
         "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py"
       ).with(
-        mode: 00644,
+        mode: 0o0644,
         owner: 'root',
         source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/ocata/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
       )

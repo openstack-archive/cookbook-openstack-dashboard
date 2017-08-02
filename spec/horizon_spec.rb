@@ -31,7 +31,7 @@ describe 'openstack-dashboard::horizon' do
           sensitive: true,
           user: 'root',
           group: 'horizon',
-          mode: 0640
+          mode: 0o640
         )
       end
 
@@ -425,7 +425,8 @@ describe 'openstack-dashboard::horizon' do
           it "sets the logger level for #{component}" do
             node.set['openstack']['dashboard']['log_level'][component] = "#{component}_log_level_value"
             expect(chef_run).to render_file(file.name).with_content(
-              /^\s*'#{component}': {\s*'handlers': \['console'\],\s*'level': '#{component}_log_level_value',$/)
+              /^\s*'#{component}': {\s*'handlers': \['console'\],\s*'level': '#{component}_log_level_value',$/
+            )
           end
         end
 
@@ -536,7 +537,7 @@ describe 'openstack-dashboard::horizon' do
 
     it 'has group write mode on path' do
       path = chef_run.directory("#{chef_run.node['openstack']['dashboard']['dash_path']}/local")
-      expect(path.mode).to eq(02770)
+      expect(path.mode).to eq(0o2770)
       expect(path.group).to eq(chef_run.node['openstack']['dashboard']['horizon_group'])
     end
   end

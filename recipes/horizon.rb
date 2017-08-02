@@ -72,7 +72,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
   owner 'root'
   group node['openstack']['dashboard']['horizon_group']
-  mode 00640
+  mode 0o0640
   sensitive true
 
   variables(
@@ -102,7 +102,7 @@ end
 directory "#{node['openstack']['dashboard']['dash_path']}/local" do
   owner 'root'
   group node['openstack']['dashboard']['horizon_group']
-  mode 02770
+  mode 0o2770
   action :create
 end
 
