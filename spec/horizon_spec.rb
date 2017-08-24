@@ -50,12 +50,12 @@ describe 'openstack-dashboard::horizon' do
             node.set['openstack']['dashboard']['misc_local_settings'] = {
               'CUSTOM_CONFIG_A' => {
                 'variable1' => 'value1',
-                'variable2' => 'value2'
+                'variable2' => 'value2',
               },
               'CUSTOM_CONFIG_B' => {
                 'variable1' => 'value1',
-                'variable2' => 'value2'
-              }
+                'variable2' => 'value2',
+              },
             }
           end
 
@@ -68,7 +68,7 @@ describe 'openstack-dashboard::horizon' do
               ['CUSTOM_CONFIG_B = {',
                '  \'variable1\': \'value1\',',
                '  \'variable2\': \'value2\',',
-               '}']
+               '}'],
             ].each do |content|
               expect(chef_run).to render_file(file.name).with_content(build_section(content))
             end
@@ -237,7 +237,7 @@ describe 'openstack-dashboard::horizon' do
           [
             /^LOGIN_URL =$/,
             /^LOGOUT_URL =$/,
-            /^LOGIN_REDIRECT_URL =$/
+            /^LOGIN_REDIRECT_URL =$/,
           ].each do |line|
             expect(chef_run).to_not render_file(file.name).with_content(line)
           end
@@ -254,7 +254,7 @@ describe 'openstack-dashboard::horizon' do
             node.set['openstack']['dashboard']['volume_api_version'] = 'volume_api_version_value'
             [
               /^\s*"identity": identity_api_version_value,$/,
-              /^\s*"volume": volume_api_version_value$/
+              /^\s*"volume": volume_api_version_value$/,
             ].each do |line|
               expect(chef_run).to render_file(file.name).with_content(line)
             end
@@ -264,7 +264,7 @@ describe 'openstack-dashboard::horizon' do
             node.set['openstack']['api']['auth']['version'] = 'v3.0'
             [
               /^\s*"identity": 3,$/,
-              /^\s*"volume": 2$/
+              /^\s*"volume": 2$/,
             ].each do |line|
               expect(chef_run).to render_file(file.name).with_content(line)
             end
@@ -456,10 +456,9 @@ describe 'openstack-dashboard::horizon' do
              /^\s*'PASSWORD': 'test-passes',$/,
              /^\s*'HOST': '#{service_type}_host',$/,
              /^\s*'PORT': '#{service_type}_port',$/].each do |cfg|
-              unless service_type == 'sqlite'
-                it "configures the #{service_type} backend with #{cfg}" do
-                  expect(chef_run).to render_file(file.name).with_content(cfg)
-                end
+              next if service_type == 'sqlite'
+              it "configures the #{service_type} backend with #{cfg}" do
+                expect(chef_run).to render_file(file.name).with_content(cfg)
               end
             end
           end
@@ -497,7 +496,7 @@ describe 'openstack-dashboard::horizon' do
       sync_db_environment = {
         'PYTHONPATH' => '/etc/openstack-dashboard:' \
                         '/usr/share/openstack-dashboard:' \
-                        '$PYTHONPATH'
+                        '$PYTHONPATH',
       }
 
       it 'does not execute when session_backend is not sql' do

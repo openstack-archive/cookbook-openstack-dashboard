@@ -554,7 +554,7 @@ describe 'openstack-dashboard::apache2-server' do
         action: [:run],
         params: {
           enable: false,
-          name: '000-default'
+          name: '000-default',
         }
       )
     end
@@ -567,7 +567,7 @@ describe 'openstack-dashboard::apache2-server' do
         params: {
           enable: true,
           notifies: [:reload, 'service[apache2]', :immediately],
-          name: 'openstack-dashboard'
+          name: 'openstack-dashboard',
         }
       )
     end

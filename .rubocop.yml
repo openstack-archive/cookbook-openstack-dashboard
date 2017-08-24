@@ -1,5 +1,3 @@
-inherit_from: .rubocop_todo.yml
-
 AllCops:
   Include:
     - metadata.rb
@@ -28,3 +26,12 @@ LineLength:
 
 WordArray:
   MinSize: 3
+
+Style/Next:
+  Description: Use `next` to skip iteration instead of a condition at the end.
+  StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-nested-conditionals
+  Enabled: true
+  EnforcedStyle: always
+  SupportedStyles:
+  - skip_modifier_ifs
+  - always

@@ -32,7 +32,7 @@ describe 'openstack-dashboard::horizon' do
         [
           %r{^LOGIN_URL = '/auth/login/'$},
           %r{^LOGOUT_URL = '/auth/logout/'$},
-          %r{^LOGIN_REDIRECT_URL = '/'$}
+          %r{^LOGIN_REDIRECT_URL = '/'$},
         ].each do |line|
           expect(chef_run).to render_file(file.name).with_content(line)
         end
