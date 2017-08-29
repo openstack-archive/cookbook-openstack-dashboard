@@ -17,7 +17,7 @@ describe 'openstack-dashboard::neutron-lbaas-dashboard' do
     end
 
     it do
-      expect(chef_run).to install_python_runtime('neutron-lbaas-dashboard')
+      expect(chef_run).to install_python_runtime('2')
     end
 
     it do
