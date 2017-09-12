@@ -118,6 +118,7 @@ when 'rhel'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/pki/tls/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
+  default['openstack']['dashboard']['static_path'] = '/usr/share/openstack-dashboard/static'
   default['openstack']['dashboard']['policy_files_path'] = '/etc/openstack-dashboard'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
@@ -137,6 +138,7 @@ when 'debian'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/ssl/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
   default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
+  default['openstack']['dashboard']['static_path'] = '/var/lib/openstack-dashboard/static'
   default['openstack']['dashboard']['policy_files_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/conf'
   default['openstack']['dashboard']['login_url'] = nil
   default['openstack']['dashboard']['logout_url'] = nil
@@ -152,7 +154,6 @@ else
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
-default['openstack']['dashboard']['static_path'] = "#{node['openstack']['dashboard']['django_path']}/static"
 default['openstack']['dashboard']['stylesheet_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html'
 default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi/django.wsgi'
 default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
