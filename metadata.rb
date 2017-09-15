@@ -4,7 +4,7 @@ maintainer_email 'openstack-dev@lists.openstack.org'
 license          'Apache 2.0'
 description      'Installs/Configures the OpenStack Dashboard (Horizon)'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '15.0.1'
+version          '15.0.2'
 
 %w(ubuntu redhat centos).each do |os|
   supports os
