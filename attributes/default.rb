@@ -238,4 +238,4 @@ default['openstack']['dashboard']['neutron']['enable_vpn'] = false
 #  }
 default['openstack']['dashboard']['misc_local_settings'] = nil
 # version of python neutron-lbaas-dashboard package to install
-default['openstack']['dashboard']['lbaas']['version'] = '1.0.0'
+default['openstack']['dashboard']['lbaas']['version'] = '3.0.1'
