@@ -639,7 +639,7 @@ mod.INSTALLED_APPS += ('<%= p %>', )
 <% node["openstack"]["dashboard"]["misc_local_settings"].each do |sec, opts| %>
 <%= sec %> = {
 <% opts.each do |key, value| %>
-  '<%= key %>': '<%= value %>',
+  '<%= key %>': <%= !!value == value ? ( value ? "True" : "False" ) : "'#{value}'" %>,
 <% end %>
 }
 <% end %>
