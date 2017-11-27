@@ -1,9 +1,5 @@
 <%= node["openstack"]["dashboard"]["custom_template_banner"] %>
 
-<% if node['apache']['version'] != '2.4' -%>
-NameVirtualHost <%= @http_bind_address %>:<%= @http_bind_port %>
-<% end -%>
-
 <VirtualHost <%= @http_bind_address %>:<%= @http_bind_port %>>
 <% if node["openstack"]["dashboard"]["server_hostname"] -%>
   ServerName <%= node["openstack"]["dashboard"]["server_hostname"] %>
@@ -21,10 +17,6 @@ NameVirtualHost <%= @http_bind_address %>:<%= @http_bind_port %>
   <% end -%>
   TraceEnable <%= node['openstack']['dashboard']['traceenable'] %>
 </VirtualHost>
-
-  <% if node['apache']['version'] != '2.4' -%>
-NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
-  <% end -%>
 
 <VirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>>
   <% if node["openstack"]["dashboard"]["server_hostname"] -%>
@@ -53,23 +45,13 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
   <Directory <%= node["openstack"]["dashboard"]["dash_path"] %>>
     Options Indexes FollowSymLinks MultiViews
     AllowOverride None
-    <% if node['apache']['version'] == '2.4' -%>
     Require all granted
-    <% else -%>
-    Order allow,deny
-    allow from all
-    <% end -%>
   </Directory>
 
   <Directory <%= node["openstack"]["dashboard"]["static_path"] %>>
     Options FollowSymLinks MultiViews
     AllowOverride None
-    <% if node['apache']['version'] == '2.4' -%>
     Require all granted
-    <% else -%>
-    Order allow,deny
-    allow from all
-    <% end -%>
   </Directory>
 
   <% if node["openstack"]["dashboard"]["use_ssl"] -%>
@@ -95,9 +77,7 @@ NameVirtualHost <%= @https_bind_address %>:<%= @https_bind_port %>
   CustomLog <%= node["apache"]["log_dir"] %>/<%= node["openstack"]["dashboard"]["access_log"] %> combined
   TraceEnable <%= node['openstack']['dashboard']['traceenable'] %>
   <% unless node["openstack"]["dashboard"]["cache_html"] %>
-  <% if node['apache']['version'] >= '2.4' -%>
   SetEnvIfExpr "req('accept') =~/html/" NO_CACHE
-  <% end -%>
   Header merge Cache-Control no-cache env=NO_CACHE
   Header merge Cache-Control no-store env=NO_CACHE
   <% end -%>

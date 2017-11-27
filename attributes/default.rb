@@ -98,7 +98,6 @@ default['openstack']['dashboard']['webroot'] = '/'
 # Put common ones here and platform specific ones below.
 default['openstack']['dashboard']['db_python_packages'] = {
   mysql: [],
-  postgresql: [],
   sqlite: [],
 }
 
@@ -145,7 +144,7 @@ when 'debian'
   default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
     'memcache_python_packages' => ['python-memcache'],
-    'package_overrides' => "-o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-confdef'",
+    'package_overrides' => '',
   }
   default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"

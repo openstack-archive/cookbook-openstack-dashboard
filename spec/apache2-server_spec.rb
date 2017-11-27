@@ -11,11 +11,6 @@ shared_examples 'virtualhost port configurator' do |port_attribute_name, port_at
     expect(chef_run).not_to render_file(file.name).with_content(/^NameVirtualHost/)
   end
 
-  it 'sets NameVirtualHost directives when apache 2.2' do
-    node.set['apache']['version'] = '2.2'
-    expect(chef_run).to render_file(file.name).with_content(/^NameVirtualHost 0.0.0.0:#{port_attribute_value}$/)
-  end
-
   it 'sets the VirtualHost directive' do
     expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}$/)
   end
@@ -458,11 +453,6 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         context 'directory options' do
-          it 'sets default options for apache 2.2' do
-            node.set['apache']['version'] = '2.2'
-            expect(chef_run).to render_file(file.name).with_content(/^\s*Order allow,deny\n\s*allow from all$/)
-          end
-
           it 'sets default options for apache 2.4' do
             expect(chef_run).to render_file(file.name).with_content(/^\s*Require all granted$/)
           end

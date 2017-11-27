@@ -123,4 +123,20 @@ execute 'openstack-dashboard collectstatic' do
   action :nothing
 end
 
+# workaround for
+# https://bugs.launchpad.net/openstack-chef/+bug/1496158
+secret_file =
+  ::File.join(node['openstack']['dashboard']['django_path'],
+              'openstack_dashboard',
+              'local',
+              '.secret_key_store')
+
+file secret_file do
+  owner node['openstack']['dashboard']['horizon_user']
+  group node['openstack']['dashboard']['horizon_user']
+  mode 0600
+  subscribes :create, 'service[apache2]', :immediately
+  only_if { ::File.exist?(secret_file) }
+end
+
 include_recipe 'openstack-dashboard::apache2-server'

@@ -53,9 +53,9 @@ apache2_listen = Array(node['apache']['listen'])
 # a different address syntax.  *:80   vs  0.0.0.0:80
 apache2_listen -= ['*:80']
 
-apache2_listen += ["#{http_bind.host}:#{http_bind.port}"]
+apache2_listen += ["#{http_bind['host']}:#{http_bind['port']}"]
 if node['openstack']['dashboard']['use_ssl']
-  apache2_listen += ["#{https_bind.host}:#{https_bind.port}"]
+  apache2_listen += ["#{https_bind['host']}:#{https_bind['port']}"]
 end
 
 node.normal['apache']['listen'] = apache2_listen.uniq
@@ -163,9 +163,9 @@ template node['openstack']['dashboard']['apache']['sites-path'] do
     ssl_key_file: ssl_key_file.to_s,
     ssl_chain_file: ssl_chain_file.to_s,
     http_bind_address: http_bind_address,
-    http_bind_port: http_bind.port.to_i,
+    http_bind_port: http_bind['port'].to_i,
     https_bind_address: https_bind_address,
-    https_bind_port: https_bind.port.to_i
+    https_bind_port: https_bind['port'].to_i
   )
 
   notifies :run, 'execute[restore-selinux-context]', :immediately
