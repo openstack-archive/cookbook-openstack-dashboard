@@ -73,7 +73,11 @@ OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "<%= node["openstack"]["dashboard"]["keyston
 
 # Set Console type:
 # valid options would be "AUTO", "VNC", "SPICE" or "RDP"
+<% if node["openstack"]["dashboard"]["console_type"].match('None|False') %>
+CONSOLE_TYPE = <%= node["openstack"]["dashboard"]["console_type"] %>
+<% else -%>
 CONSOLE_TYPE = "<%= node["openstack"]["dashboard"]["console_type"] %>"
+<% end %>
 
 # Default OpenStack Dashboard configuration.
 HORIZON_CONFIG = {
