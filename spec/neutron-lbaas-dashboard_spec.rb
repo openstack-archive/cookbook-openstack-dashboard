@@ -30,7 +30,7 @@ describe 'openstack-dashboard::neutron-lbaas-dashboard' do
       ).with(
         mode: 0o0644,
         owner: 'root',
-        source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/ocata/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
+        source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/pike/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
       )
     end
 
