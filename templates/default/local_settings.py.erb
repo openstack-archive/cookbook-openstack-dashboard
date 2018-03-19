@@ -228,6 +228,7 @@ OPENSTACK_NEUTRON_NETWORK = {
     'enable_lb': <%= node['openstack']['dashboard']['neutron']['enable_lb'].to_s.capitalize %>,
     'enable_vpn': <%= node['openstack']['dashboard']['neutron']['enable_vpn'].to_s.capitalize %>,
     'enable_quotas': <%= node['openstack']['dashboard']['neutron']['enable_quotas'] ? 'True' : 'False' %>,
+    'enable_firewall': <%= node['openstack']['dashboard']['neutron']['enable_fwaas'].to_s.capitalize %>,
     # The profile_support option is used to detect if an external router can be
     # configured via the dashboard. When using specific plugins the
     # profile_support can be turned on if needed.
