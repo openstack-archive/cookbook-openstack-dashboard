@@ -431,8 +431,7 @@ describe 'openstack-dashboard::horizon' do
         end
 
         { 'mysql' => 'django.db.backends.mysql',
-          'sqlite' => 'django.db.backends.sqlite3',
-          'postgresql' => 'django.db.backends.postgresql_psycopg2' }.each do |service_type, backend|
+          'sqlite' => 'django.db.backends.sqlite3' }.each do |service_type, backend|
           context "#{service_type} database settings" do
             before do
               allow_any_instance_of(Chef::Recipe).to receive(:db)
