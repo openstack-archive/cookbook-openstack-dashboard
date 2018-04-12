@@ -20,12 +20,6 @@ include_recipe 'openstack-dashboard::horizon'
 django_path = node['openstack']['dashboard']['django_path']
 policy_file_path = node['openstack']['dashboard']['policy_files_path']
 
-# use system python for fwaas dashboard
-python_runtime '2' do
-  provider :system
-  version '2.7'
-end
-
 python_package 'neutron-fwaas-dashboard'
 
 %w(
