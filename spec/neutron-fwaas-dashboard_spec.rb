@@ -17,10 +17,6 @@ describe 'openstack-dashboard::neutron-fwaas-dashboard' do
     end
 
     it do
-      expect(chef_run).to install_python_runtime('2')
-    end
-
-    it do
       expect(chef_run).to install_python_package('neutron-fwaas-dashboard')
     end
 

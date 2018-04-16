@@ -19,11 +19,6 @@ include_recipe 'openstack-dashboard::horizon'
 
 django_path = node['openstack']['dashboard']['django_path']
 
-# use system python for lbaasv2 dashboard
-python_runtime '2' do
-  provider :system
-end
-
 python_package 'neutron-lbaas-dashboard' do
   version node['openstack']['dashboard']['lbaas']['version']
   notifies :run, 'execute[restore-selinux-context]', :immediately
