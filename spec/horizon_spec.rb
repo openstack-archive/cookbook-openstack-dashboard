@@ -367,10 +367,6 @@ describe 'openstack-dashboard::horizon' do
           expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_URL = "http://127.0.0.1:5000/v3"})
         end
 
-        it 'has a keystone admin url' do
-          expect(chef_run).to render_file(file.name).with_content(%r{OPENSTACK_KEYSTONE_ADMIN_URL = "http://127.0.0.1:35357/v3"})
-        end
-
         it 'has a keystone default role' do
           node.set['openstack']['dashboard']['keystone_default_role'] = 'keystone_default_role_value'
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_DEFAULT_ROLE = "keystone_default_role_value"$/)
