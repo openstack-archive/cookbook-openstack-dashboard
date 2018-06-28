@@ -30,10 +30,8 @@ end
 include_recipe 'openstack-identity'
 platform_options = node['openstack']['dashboard']['platform']
 
-identity_admin_endpoint = admin_endpoint 'identity'
-auth_admin_uri = auth_uri_transform identity_admin_endpoint.to_s, node['openstack']['dashboard']['api']['auth']['version']
 identity_endpoint = public_endpoint 'identity'
-auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['dashboard']['api']['auth']['version']
+auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
 
 http_bind = node['openstack']['bind_service']['dashboard_http']
 http_bind_address = bind_address http_bind
@@ -78,8 +76,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
   variables(
     db_pass: db_pass,
     db_info: db_info,
-    auth_uri: auth_uri,
-    auth_admin_uri: auth_admin_uri,
+    auth_url: auth_url,
     memcached_servers: memcached,
     host: horizon_host
   )
