@@ -30,8 +30,8 @@ end
 include_recipe 'openstack-identity'
 platform_options = node['openstack']['dashboard']['platform']
 
-identity_endpoint = public_endpoint 'identity'
-auth_url = auth_uri_transform identity_endpoint.to_s, node['openstack']['api']['auth']['version']
+identity_endpoint = internal_endpoint 'identity'
+auth_url = ::URI.decode identity_endpoint.to_s
 
 http_bind = node['openstack']['bind_service']['dashboard_http']
 http_bind_address = bind_address http_bind
