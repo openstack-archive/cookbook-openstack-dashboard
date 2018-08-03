@@ -38,7 +38,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'does not mess with certs if ssl not enabled' do
-          node.set['openstack']['dashboard']['use_ssl'] = false
+          node.override['openstack']['dashboard']['use_ssl'] = false
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
           expect(chef_run).not_to create_file('/etc/pki/tls/private/horizon.key')
         end

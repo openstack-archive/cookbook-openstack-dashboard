@@ -4,7 +4,7 @@ require_relative 'spec_helper'
 shared_examples 'virtualhost port configurator' do |port_attribute_name, port_attribute_value|
   let(:virtualhost_directive) { "<VirtualHost 0.0.0.0:#{port_attribute_value}>" }
   before do
-    node.set['openstack']['endpoints'][port_attribute_name]['port'] = port_attribute_value
+    node.override['openstack']['endpoints'][port_attribute_name]['port'] = port_attribute_value
   end
 
   it 'does not set NameVirtualHost directives when apache 2.4' do
@@ -17,26 +17,26 @@ shared_examples 'virtualhost port configurator' do |port_attribute_name, port_at
 
   context 'server_hostname' do
     it 'sets the value if the server_hostname is present' do
-      node.set['openstack']['dashboard']['server_hostname'] = 'server_hostname_value'
+      node.override['openstack']['dashboard']['server_hostname'] = 'server_hostname_value'
       expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerName server_hostname_value$/)
     end
 
     it 'does not set the value if the server_hostname is not present' do
-      node.set['openstack']['dashboard']['server_hostname'] = nil
+      node.override['openstack']['dashboard']['server_hostname'] = nil
       expect(chef_run).not_to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerName$/)
     end
   end
   context 'server_aliases' do
     it 'sets the value if the server_aliases is present' do
-      node.set['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value)
+      node.override['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value)
       expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias server_aliases_value$/)
     end
     it 'sets the value if multiple server_aliases is present' do
-      node.set['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value1 server_aliases_value2)
+      node.override['openstack']['dashboard']['server_aliases'] = %w(server_aliases_value1 server_aliases_value2)
       expect(chef_run).to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias server_aliases_value1 server_aliases_value2$/)
     end
     it 'does not set the value if the server_aliases is not present' do
-      node.set['openstack']['dashboard']['server_hostname'] = []
+      node.override['openstack']['dashboard']['server_hostname'] = []
       expect(chef_run).not_to render_file(file.name).with_content(/^#{virtualhost_directive}\s*ServerAlias$/)
     end
   end
@@ -51,7 +51,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     let(:chef_run_session_sql) do
-      node.set['openstack']['dashboard']['session_backend'] = 'sql'
+      node.override['openstack']['dashboard']['session_backend'] = 'sql'
       runner.converge(described_recipe)
     end
     include_context 'non_redhat_stubs'
@@ -77,7 +77,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'does not include the apache mod_ssl package when ssl disabled' do
-      node.set['openstack']['dashboard']['use_ssl'] = false
+      node.override['openstack']['dashboard']['use_ssl'] = false
       expect(chef_run).not_to include_recipe('apache2::mod_ssl')
     end
 
@@ -110,7 +110,7 @@ describe 'openstack-dashboard::apache2-server' do
       end
       context 'set ssl chain' do
         before do
-          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+          node.override['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
         end
         let(:chain) { chef_run.file('/etc/ssl/certs/horizon-chain.pem') }
 
@@ -128,7 +128,7 @@ describe 'openstack-dashboard::apache2-server' do
         let(:key) { chef_run.file('/etc/ssl/private/horizon.pem') }
 
         before do
-          node.set['openstack']['dashboard']['ssl'].tap do |ssl|
+          node.override['openstack']['dashboard']['ssl'].tap do |ssl|
             ssl['cert_dir'] = ssl['key_dir'] = '/etc/ssl/private'
             ssl['cert'] = ssl['key'] = 'horizon.pem'
           end
@@ -155,8 +155,8 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'does not mess with certs if ssl not enabled' do
-          node.set['openstack']['dashboard']['use_ssl'] = false
-          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+          node.override['openstack']['dashboard']['use_ssl'] = false
+          node.override['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon-chain.pem')
@@ -168,17 +168,17 @@ describe 'openstack-dashboard::apache2-server' do
         let(:key) { chef_run.file('/etc/anypath/any.key') }
 
         before do
-          node.set['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/anypath'
-          node.set['openstack']['dashboard']['ssl']['key_dir'] = '/etc/anypath'
-          node.set['openstack']['dashboard']['ssl']['cert'] = 'any.pem'
-          node.set['openstack']['dashboard']['ssl']['key'] = 'any.key'
+          node.override['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/anypath'
+          node.override['openstack']['dashboard']['ssl']['key_dir'] = '/etc/anypath'
+          node.override['openstack']['dashboard']['ssl']['cert'] = 'any.pem'
+          node.override['openstack']['dashboard']['ssl']['key'] = 'any.key'
           allow_any_instance_of(Chef::Recipe).to receive(:secret)
             .with('certs', 'any.pem')
             .and_return('any_pem_value')
           allow_any_instance_of(Chef::Recipe).to receive(:secret)
             .with('certs', 'any.key')
             .and_return('any_key_value')
-          node.set['openstack']['dashboard']
+          node.override['openstack']['dashboard']
         end
         it 'create files and restarts apache' do
           expect(chef_run).to create_file('/etc/anypath/any.pem').with(
@@ -199,7 +199,7 @@ describe 'openstack-dashboard::apache2-server' do
         context 'set ssl chain' do
           let(:chain) { chef_run.file('/etc/anypath/any-chain.pem') }
           before do
-            node.set['openstack']['dashboard']['ssl']['chain'] = 'any-chain.pem'
+            node.override['openstack']['dashboard']['ssl']['chain'] = 'any-chain.pem'
             allow_any_instance_of(Chef::Recipe).to receive(:secret)
               .with('certs', 'any-chain.pem')
               .and_return('any_chain_pem_value')
@@ -215,14 +215,14 @@ describe 'openstack-dashboard::apache2-server' do
           end
         end
         it 'does not mess with certs if ssl not enabled' do
-          node.set['openstack']['dashboard']['use_ssl'] = false
+          node.override['openstack']['dashboard']['use_ssl'] = false
           expect(chef_run).not_to create_file('/etc/anypath/any.key')
           expect(chef_run).not_to create_file('/etc/anypath/any.pem')
           expect(chef_run).not_to create_file('/etc/anypath/any-chain.pem')
         end
         it 'does not create certs if certs data bag is disabled' do
-          node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
-          node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+          node.override['openstack']['dashboard']['ssl']['use_data_bag'] = false
+          node.override['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.key')
           expect(chef_run).not_to create_file('/etc/ssl/certs/horizon-chain.pem')
@@ -252,7 +252,7 @@ describe 'openstack-dashboard::apache2-server' do
         let(:default_rewrite_rule) { %r(^\s*RewriteRule \^\(\.\*\)\$ https\://%\{HTTP_HOST\}%\{REQUEST_URI\} \[L,R\]$) }
 
         it 'has the default banner' do
-          node.set['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
+          node.override['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
           expect(chef_run).to render_file(file.name).with_content(/^custom_template_banner_value$/)
         end
 
@@ -264,7 +264,7 @@ describe 'openstack-dashboard::apache2-server' do
           end
 
           it 'allows html page caching' do
-            node.set['openstack']['dashboard']['cache_html'] = true
+            node.override['openstack']['dashboard']['cache_html'] = true
             expect(chef_run).not_to render_file(file.name).with_content(%r{^\s*SetEnvIfExpr "req\('accept'\) =~/html/" NO_CACHE$})
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-cache env=NO_CACHE$/)
             expect(chef_run).not_to render_file(file.name).with_content(/^\s*Header merge Cache-Control no-store env=NO_CACHE$/)
@@ -275,7 +275,7 @@ describe 'openstack-dashboard::apache2-server' do
 
         context 'with use_ssl enabled' do
           before do
-            node.set['openstack']['dashboard']['use_ssl'] = true
+            node.override['openstack']['dashboard']['use_ssl'] = true
           end
 
           it_should_behave_like 'virtualhost port configurator', 'dashboard-https-bind', 443
@@ -286,23 +286,23 @@ describe 'openstack-dashboard::apache2-server' do
 
           context 'rewrite rule' do
             it 'shows the default SSL rewrite rule when http_port is 80 and https_port is 443' do
-              node.set['openstack']['bind_service']['dashboard_http']['port'] = 80
-              node.set['openstack']['bind_service']['dashboard_https']['port'] = 443
+              node.override['openstack']['bind_service']['dashboard_http']['port'] = 80
+              node.override['openstack']['bind_service']['dashboard_https']['port'] = 443
               expect(chef_run).to render_file(file.name).with_content(default_rewrite_rule)
             end
 
             it 'shows the parameterized SSL rewrite rule when http_port is different from 80' do
               https_port_value = 443
-              node.set['openstack']['bind_service']['dashboard_http']['port'] = 81
-              node.set['openstack']['bind_service']['dashboard_https']['port'] = https_port_value
+              node.override['openstack']['bind_service']['dashboard_http']['port'] = 81
+              node.override['openstack']['bind_service']['dashboard_https']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
                 .with_content(%r{^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$})
             end
 
             it 'shows the parameterized SSL rewrite rule when https_port is different from 443' do
               https_port_value = 444
-              node.set['openstack']['bind_service']['dashboard_http']['port'] = 80
-              node.set['openstack']['bind_service']['dashboard_https']['port'] = https_port_value
+              node.override['openstack']['bind_service']['dashboard_http']['port'] = 80
+              node.override['openstack']['bind_service']['dashboard_https']['port'] = https_port_value
               expect(chef_run).to render_file(file.name)
                 .with_content(%r{^\s*RewriteRule \^\(\.\*\)\$ https://%\{SERVER_NAME\}:#{https_port_value}%\{REQUEST_URI\} \[L,R\]$})
             end
@@ -320,14 +320,14 @@ describe 'openstack-dashboard::apache2-server' do
           end
           context 'set ssl chain' do
             it 'shows chain directive' do
-              node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+              node.override['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
               expect(chef_run).to render_file(file.name)
                 .with_content(%r{^\s*SSLCertificateChainFile /etc/ssl/certs/horizon-chain.pem$})
             end
           end
           context 'set use_data_bag to false' do
             it 'shows ssl certificate related directives defaults' do
-              node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
+              node.override['openstack']['dashboard']['ssl']['use_data_bag'] = false
               [/^\s*SSLEngine on$/,
                %r{^\s*SSLCertificateFile /etc/ssl/certs/horizon.pem$},
                %r{^\s*SSLCertificateKeyFile /etc/ssl/private/horizon.key$},
@@ -339,8 +339,8 @@ describe 'openstack-dashboard::apache2-server' do
             end
             context 'set ssl chain' do
               it 'shows chain directive' do
-                node.set['openstack']['dashboard']['ssl']['use_data_bag'] = false
-                node.set['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
+                node.override['openstack']['dashboard']['ssl']['use_data_bag'] = false
+                node.override['openstack']['dashboard']['ssl']['chain'] = 'horizon-chain.pem'
                 expect(chef_run).to render_file(file.name)
                   .with_content(%r{^\s*SSLCertificateChainFile /etc/ssl/certs/horizon-chain.pem$})
               end
@@ -358,12 +358,12 @@ describe 'openstack-dashboard::apache2-server' do
               allow_any_instance_of(Chef::Recipe).to receive(:secret)
                 .with('certs', 'ssl.key')
                 .and_return('ssl_key_value')
-              node.set['openstack']['dashboard']['ssl']['cert'] = 'ssl.cert'
-              node.set['openstack']['dashboard']['ssl']['key'] = 'ssl.key'
-              node.set['openstack']['dashboard']['ssl']['cert_dir'] = 'ssl_dir_value/certs'
-              node.set['openstack']['dashboard']['ssl']['key_dir'] = 'ssl_dir_value/private'
-              node.set['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
-              node.set['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
+              node.override['openstack']['dashboard']['ssl']['cert'] = 'ssl.cert'
+              node.override['openstack']['dashboard']['ssl']['key'] = 'ssl.key'
+              node.override['openstack']['dashboard']['ssl']['cert_dir'] = 'ssl_dir_value/certs'
+              node.override['openstack']['dashboard']['ssl']['key_dir'] = 'ssl_dir_value/private'
+              node.override['openstack']['dashboard']['ssl']['protocol'] = 'ssl_protocol_value'
+              node.override['openstack']['dashboard']['ssl']['ciphers'] = 'ssl_ciphers_value'
             end
             it 'shows ssl related directives overrides' do
               [/^\s*SSLEngine on$/,
@@ -380,7 +380,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
         context 'with use_ssl disabled' do
           before do
-            node.set['openstack']['dashboard']['use_ssl'] = false
+            node.override['openstack']['dashboard']['use_ssl'] = false
           end
 
           it 'does not show rewrite ssl directive' do
@@ -388,8 +388,8 @@ describe 'openstack-dashboard::apache2-server' do
           end
 
           it 'does not show the default rewrite rule' do
-            node.set['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
-            node.set['openstack']['endpoints']['dashboard-https-bind']['port'] = 443
+            node.override['openstack']['endpoints']['dashboard-http-bind']['port'] = 80
+            node.override['openstack']['endpoints']['dashboard-https-bind']['port'] = 443
             expect(chef_run).not_to render_file(file.name).with_content(default_rewrite_rule)
           end
 
@@ -405,7 +405,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'shows the ServerAdmin' do
-          node.set['apache']['contact'] = 'apache_contact_value'
+          node.override['apache']['contact'] = 'apache_contact_value'
           expect(chef_run).to render_file(file.name).with_content(/\s*ServerAdmin apache_contact_value$/)
         end
 
@@ -414,40 +414,40 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'sets the WSGI script alias' do
-          node.set['openstack']['dashboard']['wsgi_path'] = 'wsgi_path_value'
-          node.set['openstack']['dashboard']['webroot'] = 'root'
+          node.override['openstack']['dashboard']['wsgi_path'] = 'wsgi_path_value'
+          node.override['openstack']['dashboard']['webroot'] = 'root'
           expect(chef_run).to render_file(file.name).with_content(/^\s*WSGIScriptAlias root wsgi_path_value$/)
         end
 
         it 'sets the WSGI daemon process' do
-          node.set['openstack']['dashboard']['horizon_user'] = 'horizon_user_value'
-          node.set['openstack']['dashboard']['horizon_group'] = 'horizon_group_value'
-          node.set['openstack']['dashboard']['dash_path'] = 'dash_path_value'
+          node.override['openstack']['dashboard']['horizon_user'] = 'horizon_user_value'
+          node.override['openstack']['dashboard']['horizon_group'] = 'horizon_group_value'
+          node.override['openstack']['dashboard']['dash_path'] = 'dash_path_value'
           expect(chef_run).to render_file(file.name).with_content(
             /^\s*WSGIDaemonProcess dashboard user=horizon_user_value group=horizon_group_value processes=3 threads=10 python-path=dash_path_value$/
           )
         end
 
         it 'has the default DocRoot' do
-          node.set['openstack']['dashboard']['dash_path'] = 'dash_path_value'
+          node.override['openstack']['dashboard']['dash_path'] = 'dash_path_value'
           expect(chef_run).to render_file(file.name)
             .with_content(%r{\s*DocumentRoot dash_path_value/.blackhole/$})
         end
 
         it 'has TraceEnable set' do
-          node.set['openstack']['dashboard']['traceenable'] = 'value'
+          node.override['openstack']['dashboard']['traceenable'] = 'value'
           expect(chef_run).to render_file(file.name)
             .with_content(/^  TraceEnable value$/)
         end
 
         it 'sets the right Alias path for /static' do
-          node.set['openstack']['dashboard']['static_path'] = 'static_path_value'
+          node.override['openstack']['dashboard']['static_path'] = 'static_path_value'
           expect(chef_run).to render_file(file.name).with_content(%r{^\s+Alias /static static_path_value$})
         end
 
         %w(dash_path static_path).each do |dir_attribute|
           it "sets the #{dir_attribute} directory directive" do
-            node.set['openstack']['dashboard'][dir_attribute] = "#{dir_attribute}_value"
+            node.override['openstack']['dashboard'][dir_attribute] = "#{dir_attribute}_value"
             expect(chef_run).to render_file(file.name).with_content(/^\s*<Directory #{dir_attribute}_value>$/)
           end
         end
@@ -460,27 +460,27 @@ describe 'openstack-dashboard::apache2-server' do
 
         context 'log directives' do
           before do
-            node.set['apache']['log_dir'] = 'log_dir_value'
+            node.override['apache']['log_dir'] = 'log_dir_value'
           end
 
           it 'sets de ErrorLog directive' do
-            node.set['openstack']['dashboard']['error_log'] = 'error_log_value'
+            node.override['openstack']['dashboard']['error_log'] = 'error_log_value'
             expect(chef_run).to render_file(file.name).with_content(%r{^\s*ErrorLog log_dir_value/error_log_value$})
           end
 
           it 'sets de CustomLog directive' do
-            node.set['openstack']['dashboard']['access_log'] = 'access_log_value'
+            node.override['openstack']['dashboard']['access_log'] = 'access_log_value'
             expect(chef_run).to render_file(file.name).with_content(%r{^\s*CustomLog log_dir_value/access_log_value combined$})
           end
         end
 
         it 'sets wsgi socket prefix if wsgi_socket_prefix attribute is preset' do
-          node.set['openstack']['dashboard']['wsgi_socket_prefix'] = '/var/run/wsgi'
+          node.override['openstack']['dashboard']['wsgi_socket_prefix'] = '/var/run/wsgi'
           expect(chef_run).to render_file(file.name).with_content(%r{^WSGISocketPrefix /var/run/wsgi$})
         end
 
         it 'omits wsgi socket prefix if wsgi_socket_prefix attribute is not preset' do
-          node.set['openstack']['dashboard']['wsgi_socket_prefix'] = nil
+          node.override['openstack']['dashboard']['wsgi_socket_prefix'] = nil
           expect(chef_run).not_to render_file(file.name).with_content(/^WSGISocketPrefix $/)
         end
       end
@@ -508,9 +508,9 @@ describe 'openstack-dashboard::apache2-server' do
       end
 
       it 'has configurable path and ownership settings' do
-        node.set['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
-        node.set['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
-        node.set['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
+        node.override['openstack']['dashboard']['secret_key_path'] = 'somerandompath'
+        node.override['openstack']['dashboard']['horizon_user'] = 'somerandomuser'
+        node.override['openstack']['dashboard']['horizon_group'] = 'somerandomgroup'
         file = chef_run.file('somerandompath')
         expect(file.owner).to eq('somerandomuser')
         expect(file.group).to eq('somerandomgroup')
@@ -518,7 +518,7 @@ describe 'openstack-dashboard::apache2-server' do
 
       describe 'secret_key_content set' do
         before do
-          node.set['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
+          node.override['openstack']['dashboard']['secret_key_content'] = 'somerandomcontent'
         end
 
         it 'has configurable secret_key_content setting' do

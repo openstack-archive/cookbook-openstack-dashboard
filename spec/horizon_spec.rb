@@ -10,7 +10,7 @@ describe 'openstack-dashboard::horizon' do
     end
 
     let(:chef_run_session_sql) do
-      node.set['openstack']['dashboard']['session_backend'] = 'sql'
+      node.override['openstack']['dashboard']['session_backend'] = 'sql'
       runner.converge(described_recipe)
     end
 
@@ -41,13 +41,13 @@ describe 'openstack-dashboard::horizon' do
 
       context 'template contents' do
         it 'has the customer banner' do
-          node.set['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
+          node.override['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
           expect(chef_run).to render_file(file.name).with_content(/^custom_template_banner_value$/)
         end
 
         context 'misc settings' do
           before do
-            node.set['openstack']['dashboard']['misc_local_settings'] = {
+            node.override['openstack']['dashboard']['misc_local_settings'] = {
               'CUSTOM_CONFIG_A' => {
                 'variable1' => 'value1',
                 'variable2' => 'value2',
@@ -78,7 +78,7 @@ describe 'openstack-dashboard::horizon' do
         context 'debug setting' do
           context 'set to true' do
             before do
-              node.set['openstack']['dashboard']['debug'] = true
+              node.override['openstack']['dashboard']['debug'] = true
             end
 
             it 'has a true value for the DEBUG attribute' do
@@ -92,7 +92,7 @@ describe 'openstack-dashboard::horizon' do
 
           context 'set to false' do
             before do
-              node.set['openstack']['dashboard']['debug'] = false
+              node.override['openstack']['dashboard']['debug'] = false
             end
 
             it 'has a false value for the DEBUG attribute' do
@@ -114,7 +114,7 @@ describe 'openstack-dashboard::horizon' do
 
           context 'set to False' do
             before do
-              node.set['openstack']['dashboard']['ssl_no_verify'] = 'False'
+              node.override['openstack']['dashboard']['ssl_no_verify'] = 'False'
             end
 
             it 'has a False value for the OPENSTACK_SSL_NO_VERIFY attribute' do
@@ -124,25 +124,25 @@ describe 'openstack-dashboard::horizon' do
 
           context 'not set when ssl disabled' do
             it 'has a True value for the OPENSTACK_SSL_NO_VERIFY attribute' do
-              node.set['openstack']['dashboard']['use_ssl'] = false
+              node.override['openstack']['dashboard']['use_ssl'] = false
               expect(chef_run).not_to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = True$/)
             end
           end
         end
 
         it 'config ssl_cacert' do
-          node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
+          node.override['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
           expect(chef_run).to render_file(file.name).with_content(%r{^OPENSTACK_SSL_CACERT = '/path_to_cacert.pem'$})
         end
 
         it 'does not config ssl_cacert when ssl disabled' do
-          node.set['openstack']['dashboard']['use_ssl'] = false
-          node.set['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
+          node.override['openstack']['dashboard']['use_ssl'] = false
+          node.override['openstack']['dashboard']['ssl_cacert'] = '/path_to_cacert.pem'
           expect(chef_run).not_to render_file(file.name).with_content(%r{^OPENSTACK_SSL_CACERT = '/path_to_cacert.pem'$})
         end
 
         it 'has some allowed hosts set' do
-          node.set['openstack']['dashboard']['allowed_hosts'] = ['dashboard.example.net']
+          node.override['openstack']['dashboard']['allowed_hosts'] = ['dashboard.example.net']
           expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["dashboard.example.net"\]$/)
         end
 
@@ -155,7 +155,7 @@ describe 'openstack-dashboard::horizon' do
 
           context 'set to sha256' do
             before do
-              node.set['openstack']['dashboard']['hash_algorithm'] = 'sha256'
+              node.override['openstack']['dashboard']['hash_algorithm'] = 'sha256'
             end
 
             it 'has a sha256 value for the OPENSTACK_TOKEN_HASH_ALGORITHM attribute' do
@@ -167,12 +167,12 @@ describe 'openstack-dashboard::horizon' do
         context 'ssl offload' do
           let(:secure_proxy_string) { 'SECURE_PROXY_SSL_HEADER = \(\'HTTP_X_FORWARDED_PROTOCOL\', \'https\'\)' }
           it 'does not configure ssl proxy when ssl_offload is false' do
-            node.set['openstack']['dashboard']['ssl_offload'] = false
+            node.override['openstack']['dashboard']['ssl_offload'] = false
             expect(chef_run).not_to render_file(file.name).with_content(/^#{secure_proxy_string}$/)
           end
 
           it 'configures ssl proxy when ssl_offload is set to true' do
-            node.set['openstack']['dashboard']['ssl_offload'] = true
+            node.override['openstack']['dashboard']['ssl_offload'] = true
             expect(chef_run).to render_file(file.name).with_content(/^#{secure_proxy_string}$/)
           end
         end
@@ -180,11 +180,11 @@ describe 'openstack-dashboard::horizon' do
         context 'temp dir override' do
           context 'temp dir is nil' do
             it 'does not override temp dir when it is nil' do
-              node.set['openstack']['dashboard']['file_upload_temp_dir'] = nil
+              node.override['openstack']['dashboard']['file_upload_temp_dir'] = nil
               expect(chef_run).not_to render_file(file.name).with_content(/^FILE_UPLOAD_TEMP_DIR =/)
             end
             it 'does override temp dir when it is not nil' do
-              node.set['openstack']['dashboard']['file_upload_temp_dir'] = '/foobar'
+              node.override['openstack']['dashboard']['file_upload_temp_dir'] = '/foobar'
               expect(chef_run).to render_file(file.name).with_content(%r{^FILE_UPLOAD_TEMP_DIR = "/foobar"$})
             end
           end
@@ -193,36 +193,36 @@ describe 'openstack-dashboard::horizon' do
         context 'ssl settings' do
           context 'use_ssl enabled' do
             before do
-              node.set['openstack']['dashboard']['use_ssl'] = true
+              node.override['openstack']['dashboard']['use_ssl'] = true
             end
 
             context 'csrf_cookie_secure setting' do
               it 'sets secure csrf cookie to true when the attribute is enabled' do
-                node.set['openstack']['dashboard']['csrf_cookie_secure'] = true
+                node.override['openstack']['dashboard']['csrf_cookie_secure'] = true
                 expect(chef_run).to render_file(file.name).with_content(/^CSRF_COOKIE_SECURE = True$/)
               end
 
               it 'sets secure csrf cookie to false when the attribute is disabled' do
-                node.set['openstack']['dashboard']['csrf_cookie_secure'] = false
+                node.override['openstack']['dashboard']['csrf_cookie_secure'] = false
                 expect(chef_run).to render_file(file.name).with_content(/^CSRF_COOKIE_SECURE = False$/)
               end
             end
 
             context 'session_cookie_secure setting' do
               it 'set secure csrf cookie to true when the sttribute is enabled' do
-                node.set['openstack']['dashboard']['session_cookie_secure'] = true
+                node.override['openstack']['dashboard']['session_cookie_secure'] = true
                 expect(chef_run).to render_file(file.name).with_content(/^SESSION_COOKIE_SECURE = True$/)
               end
 
               it 'set secure csrf cookie to false when the sttribute is disabled' do
-                node.set['openstack']['dashboard']['session_cookie_secure'] = false
+                node.override['openstack']['dashboard']['session_cookie_secure'] = false
                 expect(chef_run).to render_file(file.name).with_content(/^SESSION_COOKIE_SECURE = False$/)
               end
             end
           end
 
           it 'does not set secure csrf nor secure session cookie settings when use_ssl is disabled' do
-            node.set['openstack']['dashboard']['use_ssl'] = false
+            node.override['openstack']['dashboard']['use_ssl'] = false
             [/^CSRF_COOKIE_SECURE$/, /^SESSION_COOKIE_SECURE$/].each do |setting|
               expect(chef_run).not_to render_file(file.name).with_content(setting)
             end
@@ -250,8 +250,8 @@ describe 'openstack-dashboard::horizon' do
 
         context 'identity and volume api version setting' do
           it 'is configurable directly' do
-            node.set['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
-            node.set['openstack']['dashboard']['volume_api_version'] = 'volume_api_version_value'
+            node.override['openstack']['dashboard']['identity_api_version'] = 'identity_api_version_value'
+            node.override['openstack']['dashboard']['volume_api_version'] = 'volume_api_version_value'
             [
               /^\s*"identity": identity_api_version_value,$/,
               /^\s*"volume": volume_api_version_value$/,
@@ -261,7 +261,7 @@ describe 'openstack-dashboard::horizon' do
           end
 
           it 'sets the proper value for identity v3.0 with volume default v2 from common attributes' do
-            node.set['openstack']['api']['auth']['version'] = 'v3.0'
+            node.override['openstack']['api']['auth']['version'] = 'v3.0'
             [
               /^\s*"identity": 3,$/,
               /^\s*"volume": 2$/,
@@ -273,29 +273,29 @@ describe 'openstack-dashboard::horizon' do
 
         context 'keystone multidomain support' do
           it 'sets to true when the attribute is enabled' do
-            node.set['openstack']['dashboard']['keystone_multidomain_support'] = true
+            node.override['openstack']['dashboard']['keystone_multidomain_support'] = true
             expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True$/)
           end
 
           it 'sets to false when the attribute is disabled' do
-            node.set['openstack']['dashboard']['keystone_multidomain_support'] = false
+            node.override['openstack']['dashboard']['keystone_multidomain_support'] = false
             expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = False$/)
           end
         end
 
         it 'has a keystone default domain setting if identity api version is 3' do
-          node.set['openstack']['dashboard']['identity_api_version'] = 3
-          node.set['openstack']['dashboard']['keystone_default_domain'] = 'keystone_default_domain_value'
+          node.override['openstack']['dashboard']['identity_api_version'] = 3
+          node.override['openstack']['dashboard']['keystone_default_domain'] = 'keystone_default_domain_value'
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "keystone_default_domain_value"$/)
         end
 
         it 'has a console_type setting' do
-          node.set['openstack']['dashboard']['console_type'] = 'console_type_value'
+          node.override['openstack']['dashboard']['console_type'] = 'console_type_value'
           expect(chef_run).to render_file(file.name).with_content(/^CONSOLE_TYPE = "console_type_value"$/)
         end
 
         it 'has a help_url setting' do
-          node.set['openstack']['dashboard']['help_url'] = 'help_url_value'
+          node.override['openstack']['dashboard']['help_url'] = 'help_url_value'
           expect(chef_run).to render_file(file.name).with_content(/\s*'help_url': "help_url_value",$/)
         end
 
@@ -306,29 +306,29 @@ describe 'openstack-dashboard::horizon' do
 
         context 'simple ip management' do
           it 'enables the setting when the attribute is set' do
-            node.set['openstack']['dashboard']['simple_ip_management'] = true
+            node.override['openstack']['dashboard']['simple_ip_management'] = true
             expect(chef_run).to render_file(file.name).with_content('HORIZON_CONFIG["simple_ip_management"] = True')
           end
 
           it 'disables the setting when the attribute is not set' do
-            node.set['openstack']['dashboard']['simple_ip_management'] = false
+            node.override['openstack']['dashboard']['simple_ip_management'] = false
             expect(chef_run).to render_file(file.name).with_content('HORIZON_CONFIG["simple_ip_management"] = False')
           end
         end
 
         it 'has default password_autocomplete setting' do
-          node.set['openstack']['dashboard']['password_autocomplete'] = 'password_autocomplete_value'
+          node.override['openstack']['dashboard']['password_autocomplete'] = 'password_autocomplete_value'
           expect(chef_run).to render_file(file.name).with_content(/^HORIZON_CONFIG\["password_autocomplete"\] = "password_autocomplete_value"$/)
         end
 
         it 'has configurable secret_key_path setting' do
-          node.set['openstack']['dashboard']['secret_key_path'] = 'secret_key_path_value'
+          node.override['openstack']['dashboard']['secret_key_path'] = 'secret_key_path_value'
           expect(chef_run).to render_file(file.name).with_content(/^SECRET_KEY = secret_key.generate_or_read_from_file\(os.path.realpath\('secret_key_path_value'\)\)$/)
         end
 
         context 'session backend' do
           it 'sets the session engine to file when it is the session backend' do
-            node.set['openstack']['dashboard']['session_backend'] = 'file'
+            node.override['openstack']['dashboard']['session_backend'] = 'file'
             expect(chef_run).to render_file(file.name).with_content(/^SESSION_ENGINE = 'django.contrib.sessions.backends.file'$/)
           end
 
@@ -358,7 +358,7 @@ describe 'openstack-dashboard::horizon' do
           end
 
           it 'sets the session engine to db when sql is the session backend' do
-            node.set['openstack']['dashboard']['session_backend'] = 'sql'
+            node.override['openstack']['dashboard']['session_backend'] = 'sql'
             expect(chef_run).to render_file(file.name).with_content(/^SESSION_ENGINE = 'django.contrib.sessions.backends.db'$/)
           end
         end
@@ -368,26 +368,26 @@ describe 'openstack-dashboard::horizon' do
         end
 
         it 'has a keystone default role' do
-          node.set['openstack']['dashboard']['keystone_default_role'] = 'keystone_default_role_value'
+          node.override['openstack']['dashboard']['keystone_default_role'] = 'keystone_default_role_value'
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_DEFAULT_ROLE = "keystone_default_role_value"$/)
         end
 
         context 'keystone_backend settings' do
           %w(native ldap).each do |keystone_backend_name|
             it "sets the backend name to #{keystone_backend_name}" do
-              node.set['openstack']['dashboard']['keystone_backend']['name'] = keystone_backend_name
+              node.override['openstack']['dashboard']['keystone_backend']['name'] = keystone_backend_name
               expect(chef_run).to render_file(file.name).with_content(/^\s*'name': '#{keystone_backend_name}',$/)
             end
           end
 
           %w(can_edit_user can_edit_group can_edit_project can_edit_domain can_edit_role).each do |keystone_setting|
             it "enables the #{keystone_setting} keystone backend setting when the attribute is True" do
-              node.set['openstack']['dashboard']['keystone_backend'][keystone_setting] = true
+              node.override['openstack']['dashboard']['keystone_backend'][keystone_setting] = true
               expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{keystone_setting}\': True,$/)
             end
 
             it "disables the #{keystone_setting} keystone backend setting when the attribute is False" do
-              node.set['openstack']['dashboard']['keystone_backend'][keystone_setting] = false
+              node.override['openstack']['dashboard']['keystone_backend'][keystone_setting] = false
               expect(chef_run).to render_file(file.name).with_content(/^\s*\'#{keystone_setting}\': False,$/)
             end
           end
@@ -395,21 +395,21 @@ describe 'openstack-dashboard::horizon' do
 
         context 'neutron settings' do
           it 'enables the enable_quotas setting when the attributes is True' do
-            node.set['openstack']['dashboard']['neutron']['enable_quotas'] = true
+            node.override['openstack']['dashboard']['neutron']['enable_quotas'] = true
             expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_quotas': True,$/)
           end
 
           it 'disables the enable_quotas setting when the attributes is False' do
-            node.set['openstack']['dashboard']['neutron']['enable_quotas'] = false
+            node.override['openstack']['dashboard']['neutron']['enable_quotas'] = false
             expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_quotas': False,$/)
           end
           context 'lbaas setting' do
             it 'enables the enable_lb setting when the attribute is true' do
-              node.set['openstack']['dashboard']['neutron']['enable_lb'] = true
+              node.override['openstack']['dashboard']['neutron']['enable_lb'] = true
               expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_lb': True,$/)
             end
             it 'disables the enable_lb setting when the attribute is falase' do
-              node.set['openstack']['dashboard']['neutron']['enable_lb'] = false
+              node.override['openstack']['dashboard']['neutron']['enable_lb'] = false
               expect(chef_run).to render_file(file.name).with_content(/^\s*'enable_lb': False,$/)
             end
           end
@@ -419,7 +419,7 @@ describe 'openstack-dashboard::horizon' do
            glanceclient neutronclient heatclient ceilometerclient troveclient
            swiftclient openstack_auth nose.plugins.manager django).each do |component|
           it "sets the logger level for #{component}" do
-            node.set['openstack']['dashboard']['log_level'][component] = "#{component}_log_level_value"
+            node.override['openstack']['dashboard']['log_level'][component] = "#{component}_log_level_value"
             expect(chef_run).to render_file(file.name).with_content(
               /^\s*'#{component}': {\s*'handlers': \['console'\],\s*'level': '#{component}_log_level_value',$/
             )
@@ -436,8 +436,8 @@ describe 'openstack-dashboard::horizon' do
                             'db_name' => "#{service_type}_db",
                             'host' => "#{service_type}_host",
                             'port' => "#{service_type}_port")
-              node.set['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
-              node.set['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
+              node.override['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
+              node.override['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
             end
 
             [/^\s*'ENGINE': '#{backend}',$/,
@@ -464,7 +464,7 @@ describe 'openstack-dashboard::horizon' do
           context 'plugins enabled' do
             let(:plugins) { %w(testPlugin1 testPlugin2) }
             before do
-              node.set['openstack']['dashboard']['plugins'] = plugins
+              node.override['openstack']['dashboard']['plugins'] = plugins
             end
 
             it 'shows the mod setting' do
@@ -479,7 +479,7 @@ describe 'openstack-dashboard::horizon' do
           end
 
           it 'does not show the mod setting if there are no plugins' do
-            node.set['openstack']['dashboard']['plugins'] = nil
+            node.override['openstack']['dashboard']['plugins'] = nil
             expect(chef_run).not_to render_file(file.name).with_content(mod_regex)
           end
         end
@@ -509,7 +509,7 @@ describe 'openstack-dashboard::horizon' do
       end
 
       it 'does not execute when the migrate attribute is set to false' do
-        node.set['openstack']['db']['dashboard']['migrate'] = false
+        node.override['openstack']['db']['dashboard']['migrate'] = false
         expect(chef_run_session_sql).not_to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
@@ -517,7 +517,7 @@ describe 'openstack-dashboard::horizon' do
       end
 
       it 'executes when database backend is sqlite' do
-        node.set['openstack']['db']['dashboard']['service_type'] = 'sqlite'
+        node.override['openstack']['db']['dashboard']['service_type'] = 'sqlite'
         expect(chef_run_session_sql).to run_execute(sync_db_cmd).with(
           cwd: node['openstack']['dashboard']['django_path'],
           environment: sync_db_environment
