@@ -649,3 +649,6 @@ mod.INSTALLED_APPS += ('<%= p %>', )
 <% if node["openstack"]["dashboard"]["file_upload_temp_dir"] %>
 FILE_UPLOAD_TEMP_DIR = "<%= node["openstack"]["dashboard"]["file_upload_temp_dir"] %>"
 <% end %>
+
+# Controls whether the keystone v2 openrc file is accessable from the user menu and the api access panel.
+SHOW_KEYSTONE_V2_RC = <%= node['openstack']['dashboard']['show_keystone_v2_rc'] %>
