@@ -163,6 +163,9 @@ default['openstack']['dashboard']['plugins'] = nil
 
 default['openstack']['dashboard']['file_upload_temp_dir'] = nil
 
+# disable the v2 openrc download panel by default since v2 has been deprecated for a while
+default['openstack']['dashboard']['show_keystone_v2_rc'] = 'False'
+
 default['openstack']['dashboard']['error_log'] = 'openstack-dashboard-error.log'
 default['openstack']['dashboard']['access_log'] = 'openstack-dashboard-access.log'
 
