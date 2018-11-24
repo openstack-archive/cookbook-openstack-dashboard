@@ -48,7 +48,7 @@ SESSION_COOKIE_SECURE = <%= node["openstack"]["dashboard"]["session_cookie_secur
 <% end %>
 
 # Overrides for OpenStack API versions. Use this setting to force the
-# OpenStack dashboard to use a specfic API version for a given service API.
+# OpenStack dashboard to use a specific API version for a given service API.
 # NOTE: The version should be formatted as it appears in the URL for the
 # service API. For example, The identity service APIs have inconsistent
 # use of the decimal point, so valid options would be "2.0" or "3".
@@ -650,5 +650,5 @@ mod.INSTALLED_APPS += ('<%= p %>', )
 FILE_UPLOAD_TEMP_DIR = "<%= node["openstack"]["dashboard"]["file_upload_temp_dir"] %>"
 <% end %>
 
-# Controls whether the keystone v2 openrc file is accessable from the user menu and the api access panel.
+# Controls whether the keystone v2 openrc file is accessible from the user menu and the api access panel.
 SHOW_KEYSTONE_V2_RC = <%= node['openstack']['dashboard']['show_keystone_v2_rc'] %>
