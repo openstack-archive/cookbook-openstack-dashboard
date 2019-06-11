@@ -259,16 +259,6 @@ describe 'openstack-dashboard::horizon' do
               expect(chef_run).to render_file(file.name).with_content(line)
             end
           end
-
-          it 'sets the proper value for identity v3.0 with volume default v2 from common attributes' do
-            node.override['openstack']['api']['auth']['version'] = 'v3.0'
-            [
-              /^\s*"identity": 3,$/,
-              /^\s*"volume": 2$/,
-            ].each do |line|
-              expect(chef_run).to render_file(file.name).with_content(line)
-            end
-          end
         end
 
         context 'keystone multidomain support' do
@@ -283,8 +273,7 @@ describe 'openstack-dashboard::horizon' do
           end
         end
 
-        it 'has a keystone default domain setting if identity api version is 3' do
-          node.override['openstack']['dashboard']['identity_api_version'] = 3
+        it 'has a keystone default domain setting' do
           node.override['openstack']['dashboard']['keystone_default_domain'] = 'keystone_default_domain_value'
           expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "keystone_default_domain_value"$/)
         end

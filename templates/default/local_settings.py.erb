@@ -61,7 +61,6 @@ OPENSTACK_API_VERSIONS = {
 # will require user to enter the Domain name in addition to username for login.
 OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = <%= node["openstack"]["dashboard"]["keystone_multidomain_support"] ? "True" : "False" %>
 
-<% if node["openstack"]["dashboard"]["identity_api_version"] == 3 %>
 # Overrides the default domain used when running on single-domain model
 # with Keystone V3. All entities will be created in the default domain.
 # NOTE: This value must be the ID of the default domain, NOT the name.
@@ -69,7 +68,6 @@ OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = <%= node["openstack"]["dashboard"]["key
 #    "cloud_admin": "rule:admin_required and domain_id:<your domain id>"
 # This value must match the domain id specified there.
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "<%= node["openstack"]["dashboard"]["keystone_default_domain"] %>"
-<% end %>
 
 # Set Console type:
 # valid options would be "AUTO", "VNC", "SPICE" or "RDP"
