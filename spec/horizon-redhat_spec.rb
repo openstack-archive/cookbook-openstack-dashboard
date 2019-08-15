@@ -43,9 +43,5 @@ describe 'openstack-dashboard::horizon' do
           .with_content(%r{^POLICY_FILES_PATH = '/etc/openstack-dashboard'$})
       end
     end
-
-    it 'does not remove openstack-dashboard-ubuntu-theme package' do
-      expect(chef_run).not_to purge_package('openstack-dashboard-ubuntu-theme')
-    end
   end
 end

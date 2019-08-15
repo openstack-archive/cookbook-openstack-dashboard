@@ -103,14 +103,6 @@ directory "#{node['openstack']['dashboard']['dash_path']}/local" do
   action :create
 end
 
-# ubuntu includes their own branding - we need to delete this until ubuntu makes this a
-# configurable paramter
-package 'openstack-dashboard-ubuntu-theme' do
-  action :purge
-
-  only_if { platform_family?('debian') }
-end
-
 # resource can be triggered from other recipes (e.g. in
 # recipes/neutron-lbaas-dashboard.rb)
 execute 'openstack-dashboard collectstatic' do

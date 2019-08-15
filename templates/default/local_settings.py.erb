@@ -240,7 +240,7 @@ OPENSTACK_NEUTRON_NETWORK = {
 # The OPENSTACK_HEAT_STACK settings can be used to disable password
 # field required while launching the stack.
 OPENSTACK_HEAT_STACK = {
-    'enable_user_pass': <%= node['openstack']['dashboard']['heat_stack']['eanable_user_pass'] ? 'True' : 'False' %>,
+    'enable_user_pass': <%= node['openstack']['dashboard']['heat_stack']['enable_user_pass'] ? 'True' : 'False' %>,
 }
 
 # The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
@@ -616,12 +616,6 @@ DATABASES = {
 # pre-compress CSS and JavaScript files and works just like the automatic
 # compression with the {% compress %} tag.
 COMPRESS_OFFLINE = False
-
-# The hash algorithm to use for authentication tokens. This must
-# match the hash algorithm that the identity server and the
-# auth_token middleware are using. Allowed values are the
-# algorithms supported by Python's hashlib library.
-OPENSTACK_TOKEN_HASH_ALGORITHM = '<%= node['openstack']['dashboard']['hash_algorithm'] %>'
 
 # Add additional plugins.
 <% if node["openstack"]["dashboard"]["plugins"] %>

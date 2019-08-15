@@ -146,24 +146,6 @@ describe 'openstack-dashboard::horizon' do
           expect(chef_run).to render_file(file.name).with_content(/^ALLOWED_HOSTS = \["dashboard.example.net"\]$/)
         end
 
-        context 'config hash_algorithm' do
-          context 'set to the default value' do
-            it 'has the default value for the OPENSTACK_TOKEN_HASH_ALGORITHM attribute' do
-              expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_TOKEN_HASH_ALGORITHM = 'md5'$/)
-            end
-          end
-
-          context 'set to sha256' do
-            before do
-              node.override['openstack']['dashboard']['hash_algorithm'] = 'sha256'
-            end
-
-            it 'has a sha256 value for the OPENSTACK_TOKEN_HASH_ALGORITHM attribute' do
-              expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_TOKEN_HASH_ALGORITHM = 'sha256'$/)
-            end
-          end
-        end
-
         context 'ssl offload' do
           let(:secure_proxy_string) { 'SECURE_PROXY_SSL_HEADER = \(\'HTTP_X_FORWARDED_PROTOCOL\', \'https\'\)' }
           it 'does not configure ssl proxy when ssl_offload is false' do
@@ -512,10 +494,6 @@ describe 'openstack-dashboard::horizon' do
           environment: sync_db_environment
         )
       end
-    end
-
-    it 'removes openstack-dashboard-ubuntu-theme package' do
-      expect(chef_run).to purge_package('openstack-dashboard-ubuntu-theme')
     end
 
     it 'has group write mode on path' do

@@ -44,10 +44,7 @@ default['openstack']['dashboard']['debug'] = false
 default['openstack']['dashboard']['cache_html'] = false
 
 # The Keystone role used by default for users logging into the dashboard
-default['openstack']['dashboard']['keystone_default_role'] = '_member_'
-
-# This is the name of the Chef role that will install the Keystone Service API
-default['openstack']['dashboard']['keystone_service_chef_role'] = 'keystone'
+default['openstack']['dashboard']['keystone_default_role'] = 'member'
 
 default['openstack']['dashboard']['server_hostname'] = nil
 default['openstack']['dashboard']['server_aliases'] = []
@@ -73,10 +70,6 @@ default['openstack']['dashboard']['ssl']['use_data_bag'] = true
 # allows everything
 default['openstack']['dashboard']['allowed_hosts'] = ['*']
 
-default['openstack']['dashboard']['swift']['enabled'] = 'False'
-
-default['openstack']['dashboard']['theme'] = 'default'
-
 default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/openstack-dashboard.conf"
 
 # Allow TRACE method
@@ -100,12 +93,6 @@ default['openstack']['dashboard']['db_python_packages'] = {
   mysql: [],
   sqlite: [],
 }
-
-# The hash algorithm to use for authentication tokens. This must match the hash
-# algorithm that the identity (Keystone) server and the auth_token middleware
-# are using. Allowed values are the algorithms supported by Python's hashlib
-# library.
-default['openstack']['dashboard']['hash_algorithm'] = 'md5'
 
 case node['platform_family']
 when 'rhel'
@@ -153,7 +140,6 @@ else
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
-default['openstack']['dashboard']['stylesheet_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/templates/_stylesheets.html'
 default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi/django.wsgi'
 default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
 default['openstack']['dashboard']['session_backend'] = 'memcached'
@@ -164,12 +150,13 @@ default['openstack']['dashboard']['plugins'] = nil
 default['openstack']['dashboard']['file_upload_temp_dir'] = nil
 
 # disable the v2 openrc download panel by default since v2 has been deprecated for a while
+# TODO: remove this option completely for Train
 default['openstack']['dashboard']['show_keystone_v2_rc'] = 'False'
 
 default['openstack']['dashboard']['error_log'] = 'openstack-dashboard-error.log'
 default['openstack']['dashboard']['access_log'] = 'openstack-dashboard-access.log'
 
-default['openstack']['dashboard']['help_url'] = 'http://docs.openstack.org'
+default['openstack']['dashboard']['help_url'] = 'https://docs.openstack.org'
 
 default['openstack']['dashboard']['csrf_cookie_secure'] = true
 default['openstack']['dashboard']['session_cookie_secure'] = true
@@ -204,7 +191,7 @@ default['openstack']['dashboard']['log_level']['openstack_auth'] = 'INFO'
 default['openstack']['dashboard']['log_level']['nose.plugins.manager'] = 'INFO'
 default['openstack']['dashboard']['log_level']['django'] = 'INFO'
 
-default['openstack']['dashboard']['heat_stack']['eanable_user_pass'] = true
+default['openstack']['dashboard']['heat_stack']['enable_user_pass'] = true
 
 default['openstack']['dashboard']['password_autocomplete'] = 'off'
 default['openstack']['dashboard']['simple_ip_management'] = false
