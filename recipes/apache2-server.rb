@@ -155,7 +155,7 @@ end
 template node['openstack']['dashboard']['apache']['sites-path'] do
   source 'dash-site.erb'
   owner 'root'
-  group 'root'
+  group node['apache']['root_group']
   mode 0o0644
 
   variables(
