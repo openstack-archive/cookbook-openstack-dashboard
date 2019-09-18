@@ -19,8 +19,10 @@ describe 'openstack-dashboard::horizon' do
 
     it 'installs packages' do
       expect(chef_run).to upgrade_package('node-less')
+      expect(chef_run).to upgrade_package('libapache2-mod-wsgi-py3')
+      expect(chef_run).to upgrade_package('python3-django-horizon')
       expect(chef_run).to upgrade_package('openstack-dashboard')
-      expect(chef_run).to upgrade_package('python-mysqldb')
+      expect(chef_run).to upgrade_package('python3-mysqldb')
     end
 
     describe 'local_settings.py' do

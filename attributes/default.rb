@@ -130,10 +130,10 @@ when 'debian'
   default['openstack']['dashboard']['logout_url'] = nil
   default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
-    'memcache_python_packages' => ['python-memcache'],
+    'memcache_python_packages' => ['python3-memcache'],
     'package_overrides' => '',
   }
-  default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'openstack-dashboard']
+  default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'libapache2-mod-wsgi-py3', 'python3-django-horizon', 'openstack-dashboard']
   default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
 else
   default['openstack']['dashboard']['key_group'] = 'root'
@@ -221,4 +221,4 @@ default['openstack']['dashboard']['neutron']['enable_fwaas'] = false
 #  }
 default['openstack']['dashboard']['misc_local_settings'] = nil
 # version of python neutron-lbaas-dashboard package to install
-default['openstack']['dashboard']['lbaas']['version'] = '3.0.1'
+default['openstack']['dashboard']['lbaas']['version'] = '5.0.0'

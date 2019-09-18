@@ -17,22 +17,7 @@ describe 'openstack-dashboard::neutron-lbaas-dashboard' do
     end
 
     it do
-      expect(chef_run).to install_python_package('neutron-lbaas-dashboard')
-    end
-
-    it do
-      expect(chef_run).to create_remote_file(
-        "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py"
-      ).with(
-        mode: 0o0644,
-        owner: 'root',
-        source: 'https://raw.githubusercontent.com/openstack/neutron-lbaas-dashboard/stable/queens/neutron_lbaas_dashboard/enabled/_1481_project_ng_loadbalancersv2_panel.py'
-      )
-    end
-
-    it do
-      expect(chef_run.remote_file("#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/_1481_project_ng_loadbalancersv2_panel.py"))
-        .to notify('execute[openstack-dashboard collectstatic]')
+      expect(chef_run).to install_package('python3-neutron-lbaas-dashboard')
     end
   end
 end

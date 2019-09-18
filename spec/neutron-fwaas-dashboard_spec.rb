@@ -17,46 +17,7 @@ describe 'openstack-dashboard::neutron-fwaas-dashboard' do
     end
 
     it do
-      expect(chef_run).to install_python_package('neutron-fwaas-dashboard')
-    end
-
-    %w(
-      _7010_project_firewalls_common.py
-      _7011_project_firewalls_panel.py
-      _7012_project_firewalls_v2_panel.py
-    ).each do |file|
-      it do
-        expect(chef_run).to create_remote_file(
-          "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/#{file}"
-        ).with(
-          mode: 0o0644,
-          owner: 'root',
-          source: "https://raw.githubusercontent.com/openstack/neutron-fwaas-dashboard/stable/queens/neutron_fwaas_dashboard/enabled/#{file}"
-        )
-      end
-
-      it do
-        expect(chef_run.remote_file("#{node['openstack']['dashboard']['django_path']}/openstack_dashboard/local/enabled/#{file}"))
-          .to notify('execute[openstack-dashboard collectstatic]').to(:run)
-        notify('execute[neutron-fwaas-dashboard compilemessages]').to(:run)
-      end
-    end
-
-    it do
-      expect(chef_run).to create_remote_file(
-        "#{node['openstack']['dashboard']['policy_files_path']}/neutron-fwaas-policy.json"
-      ).with(
-        mode: 0o0644,
-        owner: 'root',
-        source: 'https://raw.githubusercontent.com/openstack/neutron-fwaas-dashboard/stable/queens/etc/neutron-fwaas-policy.json'
-      )
-    end
-
-    it do
-      expect(chef_run.remote_file("#{node['openstack']['dashboard']['policy_files_path']}/neutron-fwaas-policy.json"))
-        .to notify('execute[openstack-dashboard collectstatic]').to(:run)
-      notify('execute[neutron-fwaas-dashboard compilemessages]').to(:run)
-      notify('service[apache2]').to(:restart).delayed
+      expect(chef_run).to install_package('python3-neutron-fwaas-dashboard')
     end
   end
 end

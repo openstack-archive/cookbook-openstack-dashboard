@@ -17,37 +17,42 @@
 
 include_recipe 'openstack-dashboard::horizon'
 
-django_path = node['openstack']['dashboard']['django_path']
-policy_file_path = node['openstack']['dashboard']['policy_files_path']
+case node['platform_family']
+when 'debian'
+  package 'python3-neutron-fwaas-dashboard'
+when 'rhel'
+  django_path = node['openstack']['dashboard']['django_path']
+  policy_file_path = node['openstack']['dashboard']['policy_files_path']
 
-python_package 'neutron-fwaas-dashboard'
+  python_package 'neutron-fwaas-dashboard'
 
-%w(
-  _7010_project_firewalls_common.py
-  _7011_project_firewalls_panel.py
-  _7012_project_firewalls_v2_panel.py
-).each do |file|
-  remote_file "#{django_path}/openstack_dashboard/local/enabled/#{file}" do
-    source "https://raw.githubusercontent.com/openstack/neutron-fwaas-dashboard/stable/queens/neutron_fwaas_dashboard/enabled/#{file}"
+  %w(
+    _7010_project_firewalls_common.py
+    _7011_project_firewalls_panel.py
+    _7012_project_firewalls_v2_panel.py
+  ).each do |file|
+    remote_file "#{django_path}/openstack_dashboard/local/enabled/#{file}" do
+      source "https://opendev.org/openstack/neutron-fwaas-dashboard/raw/branch/stable/rocky/neutron_fwaas_dashboard/enabled/#{file}"
+      owner 'root'
+      mode 0o0644
+      notifies :run, 'execute[neutron-fwaas-dashboard compilemessages]'
+      notifies :run, 'execute[openstack-dashboard collectstatic]'
+    end
+  end
+
+  remote_file "#{policy_file_path}/neutron-fwaas-policy.json" do
+    source 'https://opendev.org/openstack/neutron-fwaas-dashboard/raw/branch/stable/rocky/etc/neutron-fwaas-policy.json'
     owner 'root'
     mode 0o0644
     notifies :run, 'execute[neutron-fwaas-dashboard compilemessages]'
     notifies :run, 'execute[openstack-dashboard collectstatic]'
+    notifies :restart, 'service[apache2]', :delayed
   end
-end
 
-remote_file "#{policy_file_path}/neutron-fwaas-policy.json" do
-  source 'https://raw.githubusercontent.com/openstack/neutron-fwaas-dashboard/stable/queens/etc/neutron-fwaas-policy.json'
-  owner 'root'
-  mode 0o0644
-  notifies :run, 'execute[neutron-fwaas-dashboard compilemessages]'
-  notifies :run, 'execute[openstack-dashboard collectstatic]'
-  notifies :restart, 'service[apache2]', :delayed
-end
-
-execute 'neutron-fwaas-dashboard compilemessages' do
-  cwd django_path
-  environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{django_path}:$PYTHONPATH"
-  command 'python manage.py compilemessages'
-  action :nothing
+  execute 'neutron-fwaas-dashboard compilemessages' do
+    cwd django_path
+    environment 'PYTHONPATH' => "/etc/openstack-dashboard:#{django_path}:$PYTHONPATH"
+    command 'python manage.py compilemessages'
+    action :nothing
+  end
 end
