@@ -140,7 +140,7 @@ else
 end
 
 default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
-default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi/django.wsgi'
+default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi.py'
 default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
 default['openstack']['dashboard']['session_backend'] = 'memcached'
 

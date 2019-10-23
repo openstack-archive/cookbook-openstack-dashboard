@@ -410,7 +410,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'sets the WSGI script alias defaults' do
-          expect(chef_run).to render_file(file.name).with_content(%r{^\s*WSGIScriptAlias / /usr/share/openstack-dashboard/openstack_dashboard/wsgi/django.wsgi$})
+          expect(chef_run).to render_file(file.name).with_content(%r{^\s*WSGIScriptAlias / /usr/share/openstack-dashboard/openstack_dashboard/wsgi.py$})
         end
 
         it 'sets the WSGI script alias' do
