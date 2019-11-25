@@ -69,7 +69,6 @@ describe 'openstack-dashboard::apache2-server' do
     it 'includes apache packages' do
       %w(apache2
          apache2::mod_headers
-         apache2::mod_wsgi
          apache2::mod_rewrite
          apache2::mod_ssl).each do |recipe|
         expect(chef_run).to include_recipe(recipe)
