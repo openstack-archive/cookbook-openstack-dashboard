@@ -27,7 +27,7 @@ require 'uri'
 class ::Chef::Recipe
   include ::Openstack
 end
-include_recipe 'openstack-identity'
+
 platform_options = node['openstack']['dashboard']['platform']
 
 identity_endpoint = internal_endpoint 'identity'
