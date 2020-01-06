@@ -5,7 +5,7 @@ describe 'openstack-dashboard::apache2-server' do
   describe 'redhat' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:chef_run) do
       runner.converge(described_recipe)
     end
     include_context 'dashboard_stubs'
@@ -37,10 +37,15 @@ describe 'openstack-dashboard::apache2-server' do
           expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
 
-        it 'does not mess with certs if ssl not enabled' do
-          node.override['openstack']['dashboard']['use_ssl'] = false
-          expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
-          expect(chef_run).not_to create_file('/etc/pki/tls/private/horizon.key')
+        context 'does not mess with certs if ssl not enabled' do
+          cached(:chef_run) do
+            node.override['openstack']['dashboard']['use_ssl'] = false
+            runner.converge(described_recipe)
+          end
+          it do
+            expect(chef_run).not_to create_file('/etc/ssl/certs/horizon.pem')
+            expect(chef_run).not_to create_file('/etc/pki/tls/private/horizon.key')
+          end
         end
       end
     end

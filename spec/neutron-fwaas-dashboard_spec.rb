@@ -3,9 +3,9 @@ require_relative 'spec_helper'
 
 describe 'openstack-dashboard::neutron-fwaas-dashboard' do
   describe 'ubuntu' do
-    let(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
-    let(:node) { runner.node }
-    let(:chef_run) do
+    cached(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
+    cached(:node) { runner.node }
+    cached(:chef_run) do
       runner.converge(described_recipe)
     end
 
