@@ -39,6 +39,42 @@ shared_context 'dashboard_stubs' do
     allow_any_instance_of(Chef::Recipe).to receive(:secret)
       .with('certs', 'horizon.key')
       .and_return('horizon_key_value')
+    # identity stubs
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('secrets', 'credential_key0')
+      .and_return('thisiscredentialkey0')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('secrets', 'credential_key1')
+      .and_return('thisiscredentialkey1')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('secrets', 'fernet_key0')
+      .and_return('thisisfernetkey0')
+    allow_any_instance_of(Chef::Recipe).to receive(:secret)
+      .with('secrets', 'fernet_key1')
+      .and_return('thisisfernetkey1')
+    allow_any_instance_of(Chef::Recipe).to receive(:search_for)
+      .with('os-identity').and_return(
+        [{
+          'openstack' => {
+            'identity' => {
+              'admin_tenant_name' => 'admin',
+              'admin_user' => 'admin',
+            },
+          },
+        }]
+      )
+    allow_any_instance_of(Chef::Recipe).to receive(:rabbit_transport_url)
+      .with('identity')
+      .and_return('rabbit://openstack:mypass@127.0.0.1:5672')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('user', anything)
+      .and_return('')
+    allow_any_instance_of(Chef::Recipe).to receive(:get_password)
+      .with('db', anything)
+      .and_return('test-passes')
+    allow_any_instance_of(Chef::Recipe).to receive(:db_uri)
+      .with(anything, anything, anything)
+      .and_return('')
   end
 end
 

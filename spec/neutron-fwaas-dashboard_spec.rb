@@ -6,7 +6,7 @@ describe 'openstack-dashboard::neutron-fwaas-dashboard' do
     cached(:runner) { ChefSpec::SoloRunner.new(UBUNTU_OPTS) }
     cached(:node) { runner.node }
     cached(:chef_run) do
-      runner.converge(described_recipe)
+      runner.converge('openstack-identity::server-apache', described_recipe)
     end
 
     include_context 'non_redhat_stubs'

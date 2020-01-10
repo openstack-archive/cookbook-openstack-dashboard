@@ -25,7 +25,6 @@ when 'rhel'
 
   python_package 'neutron-lbaas-dashboard' do
     version node['openstack']['dashboard']['lbaas']['version']
-    notifies :run, 'execute[restore-selinux-context]', :immediately
     notifies :run, 'execute[openstack-dashboard collectstatic]'
   end
 

@@ -56,8 +56,6 @@ describe 'openstack-dashboard::apache2-server' do
     cached(:chef_run) do
       node.override['openstack']['dashboard']['custom_template_banner'] = 'custom_template_banner_value'
       node.override['openstack']['dashboard']['traceenable'] = 'value'
-      node.override['apache']['log_dir'] = 'log_dir_value'
-      node.override['apache']['contact'] = 'apache_contact_value'
       node.override['openstack']['dashboard']['error_log'] = 'error_log_value'
       node.override['openstack']['dashboard']['access_log'] = 'access_log_value'
       runner.converge(described_recipe)
@@ -77,33 +75,18 @@ describe 'openstack-dashboard::apache2-server' do
     include_context 'non_redhat_stubs'
     include_context 'dashboard_stubs'
 
-    it 'does not execute set-selinux-permissive' do
-      cmd = '/sbin/setenforce Permissive'
-      expect(chef_run).not_to run_execute(cmd)
+    it do
+      expect(chef_run).to install_apache2_install('openstack').with(listen: %w(0.0.0.0:80 0.0.0.0:443))
     end
 
-    it 'set apache addresses and ports' do
-      expect(chef_run.node['apache']['listen']).to eq %w(0.0.0.0:80 0.0.0.0:443)
-    end
-
-    it 'includes apache packages' do
-      %w(
-        apache2
-        apache2::mod_headers
-        apache2::mod_rewrite
-        apache2::mod_ssl
-      ).each do |recipe|
-        expect(chef_run).to include_recipe(recipe)
-      end
+    it 'enables apache modules' do
+      expect(chef_run).to enable_apache2_module('wsgi')
+      expect(chef_run).to enable_apache2_module('rewrite')
+      expect(chef_run).to enable_apache2_module('headers')
     end
 
     it 'does not include the apache mod_ssl package when ssl disabled' do
-      expect(chef_run_no_ssl).not_to include_recipe('apache2::mod_ssl')
-    end
-
-    it 'does not execute set-selinux-enforcing' do
-      cmd = '/sbin/setenforce Enforcing ; restorecon -R /etc/httpd'
-      expect(chef_run).not_to run_execute(cmd)
+      expect(chef_run_no_ssl).not_to enable_apache2_module('ssl')
     end
 
     describe 'certs' do
@@ -124,8 +107,6 @@ describe 'openstack-dashboard::apache2-server' do
             group: 'ssl-cert',
             mode: 0o640
           )
-          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
-          expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
       end
       describe 'set ssl chain' do
@@ -138,7 +119,6 @@ describe 'openstack-dashboard::apache2-server' do
             group: 'root',
             mode: 0o644
           )
-          expect(chain).to notify('execute[restore-selinux-context]').to(:run)
         end
       end
       describe 'get secret with only one pem' do
@@ -169,7 +149,6 @@ describe 'openstack-dashboard::apache2-server' do
             group: 'ssl-cert',
             mode: 0o640
           )
-          expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
 
         it 'does not mess with certs if ssl not enabled' do
@@ -217,8 +196,6 @@ describe 'openstack-dashboard::apache2-server' do
             group: 'ssl-cert',
             mode: 0o640
           )
-          expect(key).to notify('execute[restore-selinux-context]').to(:run)
-          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
         end
         describe 'set ssl chain' do
           let(:chain) { chef_run.file('/etc/anypath/any-chain.pem') }
@@ -229,7 +206,6 @@ describe 'openstack-dashboard::apache2-server' do
               group: 'root',
               mode: 0o644
             )
-            expect(chain).to notify('execute[restore-selinux-context]').to(:run)
           end
         end
         it 'does not mess with certs if ssl not enabled' do
@@ -262,11 +238,25 @@ describe 'openstack-dashboard::apache2-server' do
       let(:file) { chef_run.template('/etc/apache2/sites-available/openstack-dashboard.conf') }
 
       it 'creates openstack-dashboard.conf' do
-        expect(chef_run).to create_template(file.name).with(
-          user: 'root',
-          group: 'root',
-          mode: 0o644
+        expect(chef_run).to create_template('/etc/apache2/sites-available/openstack-dashboard.conf').with(
+          source: 'dash-site.erb',
+          variables: {
+            apache_admin: 'root@localhost',
+            http_bind_address: '0.0.0.0',
+            http_bind_port: 80,
+            https_bind_address: '0.0.0.0',
+            https_bind_port: 443,
+            log_dir: '/var/log/apache2',
+            ssl_cert_file: '/etc/ssl/certs/horizon.pem',
+            ssl_chain_file: '',
+            ssl_key_file: '/etc/ssl/private/horizon.key',
+          }
         )
+      end
+
+      it do
+        expect(chef_run.template('/etc/apache2/sites-available/openstack-dashboard.conf')).to \
+          notify('service[apache2]').to(:reload).immediately
       end
 
       describe 'template content' do
@@ -462,7 +452,7 @@ describe 'openstack-dashboard::apache2-server' do
         end
 
         it 'shows the ServerAdmin' do
-          expect(chef_run).to render_file(file.name).with_content(/\s*ServerAdmin apache_contact_value$/)
+          expect(chef_run).to render_file(file.name).with_content(/\s*ServerAdmin root@localhost$/)
         end
 
         it 'sets the WSGI script alias defaults' do
@@ -539,17 +529,6 @@ describe 'openstack-dashboard::apache2-server' do
           end
         end
 
-        describe 'log directives' do
-          it 'sets the ErrorLog directive' do
-            expect(chef_run).to render_file(file.name).with_content(%r{^\s*ErrorLog log_dir_value/error_log_value$})
-          end
-
-          it 'sets the CustomLog directive' do
-            expect(chef_run).to render_file(file.name)
-              .with_content(%r{^\s*CustomLog log_dir_value/access_log_value combined$})
-          end
-        end
-
         context 'sets wsgi socket prefix if wsgi_socket_prefix attribute is preset' do
           cached(:chef_run) do
             node.override['openstack']['dashboard']['wsgi_socket_prefix'] = '/var/run/wsgi'
@@ -563,10 +542,6 @@ describe 'openstack-dashboard::apache2-server' do
         it 'omits wsgi socket prefix if wsgi_socket_prefix attribute is not preset' do
           expect(chef_run).not_to render_file(file.name).with_content(/^WSGISocketPrefix $/)
         end
-      end
-
-      it 'notifies restore-selinux-context' do
-        expect(file).to notify('execute[restore-selinux-context]').to(:run)
       end
     end
 
@@ -619,38 +594,20 @@ describe 'openstack-dashboard::apache2-server' do
       expect(chef_run).not_to delete_file(file)
     end
 
-    it 'calls apache_site to disable 000-default virtualhost' do
-      resource = chef_run.find_resource('execute',
-                                        'a2dissite 000-default.conf').to_hash
-      expect(resource).to include(
-        action: [:run],
-        params: {
-          enable: false,
-          name: '000-default',
-        }
-      )
+    it do
+      expect(chef_run).to disable_apache2_site('000-default')
     end
 
-    it 'calls apache_site to enable openstack-dashboard virtualhost' do
-      resource = chef_run.find_resource('execute',
-                                        'a2ensite openstack-dashboard.conf').to_hash
-      expect(resource).to include(
-        action: [:run],
-        params: {
-          enable: true,
-          notifies: [:reload, 'service[apache2]', :immediately],
-          name: 'openstack-dashboard',
-        }
-      )
+    it do
+      expect(chef_run).to_not disable_apache2_site('default')
     end
 
-    it 'notifies apache2 restart' do
-      skip 'TODO: how to test when tied to an LWRP'
+    it do
+      expect(chef_run).to enable_apache2_site('openstack-dashboard')
     end
 
-    it 'does not execute restore-selinux-context' do
-      cmd = 'restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :'
-      expect(chef_run).not_to run_execute(cmd)
+    it do
+      expect(chef_run.apache2_site('openstack-dashboard')).to notify('service[apache2]').to(:reload).immediately
     end
   end
 end

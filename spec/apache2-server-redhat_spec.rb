@@ -11,12 +11,6 @@ describe 'openstack-dashboard::apache2-server' do
     include_context 'dashboard_stubs'
     include_context 'redhat_stubs'
 
-    it 'executes set-selinux-permissive' do
-      cmd = '/sbin/setenforce Permissive'
-
-      expect(chef_run).to run_execute(cmd)
-    end
-
     describe 'certs' do
       describe 'get secret' do
         let(:pem) { chef_run.file('/etc/pki/tls/certs/horizon.pem') }
@@ -33,8 +27,6 @@ describe 'openstack-dashboard::apache2-server' do
             group: 'root',
             mode: 0o640
           )
-          expect(pem).to notify('execute[restore-selinux-context]').to(:run)
-          expect(key).to notify('execute[restore-selinux-context]').to(:run)
         end
 
         context 'does not mess with certs if ssl not enabled' do
@@ -51,14 +43,15 @@ describe 'openstack-dashboard::apache2-server' do
     end
     it 'deletes openstack-dashboard.conf' do
       file = '/etc/httpd/conf.d/openstack-dashboard.conf'
-
       expect(chef_run).to delete_file(file)
     end
 
-    it 'does not execute restore-selinux-context' do
-      cmd = 'restorecon -Rv /etc/httpd /etc/pki; chcon -R -t httpd_sys_content_t /usr/share/openstack-dashboard || :'
+    it do
+      expect(chef_run).to_not disable_apache2_site('000-default')
+    end
 
-      expect(chef_run).not_to run_execute(cmd)
+    it do
+      expect(chef_run).to disable_apache2_site('default')
     end
 
     it 'sets the WSGI daemon user to attribute default' do

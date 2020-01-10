@@ -48,6 +48,7 @@ default['openstack']['dashboard']['keystone_default_role'] = 'member'
 
 default['openstack']['dashboard']['server_hostname'] = nil
 default['openstack']['dashboard']['server_aliases'] = []
+default['openstack']['dashboard']['server_admin'] = 'root@localhost'
 default['openstack']['dashboard']['use_ssl'] = true
 # When using a remote certificate and key, the names of the actual installed certificate
 # and key in the file system are determined by the following two attributes.
@@ -70,15 +71,13 @@ default['openstack']['dashboard']['ssl']['use_data_bag'] = true
 # allows everything
 default['openstack']['dashboard']['allowed_hosts'] = ['*']
 
-default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/openstack-dashboard.conf"
-
 # Allow TRACE method
 #
 # Set to "extended" to also reflect the request body (only for testing and
 # diagnostic purposes).
 #
 # Set to one of:  On | Off | extended
-default['openstack']['dashboard']['traceenable'] = node['apache']['traceenable']
+default['openstack']['dashboard']['traceenable'] = 'Off'
 
 default['openstack']['dashboard']['secret_key_content'] = nil
 
@@ -110,11 +109,10 @@ when 'rhel'
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
   default['openstack']['dashboard']['platform'] = {
-    'horizon_packages' => ['openstack-dashboard'],
+    'horizon_packages' => ['openstack-dashboard', 'mod_wsgi'],
     'memcache_python_packages' => ['python-memcached'],
     'package_overrides' => '',
   }
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
 when 'debian'
   default['openstack']['dashboard']['key_group'] = 'ssl-cert'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
@@ -133,8 +131,8 @@ when 'debian'
     'memcache_python_packages' => ['python3-memcache'],
     'package_overrides' => '',
   }
-  default['openstack']['dashboard']['platform']['horizon_packages'] = ['node-less', 'libapache2-mod-wsgi-py3', 'python3-django-horizon', 'openstack-dashboard']
-  default['openstack']['dashboard']['apache']['sites-path'] = "#{node['apache']['dir']}/sites-available/openstack-dashboard.conf"
+  default['openstack']['dashboard']['platform']['horizon_packages'] =
+    ['node-less', 'libapache2-mod-wsgi-py3', 'python3-django-horizon', 'openstack-dashboard']
 else
   default['openstack']['dashboard']['key_group'] = 'root'
 end

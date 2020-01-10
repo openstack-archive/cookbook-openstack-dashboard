@@ -26,7 +26,7 @@
   ServerAlias <%= node["openstack"]["dashboard"]["server_aliases"].join(" ") %>
   <% end -%>
 <% end %>
-  ServerAdmin <%= node["apache"]["contact"] %>
+  ServerAdmin <%= @apache_admin %>
   # Note(jr): This is needed when SSL is used for the services, see
   # https://bugs.launchpad.net/openstack-ansible/+bug/1624791/comments/17
   WSGIApplicationGroup %{GLOBAL}
@@ -53,8 +53,8 @@
     AllowOverride None
     Require all granted
   </Directory>
-
   <% if node["openstack"]["dashboard"]["use_ssl"] -%>
+
   SSLEngine on
   SSLCertificateFile <%= @ssl_cert_file %>
   SSLCertificateKeyFile <%= @ssl_key_file %>
@@ -72,9 +72,9 @@
   RewriteCond /opt/dash/site_overlay%{REQUEST_FILENAME} -s
   RewriteRule ^/(.+) /opt/dash/site_overlay/$1 [L]
 
-  ErrorLog <%= node["apache"]["log_dir"] %>/<%= node["openstack"]["dashboard"]["error_log"] %>
+  ErrorLog <%= @log_dir %>/<%= node["openstack"]["dashboard"]["error_log"] %>
   LogLevel warn
-  CustomLog <%= node["apache"]["log_dir"] %>/<%= node["openstack"]["dashboard"]["access_log"] %> combined
+  CustomLog <%= @log_dir %>/<%= node["openstack"]["dashboard"]["access_log"] %> combined
   TraceEnable <%= node['openstack']['dashboard']['traceenable'] %>
   <% unless node["openstack"]["dashboard"]["cache_html"] %>
   SetEnvIfExpr "req('accept') =~/html/" NO_CACHE
@@ -82,7 +82,7 @@
   Header merge Cache-Control no-store env=NO_CACHE
   <% end -%>
 </VirtualHost>
-
 <% unless node["openstack"]["dashboard"]["wsgi_socket_prefix"].nil? %>
+
 WSGISocketPrefix <%= node["openstack"]["dashboard"]["wsgi_socket_prefix"] %>
 <% end %>

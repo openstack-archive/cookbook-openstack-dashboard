@@ -14,9 +14,9 @@ recipe 'neutron-lbaas-dashboard', 'Installs the python neutron-lbaas-dashboard p
   supports os
 end
 
+depends 'apache2', '~> 8.0'
 depends 'openstack-common', '>= 18.0.0'
 depends 'openstack-identity', '>= 18.0.0'
-depends 'apache2', '5.0.1'
 depends 'poise-python'
 
 issues_url 'https://launchpad.net/openstack-chef'

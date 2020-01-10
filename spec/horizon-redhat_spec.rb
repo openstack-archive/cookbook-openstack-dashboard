@@ -6,7 +6,7 @@ describe 'openstack-dashboard::horizon' do
     let(:runner) { ChefSpec::SoloRunner.new(REDHAT_OPTS) }
     let(:node) { runner.node }
     cached(:chef_run) do
-      runner.converge(described_recipe)
+      runner.converge('openstack-identity::server-apache', described_recipe)
     end
 
     include_context 'dashboard_stubs'
@@ -14,6 +14,7 @@ describe 'openstack-dashboard::horizon' do
 
     it 'installs packages' do
       expect(chef_run).to upgrade_package('openstack-dashboard')
+      expect(chef_run).to upgrade_package('mod_wsgi')
       expect(chef_run).to upgrade_package('MySQL-python')
     end
 

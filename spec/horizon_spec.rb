@@ -28,7 +28,7 @@ describe 'openstack-dashboard::horizon' do
           'variable2' => 'value2',
         },
       }
-      runner.converge(described_recipe)
+      runner.converge('openstack-identity::server-apache', described_recipe)
     end
 
     cached(:chef_run2) do
@@ -46,12 +46,12 @@ describe 'openstack-dashboard::horizon' do
       node.override['openstack']['dashboard']['neutron']['enable_lb'] = true
       node.override['openstack']['dashboard']['plugins'] = %w(testPlugin1 testPlugin2)
       node.override['openstack']['db']['dashboard']['migrate'] = false
-      runner.converge(described_recipe)
+      runner.converge('openstack-identity::server-apache', described_recipe)
     end
 
     cached(:chef_run_sql) do
       node.override['openstack']['dashboard']['session_backend'] = 'sql'
-      runner.converge(described_recipe)
+      runner.converge('openstack-identity::server-apache', described_recipe)
     end
 
     include_context 'non_redhat_stubs'
@@ -136,7 +136,7 @@ describe 'openstack-dashboard::horizon' do
             cached(:chef_run) do
               node.override['openstack']['dashboard']['use_ssl'] = true
               node.override['openstack']['dashboard']['ssl_no_verify'] = 'False'
-              runner.converge(described_recipe)
+              runner.converge('openstack-identity::server-apache', described_recipe)
             end
             it 'has a False value for the OPENSTACK_SSL_NO_VERIFY attribute' do
               expect(chef_run).to render_file(file.name).with_content(/^OPENSTACK_SSL_NO_VERIFY = False$/)
@@ -200,7 +200,7 @@ describe 'openstack-dashboard::horizon' do
               cached(:chef_run) do
                 node.override['openstack']['dashboard']['csrf_cookie_secure'] = false
                 node.override['openstack']['dashboard']['session_cookie_secure'] = false
-                runner.converge(described_recipe)
+                runner.converge('openstack-identity::server-apache', described_recipe)
               end
               it do
                 expect(chef_run).to render_file(file.name).with_content(/^CSRF_COOKIE_SECURE = False$/)
@@ -321,16 +321,14 @@ describe 'openstack-dashboard::horizon' do
               end
             end
 
-            [nil, []].each do |empty_value|
-              context 'without memcache servers' do
-                cached(:chef_run) do
-                  allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers).and_return(empty_value)
-                  runner.converge(described_recipe)
-                end
-                it "does not configure caching when backend == memcache and #{empty_value} provided as memcache servers" do
-                  expect(chef_run).to_not render_file(file.name)
-                    .with_content(/^\s*'LOCATION': \[\s*'hostA:port',\s*'hostB:port',\s*\]$/)
-                end
+            context 'without memcache servers' do
+              cached(:chef_run) do
+                allow_any_instance_of(Chef::Recipe).to receive(:memcached_servers).and_return([])
+                runner.converge('openstack-identity::server-apache', described_recipe)
+              end
+              it 'does not configure caching when backend == memcache and memcached_servers == []' do
+                expect(chef_run).to_not render_file(file.name)
+                  .with_content(/^\s*'LOCATION': \[\s*'hostA:port',\s*'hostB:port',\s*\]$/)
               end
             end
           end
@@ -365,7 +363,7 @@ describe 'openstack-dashboard::horizon' do
             keystone_settings.each do |keystone_setting|
               node.override['openstack']['dashboard']['keystone_backend'][keystone_setting] = true
             end
-            runner.converge(described_recipe)
+            runner.converge('openstack-identity::server-apache', described_recipe)
           end
           keystone_settings.each do |keystone_setting|
             it do
@@ -379,7 +377,7 @@ describe 'openstack-dashboard::horizon' do
             keystone_settings.each do |keystone_setting|
               node.override['openstack']['dashboard']['keystone_backend'][keystone_setting] = false
             end
-            runner.converge(described_recipe)
+            runner.converge('openstack-identity::server-apache', described_recipe)
           end
           keystone_settings.each do |keystone_setting|
             it do
@@ -428,7 +426,7 @@ describe 'openstack-dashboard::horizon' do
             components.each do |component|
               node.override['openstack']['dashboard']['log_level'][component] = "#{component}_log_level_value"
             end
-            runner.converge(described_recipe)
+            runner.converge('openstack-identity::server-apache', described_recipe)
           end
           components.each do |component|
             it do
@@ -447,7 +445,7 @@ describe 'openstack-dashboard::horizon' do
             cached(:chef_run) do
               node.override['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
               node.override['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
-              runner.converge(described_recipe)
+              runner.converge('openstack-identity::server-apache', described_recipe)
             end
             before do
               allow_any_instance_of(Chef::Recipe).to receive(:db)
@@ -539,7 +537,7 @@ describe 'openstack-dashboard::horizon' do
       context 'executes when database backend is sqlite' do
         cached(:chef_run) do
           node.override['openstack']['db']['dashboard']['service_type'] = 'sqlite'
-          runner.converge(described_recipe)
+          runner.converge('openstack-identity::server-apache', described_recipe)
         end
         it do
           expect(chef_run).to run_execute(sync_db_cmd).with(
