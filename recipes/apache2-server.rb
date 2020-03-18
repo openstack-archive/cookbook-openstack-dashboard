@@ -1,13 +1,14 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-dashboard
+# Cookbook:: openstack-dashboard
 # Recipe:: apache2-server
 #
-# Copyright 2012, Rackspace US, Inc.
-# Copyright 2012-2013, AT&T Services, Inc.
-# Copyright 2013-2014, IBM, Corp.
-# Copyright 2014, SUSE Linux, GmbH.
-# Copyright 2014, x-ion GmbH.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2012-2013, AT&T Services, Inc.
+# Copyright:: 2013-2014, IBM, Corp.
+# Copyright:: 2014, SUSE Linux, GmbH.
+# Copyright:: 2014, x-ion GmbH.
+# Copyright:: 2016-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -83,16 +84,19 @@ if node['openstack']['dashboard']['ssl']['use_data_bag']
     ssl_chain = secret('certs', node['openstack']['dashboard']['ssl']['chain'])
   end
 end
-ssl_cert_file = File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
-ssl_key_file = File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
-ssl_chain_file = if node['openstack']['dashboard']['ssl']['chain']
-                   File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['chain'])
-                 end
+ssl_cert_file =
+  File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['cert'])
+ssl_key_file =
+  File.join(node['openstack']['dashboard']['ssl']['key_dir'], node['openstack']['dashboard']['ssl']['key'])
+ssl_chain_file =
+  if node['openstack']['dashboard']['ssl']['chain']
+    File.join(node['openstack']['dashboard']['ssl']['cert_dir'], node['openstack']['dashboard']['ssl']['chain'])
+  end
 
 if node['openstack']['dashboard']['use_ssl'] &&
    node['openstack']['dashboard']['ssl']['use_data_bag']
   unless ssl_cert_file == ssl_key_file
-    cert_mode = 0o0644
+    cert_mode = '644'
     cert_owner = 'root'
     cert_group = 'root'
 
@@ -105,7 +109,7 @@ if node['openstack']['dashboard']['use_ssl'] &&
   end
 
   if ssl_chain_file
-    cert_mode = 0o0644
+    cert_mode = '644'
     cert_owner = 'root'
     cert_group = 'root'
 
@@ -117,7 +121,7 @@ if node['openstack']['dashboard']['use_ssl'] &&
     end
   end
 
-  key_mode = 0o0640
+  key_mode = '640'
   key_owner = 'root'
   key_group = node['openstack']['dashboard']['key_group']
 
@@ -133,7 +137,7 @@ end
 file node['openstack']['dashboard']['secret_key_path'] do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_group']
-  mode 0o0600
+  mode '600'
   # the only time the file should be created is if we have secret_key_content
   # set, otherwise let apache create it when someone first accesses the
   # dashboard
@@ -148,7 +152,6 @@ end
 # stop apache bitching
 directory "#{node['openstack']['dashboard']['dash_path']}/.blackhole" do
   owner 'root'
-  action :create
 end
 
 template "#{apache_dir}/sites-available/openstack-dashboard.conf" do

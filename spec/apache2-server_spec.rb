@@ -99,13 +99,13 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0o644
+            mode: '644'
           )
           expect(chef_run).to create_file('/etc/ssl/private/horizon.key').with(
             content: 'horizon_key_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0o640
+            mode: '640'
           )
         end
       end
@@ -117,7 +117,7 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_chain_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0o644
+            mode: '644'
           )
         end
       end
@@ -138,7 +138,7 @@ describe 'openstack-dashboard::apache2-server' do
               content: 'horizon_pem_value',
               user: 'root',
               group: 'root',
-              mode: 0o644
+              mode: '644'
             )
         end
 
@@ -147,7 +147,7 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'horizon_pem_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0o640
+            mode: '640'
           )
         end
 
@@ -188,13 +188,13 @@ describe 'openstack-dashboard::apache2-server' do
             content: 'any_pem_value',
             user: 'root',
             group: 'root',
-            mode: 0o644
+            mode: '644'
           )
           expect(chef_run).to create_file('/etc/anypath/any.key').with(
             content: 'any_key_value',
             user: 'root',
             group: 'ssl-cert',
-            mode: 0o640
+            mode: '640'
           )
         end
         describe 'set ssl chain' do
@@ -204,7 +204,7 @@ describe 'openstack-dashboard::apache2-server' do
               content: 'any_chain_pem_value',
               user: 'root',
               group: 'root',
-              mode: 0o644
+              mode: '644'
             )
           end
         end
@@ -555,7 +555,7 @@ describe 'openstack-dashboard::apache2-server' do
       end
 
       it 'has correct mode' do
-        expect(file.mode).to eq(0o0600)
+        expect(file.mode).to eq('600')
       end
 
       it 'does not notify apache2 restart' do

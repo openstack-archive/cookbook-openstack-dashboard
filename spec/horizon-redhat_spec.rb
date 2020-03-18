@@ -13,9 +13,7 @@ describe 'openstack-dashboard::horizon' do
     include_context 'redhat_stubs'
 
     it 'installs packages' do
-      expect(chef_run).to upgrade_package('openstack-dashboard')
-      expect(chef_run).to upgrade_package('mod_wsgi')
-      expect(chef_run).to upgrade_package('MySQL-python')
+      expect(chef_run).to upgrade_package %w(openstack-dashboard mod_wsgi MySQL-python)
     end
 
     describe 'local_settings' do
@@ -25,7 +23,7 @@ describe 'openstack-dashboard::horizon' do
         expect(chef_run).to create_template(file.name).with(
           user: 'root',
           group: 'apache',
-          mode: 0o640
+          mode: '640'
         )
       end
 

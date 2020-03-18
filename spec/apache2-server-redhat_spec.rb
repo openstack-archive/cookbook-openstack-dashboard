@@ -20,12 +20,12 @@ describe 'openstack-dashboard::apache2-server' do
           expect(chef_run).to create_file('/etc/pki/tls/certs/horizon.pem').with(
             user: 'root',
             group: 'root',
-            mode: 0o644
+            mode: '644'
           )
           expect(chef_run).to create_file('/etc/pki/tls/private/horizon.key').with(
             user: 'root',
             group: 'root',
-            mode: 0o640
+            mode: '640'
           )
         end
 

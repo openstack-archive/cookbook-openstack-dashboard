@@ -1,13 +1,14 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-dashboard
+# Cookbook:: openstack-dashboard
 # Recipe:: horizon
 #
-# Copyright 2012, Rackspace US, Inc.
-# Copyright 2012-2013, AT&T Services, Inc.
-# Copyright 2013-2014, IBM, Corp.
-# Copyright 2014, SUSE Linux, GmbH.
-# Copyright 2014, x-ion, GmbH.
+# Copyright:: 2012, Rackspace US, Inc.
+# Copyright:: 2012-2013, AT&T Services, Inc.
+# Copyright:: 2013-2014, IBM, Corp.
+# Copyright:: 2014, SUSE Linux, GmbH.
+# Copyright:: 2014, x-ion, GmbH.
+# Copyright:: 2019-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,11 +39,12 @@ http_bind_address = bind_address http_bind
 https_bind = node['openstack']['bind_service']['dashboard_https']
 https_bind_address = bind_address https_bind
 
-horizon_host = if node['openstack']['dashboard']['use_ssl']
-                 https_bind_address
-               else
-                 http_bind_address
-               end
+horizon_host =
+  if node['openstack']['dashboard']['use_ssl']
+    https_bind_address
+  else
+    http_bind_address
+  end
 
 db_pass = get_password 'db', 'horizon'
 db_info = db 'dashboard'
@@ -50,11 +52,9 @@ db_info = db 'dashboard'
 python_packages = node['openstack']['db']['python_packages'][db_info['service_type']]
 # Add dashboard specific database packages
 python_packages += Array(node['openstack']['dashboard']['db_python_packages'][db_info['service_type']])
-(platform_options['horizon_packages'] + python_packages).each do |pkg|
-  package pkg do
-    action :upgrade
-    options platform_options['package_overrides']
-  end
+package platform_options['horizon_packages'] + python_packages do
+  action :upgrade
+  options platform_options['package_overrides']
 end
 
 if node['openstack']['dashboard']['session_backend'] == 'memcached'
@@ -70,7 +70,7 @@ template node['openstack']['dashboard']['local_settings_path'] do
   source 'local_settings.py.erb'
   owner 'root'
   group node['openstack']['dashboard']['horizon_group']
-  mode 0o0640
+  mode '640'
   sensitive true
 
   variables(
@@ -99,8 +99,7 @@ end
 directory "#{node['openstack']['dashboard']['dash_path']}/local" do
   owner 'root'
   group node['openstack']['dashboard']['horizon_group']
-  mode 0o2770
-  action :create
+  mode '2770'
 end
 
 # resource can be triggered from other recipes (e.g. in
@@ -123,7 +122,7 @@ secret_file =
 file secret_file do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_user']
-  mode 0600
+  mode '600'
   subscribes :create, 'service[apache2]', :immediately
   only_if { ::File.exist?(secret_file) }
 end

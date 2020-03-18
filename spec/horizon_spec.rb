@@ -58,11 +58,7 @@ describe 'openstack-dashboard::horizon' do
     include_context 'dashboard_stubs'
 
     it 'installs packages' do
-      expect(chef_run).to upgrade_package('node-less')
-      expect(chef_run).to upgrade_package('libapache2-mod-wsgi-py3')
-      expect(chef_run).to upgrade_package('python3-django-horizon')
-      expect(chef_run).to upgrade_package('openstack-dashboard')
-      expect(chef_run).to upgrade_package('python3-mysqldb')
+      expect(chef_run).to upgrade_package %w(node-less libapache2-mod-wsgi-py3 python3-django-horizon openstack-dashboard python3-mysqldb)
     end
 
     describe 'local_settings.py' do
@@ -73,7 +69,7 @@ describe 'openstack-dashboard::horizon' do
           sensitive: true,
           user: 'root',
           group: 'horizon',
-          mode: 0o640
+          mode: '640'
         )
       end
 
@@ -444,7 +440,7 @@ describe 'openstack-dashboard::horizon' do
           context "#{service_type} database settings" do
             cached(:chef_run) do
               node.override['openstack']['db']['dashboard']['username'] = "#{service_type}_user"
-              node.override['openstack']['db']['python_packages'][service_type] = ['pkg1', 'pkg2']
+              node.override['openstack']['db']['python_packages'][service_type] = %w(pkg1 pkg2)
               runner.converge('openstack-identity::server-apache', described_recipe)
             end
             before do
@@ -553,7 +549,7 @@ describe 'openstack-dashboard::horizon' do
         .with(
           owner: 'root',
           group: 'horizon',
-          mode: 0o2770
+          mode: '2770'
         )
     end
   end

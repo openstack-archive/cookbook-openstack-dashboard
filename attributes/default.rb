@@ -1,10 +1,11 @@
 # encoding: UTF-8
 #
-# Cookbook Name:: openstack-dashboard
+# Cookbook:: openstack-dashboard
 # Attributes:: default
 #
-# Copyright 2012, AT&T, Inc.
-# Copyright 2013-2014, IBM, Corp.
+# Copyright:: 2012, AT&T, Inc.
+# Copyright:: 2013-2014, IBM, Corp.
+# Copyright:: 2016-2020, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -98,7 +99,8 @@ when 'rhel'
   default['openstack']['dashboard']['key_group'] = 'root'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
   default['openstack']['dashboard']['horizon_group'] = 'apache'
-  default['openstack']['dashboard']['secret_key_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
+  default['openstack']['dashboard']['secret_key_path'] =
+    '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
   default['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/pki/tls/certs/'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/pki/tls/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
@@ -109,8 +111,8 @@ when 'rhel'
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
   default['openstack']['dashboard']['platform'] = {
-    'horizon_packages' => ['openstack-dashboard', 'mod_wsgi'],
-    'memcache_python_packages' => ['python-memcached'],
+    'horizon_packages' => %w(openstack-dashboard mod_wsgi),
+    'memcache_python_packages' => %w(python-memcached),
     'package_overrides' => '',
   }
 when 'debian'
@@ -128,11 +130,16 @@ when 'debian'
   default['openstack']['dashboard']['logout_url'] = nil
   default['openstack']['dashboard']['login_redirect_url'] = nil
   default['openstack']['dashboard']['platform'] = {
-    'memcache_python_packages' => ['python3-memcache'],
+    'memcache_python_packages' => %w(python3-memcache),
     'package_overrides' => '',
   }
   default['openstack']['dashboard']['platform']['horizon_packages'] =
-    ['node-less', 'libapache2-mod-wsgi-py3', 'python3-django-horizon', 'openstack-dashboard']
+    %w(
+      node-less
+      libapache2-mod-wsgi-py3
+      python3-django-horizon
+      openstack-dashboard
+    )
 else
   default['openstack']['dashboard']['key_group'] = 'root'
 end
@@ -196,7 +203,6 @@ default['openstack']['dashboard']['simple_ip_management'] = false
 default['openstack']['dashboard']['neutron']['enable_quotas'] = true
 default['openstack']['dashboard']['neutron']['enable_lb'] = false
 default['openstack']['dashboard']['neutron']['enable_vpn'] = false
-default['openstack']['dashboard']['neutron']['enable_fwaas'] = false
 # Allow for misc sections to be added to the local_settings template
 # For example: {
 #                'CUSTOM_CONFIG_A' => {
