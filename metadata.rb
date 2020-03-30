@@ -12,7 +12,6 @@ end
 depends 'apache2', '~> 8.0'
 depends 'openstack-common', '>= 19.0.0'
 depends 'openstack-identity', '>= 19.0.0'
-depends 'poise-python'
 
 issues_url 'https://launchpad.net/openstack-chef'
 source_url 'https://opendev.org/openstack/cookbook-openstack-dashboard'

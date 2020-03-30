@@ -39,7 +39,6 @@ The following cookbooks are dependencies:
 - 'apache2', '~> 8.0'
 - 'openstack-common', '>= 19.0.0'
 - 'openstack-identity', '>= 19.0.0'
-- 'poise-python'
 
 Attributes
 ==========
