@@ -23,8 +23,6 @@
 # limitations under the License.
 #
 
-require 'uri'
-
 class ::Chef::Recipe
   include ::Openstack
   include Apache2::Cookbook::Helpers

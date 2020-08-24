@@ -11,9 +11,3 @@
 Style/IfUnlessModifier:
   Exclude:
     - 'recipes/apache2-server.rb'
-
-# Offense count: 260
-# Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Metrics/LineLength:
-  Max: 249
