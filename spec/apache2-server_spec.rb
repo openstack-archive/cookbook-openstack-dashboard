@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_relative 'spec_helper'
 
 shared_examples 'virtualhost port configurator' do |port_attribute_name, port_attribute_value|
