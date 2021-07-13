@@ -98,12 +98,13 @@ when 'rhel'
   default['openstack']['dashboard']['key_group'] = 'root'
   default['openstack']['dashboard']['horizon_user'] = 'apache'
   default['openstack']['dashboard']['horizon_group'] = 'apache'
-  default['openstack']['dashboard']['secret_key_path'] =
-    '/usr/share/openstack-dashboard/openstack_dashboard/local/.secret_key_store'
+  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
+  default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
+  default['openstack']['dashboard']['dash_state_path'] = "#{node['openstack']['dashboard']['dash_path']}/local"
+  default['openstack']['dashboard']['secret_key_path'] = "#{node['openstack']['dashboard']['dash_state_path']}/.secret_key_store"
   default['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/pki/tls/certs/'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/pki/tls/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings'
-  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   default['openstack']['dashboard']['static_path'] = '/usr/share/openstack-dashboard/static'
   default['openstack']['dashboard']['policy_files_path'] = '/etc/openstack-dashboard'
   default['openstack']['dashboard']['login_url'] = "#{node['openstack']['dashboard']['webroot']}auth/login/"
@@ -118,13 +119,10 @@ when 'debian'
   default['openstack']['dashboard']['key_group'] = 'ssl-cert'
   default['openstack']['dashboard']['horizon_user'] = 'horizon'
   default['openstack']['dashboard']['horizon_group'] = 'horizon'
-  default['openstack']['dashboard']['secret_key_path'] = '/var/lib/openstack-dashboard/secret_key'
+  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
   default['openstack']['dashboard']['ssl']['cert_dir'] = '/etc/ssl/certs/'
   default['openstack']['dashboard']['ssl']['key_dir'] = '/etc/ssl/private/'
   default['openstack']['dashboard']['local_settings_path'] = '/etc/openstack-dashboard/local_settings.py'
-  default['openstack']['dashboard']['django_path'] = '/usr/share/openstack-dashboard'
-  default['openstack']['dashboard']['static_path'] = '/var/lib/openstack-dashboard/static'
-  default['openstack']['dashboard']['policy_files_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/conf'
   default['openstack']['dashboard']['login_url'] = nil
   default['openstack']['dashboard']['logout_url'] = nil
   default['openstack']['dashboard']['login_redirect_url'] = nil
@@ -139,11 +137,23 @@ when 'debian'
       python3-django-horizon
       openstack-dashboard
     )
+  if platform?('ubuntu')
+    default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
+    default['openstack']['dashboard']['dash_state_path'] = "#{node['openstack']['dashboard']['dash_path']}/local"
+    default['openstack']['dashboard']['secret_key_path'] = '/var/lib/openstack-dashboard/secret_key'
+    default['openstack']['dashboard']['static_path'] = '/var/lib/openstack-dashboard/static'
+    default['openstack']['dashboard']['policy_files_path'] = '/usr/share/openstack-dashboard/openstack_dashboard/conf'
+  else
+    default['openstack']['dashboard']['dash_path'] = node['openstack']['dashboard']['django_path']
+    default['openstack']['dashboard']['dash_state_path'] = '/var/lib/openstack-dashboard'
+    default['openstack']['dashboard']['secret_key_path'] = "#{node['openstack']['dashboard']['dash_state_path']}/secret_key"
+    default['openstack']['dashboard']['static_path'] = "#{node['openstack']['dashboard']['dash_state_path']}/static"
+    default['openstack']['dashboard']['policy_files_path'] = '/etc/openstack-dashboard/policy'
+  end
 else
   default['openstack']['dashboard']['key_group'] = 'root'
 end
 
-default['openstack']['dashboard']['dash_path'] = "#{node['openstack']['dashboard']['django_path']}/openstack_dashboard"
 default['openstack']['dashboard']['wsgi_path'] = node['openstack']['dashboard']['dash_path'] + '/wsgi.py'
 default['openstack']['dashboard']['wsgi_socket_prefix'] = nil
 default['openstack']['dashboard']['session_backend'] = 'memcached'

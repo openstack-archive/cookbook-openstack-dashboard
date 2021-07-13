@@ -548,7 +548,7 @@ describe 'openstack-dashboard::horizon' do
         .with(
           owner: 'root',
           group: 'horizon',
-          mode: '2770'
+          mode: '2771'
         )
     end
   end

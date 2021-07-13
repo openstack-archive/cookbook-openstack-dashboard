@@ -93,10 +93,10 @@ execute 'openstack-dashboard syncdb' do
   end
 end
 
-directory "#{node['openstack']['dashboard']['dash_path']}/local" do
+directory node['openstack']['dashboard']['dash_state_path'] do
   owner 'root'
   group node['openstack']['dashboard']['horizon_group']
-  mode '2770'
+  mode '2771'
 end
 
 # resource can be triggered from other recipes (e.g. in
@@ -110,12 +110,7 @@ end
 
 # workaround for
 # https://bugs.launchpad.net/openstack-chef/+bug/1496158
-secret_file =
-  ::File.join(node['openstack']['dashboard']['django_path'],
-              'openstack_dashboard',
-              'local',
-              '.secret_key_store')
-
+secret_file = node['openstack']['dashboard']['secret_key_path']
 file secret_file do
   owner node['openstack']['dashboard']['horizon_user']
   group node['openstack']['dashboard']['horizon_user']
