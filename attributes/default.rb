@@ -2,9 +2,9 @@
 # Cookbook:: openstack-dashboard
 # Attributes:: default
 #
-# Copyright:: 2012, AT&T, Inc.
-# Copyright:: 2013-2014, IBM, Corp.
-# Copyright:: 2016-2020, Oregon State University
+# Copyright:: 2012-2021, AT&T, Inc.
+# Copyright:: 2013-2021, IBM, Corp.
+# Copyright:: 2016-2021, Oregon State University
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
