@@ -111,8 +111,8 @@ when 'rhel'
   default['openstack']['dashboard']['logout_url'] = "#{node['openstack']['dashboard']['webroot']}auth/logout/"
   default['openstack']['dashboard']['login_redirect_url'] = node['openstack']['dashboard']['webroot']
   default['openstack']['dashboard']['platform'] = {
-    'horizon_packages' => %w(openstack-dashboard mod_wsgi),
-    'memcache_python_packages' => %w(python-memcached),
+    'horizon_packages' => %w(openstack-dashboard),
+    'memcache_python_packages' => node['platform_version'].to_i >= 8 ? %w(python3-memcached) : %w(python-memcached),
     'package_overrides' => '',
   }
 when 'debian'
@@ -133,7 +133,6 @@ when 'debian'
   default['openstack']['dashboard']['platform']['horizon_packages'] =
     %w(
       node-less
-      libapache2-mod-wsgi-py3
       python3-django-horizon
       openstack-dashboard
     )

@@ -61,7 +61,7 @@ else
   end
 end
 
-apache2_module 'wsgi'
+apache2_mod_wsgi 'dashboard'
 apache2_module 'rewrite'
 apache2_module 'headers'
 apache2_module 'ssl' if node['openstack']['dashboard']['use_ssl']

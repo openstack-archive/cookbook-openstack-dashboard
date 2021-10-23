@@ -79,7 +79,7 @@ describe 'openstack-dashboard::apache2-server' do
     end
 
     it 'enables apache modules' do
-      expect(chef_run).to enable_apache2_module('wsgi')
+      expect(chef_run).to create_apache2_mod_wsgi 'dashboard'
       expect(chef_run).to enable_apache2_module('rewrite')
       expect(chef_run).to enable_apache2_module('headers')
     end
